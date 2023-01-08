@@ -1,0 +1,42 @@
+logging:
+  level:
+    org:
+      springframework:
+        jdbc:
+          core: DEBUG
+          core.JdbcTemplate: DEBUG
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      connection-test-query: SELECT NOW();
+      connection-timeout: 20000 # 20s
+      idle-timeout: 10000 # 10s
+      maximum-pool-size: 5
+      minimum-idle: 2
+      pool-name: certvetPool
+    init:
+      platform: mysql
+    name: certvetDB
+    type: com.zaxxer.hikari.HikariDataSource
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  jpa:
+    database: mysql
+    generate-ddl: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    defer-datasource-initialization: true
+  sql:
+    init:
+      platform: mysql
+      continue-on-error: true
+      mode: always
+http:
+  port: 8080
