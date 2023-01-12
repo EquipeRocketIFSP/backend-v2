@@ -1,4 +1,4 @@
-package br.vet.certvet.dto.request;
+package br.vet.certvet.dto.requests;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;

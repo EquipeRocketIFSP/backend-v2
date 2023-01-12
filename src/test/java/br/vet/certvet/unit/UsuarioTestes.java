@@ -1,7 +1,7 @@
 package br.vet.certvet.unit;
 
-import br.vet.certvet.dto.request.UsuarioAtivoRequestDto;
-import br.vet.certvet.dto.request.UsuarioRequestDto;
+import br.vet.certvet.dto.requests.UsuarioAtivoRequestDto;
+import br.vet.certvet.dto.requests.UsuarioRequestDto;
 import br.vet.certvet.model.Clinica;
 import br.vet.certvet.model.Usuario;
 import br.vet.certvet.services.ClinicaService;

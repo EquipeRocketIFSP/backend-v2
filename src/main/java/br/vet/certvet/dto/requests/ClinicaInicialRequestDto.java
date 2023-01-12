@@ -1,4 +1,4 @@
-package br.vet.certvet.dto.request;
+package br.vet.certvet.dto.requests;
 
 public class ClinicaInicialRequestDto {
     public String clinica_nome_fantasia;

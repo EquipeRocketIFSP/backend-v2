@@ -1,6 +1,6 @@
 package br.vet.certvet.services;
 
-import br.vet.certvet.dto.request.UsuarioRequestDto;
+import br.vet.certvet.dto.requests.UsuarioRequestDto;
 import br.vet.certvet.model.Clinica;
 import br.vet.certvet.model.Usuario;
 import org.springframework.stereotype.Service;

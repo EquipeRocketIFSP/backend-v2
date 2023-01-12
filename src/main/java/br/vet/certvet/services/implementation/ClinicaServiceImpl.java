@@ -1,6 +1,6 @@
 package br.vet.certvet.services.implementation;
 
-import br.vet.certvet.dto.request.ClinicaInicialRequestDto;
+import br.vet.certvet.dto.requests.ClinicaInicialRequestDto;
 import br.vet.certvet.model.Clinica;
 import br.vet.certvet.repositories.ClinicaRepository;
 import br.vet.certvet.services.ClinicaService;

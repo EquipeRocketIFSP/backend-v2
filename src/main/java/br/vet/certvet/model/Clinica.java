@@ -1,10 +1,8 @@
 package br.vet.certvet.model;
 
-import br.vet.certvet.dto.request.ClinicaInicialRequestDto;
+import br.vet.certvet.dto.requests.ClinicaInicialRequestDto;
 import lombok.*;
 import org.hibernate.Hibernate;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.List;

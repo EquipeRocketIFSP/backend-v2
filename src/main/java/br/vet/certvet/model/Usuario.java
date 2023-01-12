@@ -1,7 +1,7 @@
 package br.vet.certvet.model;
 
-import br.vet.certvet.dto.request.UsuarioAtivoRequestDto;
-import br.vet.certvet.dto.request.UsuarioRequestDto;
+import br.vet.certvet.dto.requests.UsuarioAtivoRequestDto;
+import br.vet.certvet.dto.requests.UsuarioRequestDto;
 import lombok.*;
 import org.hibernate.Hibernate;
 import org.springframework.security.core.userdetails.UserDetails;
