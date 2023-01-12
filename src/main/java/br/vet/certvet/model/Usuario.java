@@ -18,6 +18,7 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "usuarios")
 public class Usuario implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -68,11 +69,11 @@ public class Usuario implements UserDetails {
     public String estado;
 
     @Setter
-    @Column(nullable = false, length = 14)
+    @Column(nullable = false, length = 15)
     public String celular;
 
     @Setter
-    @Column(length = 13)
+    @Column(length = 14)
     public String telefone;
 
     @Setter
