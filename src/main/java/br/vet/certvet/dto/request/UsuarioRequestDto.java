@@ -41,10 +41,10 @@ public class UsuarioRequestDto {
     public String estado;
 
     @NotEmpty(message = "Celular não pode estar vazio")
-    @Size(max = 14, message = "Celular não pode ultrapassar 14 caracteres")
+    @Size(max = 15, message = "Celular não pode ultrapassar 15 caracteres")
     public String celular;
 
-    @Size(max = 13, message = "Telefone não pode ultrapassar 13 caracteres")
+    @Size(max = 14, message = "Telefone não pode ultrapassar 14 caracteres")
     public String telefone;
 
     @NotEmpty(message = "E-mail não pode estar vazio")
