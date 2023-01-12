@@ -2,9 +2,13 @@ package br.vet.certvet.unit;
 
 import br.vet.certvet.dto.request.UsuarioAtivoRequestDto;
 import br.vet.certvet.dto.request.UsuarioRequestDto;
+import br.vet.certvet.model.Clinica;
 import br.vet.certvet.model.Usuario;
+import br.vet.certvet.services.ClinicaService;
 import br.vet.certvet.services.UsuarioService;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -13,20 +17,31 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class UsuarioTestes {
     @Autowired
     private UsuarioService usuarioService;
 
+    @Autowired
+    private ClinicaService clinicaService;
+
+    private static Clinica clinica;
+
+    @BeforeAll
+    public void criarClinica() {
+        UsuarioTestes.clinica = this.clinicaService.criar(ClinicaTestes.factoryClinicaInicialRequestDto());
+    }
+
     @Test
     public void criarUsuario() {
-        Usuario usuario = this.usuarioService.criar(UsuarioTestes.factoryUsuarioAtivoRequestDto());
+        Usuario usuario = this.usuarioService.criar(UsuarioTestes.factoryUsuarioAtivoRequestDto(), UsuarioTestes.clinica);
 
         assertNotNull(usuario);
     }
 
     @Test
     public void criarTutor() {
-        Usuario usuario = this.usuarioService.criar(UsuarioTestes.factoryUsuarioRequestDto());
+        Usuario usuario = this.usuarioService.criar(UsuarioTestes.factoryUsuarioRequestDto(), UsuarioTestes.clinica);
 
         assertNotNull(usuario);
     }
