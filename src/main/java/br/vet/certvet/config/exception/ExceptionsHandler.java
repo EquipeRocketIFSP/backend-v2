@@ -1,5 +1,6 @@
 package br.vet.certvet.config.exception;
 
+import br.vet.certvet.exceptions.ConfilctException;
 import br.vet.certvet.exceptions.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,5 +31,11 @@ public class ExceptionsHandler {
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<String> handleNotFound(RuntimeException exception) {
         return new ResponseEntity<String>(exception.getLocalizedMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(ConfilctException.class)
+    public ResponseEntity<String> handleConflict(RuntimeException exception) {
+        return new ResponseEntity<String>(exception.getLocalizedMessage(), HttpStatus.CONFLICT);
     }
 }

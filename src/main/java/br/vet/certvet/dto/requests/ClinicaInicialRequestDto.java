@@ -2,6 +2,7 @@ package br.vet.certvet.dto.requests;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 public class ClinicaInicialRequestDto {
@@ -15,6 +16,7 @@ public class ClinicaInicialRequestDto {
 
     @NotEmpty(message = "CNPJ da clínica não pode ser vazio")
     @Size(max = 255, message = "CNPJ da clínica não pode ser maior que 255 caracteres")
+    @Pattern(regexp = "\\d{2}\\.\\d{3}\\.\\d{3}\\/\\d{4}-\\d{2}", message = "O CNPJ da clínica deve manter o padrão 99.999.999/9999-99")
     public String clinica_cnpj;
 
     @NotEmpty(message = "CNAE da clínica não pode ser vazio")
@@ -23,6 +25,7 @@ public class ClinicaInicialRequestDto {
 
     @NotEmpty(message = "CEP da clínica não pode ser vazio")
     @Size(max = 9, message = "CEP da clínica não pode ser maior que 9 caracteres")
+    @Pattern(regexp = "\\d{5}-\\d{3}", message = "O CEP da clínica deve manter o padrão 99999-999.")
     public String clinica_cep;
 
     @NotEmpty(message = "Logradouro da clínica não pode ser vazio")
@@ -47,10 +50,11 @@ public class ClinicaInicialRequestDto {
 
     @NotEmpty(message = "Celular da clínica não pode ser vazio")
     @Size(max = 15, message = "Celular da clínica não pode ser maior que 15 caracteres")
+    @Pattern(regexp = "\\(\\d{2}\\) \\d{5}-\\d{4}", message = "O Celular da clínica deve manter o padrão (99) 99999-9999")
     public String clinica_celular;
 
-    @NotEmpty(message = "Telefone da clínica não pode ser vazio")
     @Size(max = 14, message = "Telefone da clínica não pode ser maior que 14 caracteres")
+    @Pattern(regexp = "\\(\\d{2}\\) \\d{4}-\\d{4}", message = "O Telefone da clínica deve manter o padrão (99) 9999-9999")
     public String clinica_telefone;
 
     @NotEmpty(message = "E-mail da clínica não pode ser vazio")
@@ -64,6 +68,7 @@ public class ClinicaInicialRequestDto {
 
     @NotEmpty(message = "CPF do dono não pode ser vazio")
     @Size(max = 14, message = "CPF do dono da clínica não pode ser maior que 14 caracteres")
+    @Pattern(regexp = "\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}", message = "O CPF do dono deve manter o padrão 999.999.999-99")
     public String dono_cpf;
 
     @NotEmpty(message = "RG do dono não pode ser vazio")
@@ -72,6 +77,7 @@ public class ClinicaInicialRequestDto {
 
     @NotEmpty(message = "CEP do dono não pode ser vazio")
     @Size(max = 9, message = "CEP do dono da clínica não pode ser maior que 9 caracteres")
+    @Pattern(regexp = "\\d{5}-\\d{3}", message = "O CEP do dono deve manter o padrão 99999-999.")
     public String dono_cep;
 
     @NotEmpty(message = "Logradouro do dono não pode ser vazio")
@@ -96,10 +102,11 @@ public class ClinicaInicialRequestDto {
 
     @NotEmpty(message = "Celular do dono não pode ser vazio")
     @Size(max = 15, message = "Celular do dono da clínica não pode ser maior que 15 caracteres")
+    @Pattern(regexp = "\\(\\d{2}\\) \\d{5}-\\d{4}", message = "O Celular do dono deve manter o padrão (99) 99999-9999")
     public String dono_celular;
 
-    @NotEmpty(message = "Telefone do dono não pode ser vazio")
     @Size(max = 14, message = "Telefone do dono da clínica não pode ser maior que 14 caracteres")
+    @Pattern(regexp = "\\(\\d{2}\\) \\d{4}-\\d{4}", message = "O Telefone do dono deve manter o padrão (99) 9999-9999")
     public String dono_telefone;
 
     @NotEmpty(message = "E-mail do dono não pode ser vazio")
@@ -117,6 +124,7 @@ public class ClinicaInicialRequestDto {
 
     @NotEmpty(message = "CPF do responsável técnico da clínica não pode ser vazio")
     @Size(max = 14, message = "CPF do responsável técnico não pode ser maior que 14 caracteres")
+    @Pattern(regexp = "\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}", message = "O CPF do responsável técnico deve manter o padrão 999.999.999-99")
     public String tecnico_cpf;
 
     @NotEmpty(message = "RG do responsável técnico da clínica não pode ser vazio")
@@ -125,6 +133,7 @@ public class ClinicaInicialRequestDto {
 
     @NotEmpty(message = "CEP do responsável técnico da clínica não pode ser vazio")
     @Size(max = 9, message = "CEP do responsável técnico não pode ser maior que 9 caracteres")
+    @Pattern(regexp = "\\d{5}-\\d{3}", message = "O CEP do responsável técnico deve manter o padrão 99999-999.")
     public String tecnico_cep;
 
     @NotEmpty(message = "LogradouroNúmero do responsável técnico da clínica não pode ser vazio")
@@ -149,10 +158,11 @@ public class ClinicaInicialRequestDto {
 
     @NotEmpty(message = "Celular do responsável técnico da clínica não pode ser vazio")
     @Size(max = 15, message = "Celular do responsável técnico não pode ser maior que 15 caracteres")
+    @Pattern(regexp = "\\(\\d{2}\\) \\d{5}-\\d{4}", message = "O Celular da técnico deve manter o padrão (99) 99999-9999")
     public String tecnico_celular;
 
-    @NotEmpty(message = "Telefone do responsável técnico da clínica não pode ser vazio")
     @Size(max = 14, message = "Telefone do responsável técnico não pode ser maior que 14 caracteres")
+    @Pattern(regexp = "\\(\\d{2}\\) \\d{4}-\\d{4}", message = "O Telefone da técnico deve manter o padrão (99) 9999-9999")
     public String tecnico_telefone;
 
     @NotEmpty(message = "E-mail do responsável técnico da clínica não pode ser vazio")
