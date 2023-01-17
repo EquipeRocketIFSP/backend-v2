@@ -1,4 +1,4 @@
-package br.vet.certvet.model;
+package br.vet.certvet.models;
 
 import br.vet.certvet.dto.requests.UsuarioAtivoRequestDto;
 import br.vet.certvet.dto.requests.UsuarioRequestDto;
@@ -73,7 +73,7 @@ public class Usuario implements UserDetails {
     public String celular;
 
     @Setter
-    @Column(length = 14)
+    @Column(length = 15)
     public String telefone;
 
     @Setter

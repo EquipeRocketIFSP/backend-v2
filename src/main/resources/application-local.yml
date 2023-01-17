@@ -38,5 +38,24 @@ spring:
       platform: mysql
       continue-on-error: true
       mode: always
-http:
-  port: 8080
+server:
+  port:
+    8443
+#  ssl:
+#    certificate: "classpath:keystore/public.crt"
+#    certificate-private-key: "classpath:keystore/privatekey.pem"
+  http2:
+    enabled: true
+app:
+  jwt:
+    secret: qwertyuiosdfghjk
+    expiration: "864000000"
+api:
+  version: "v0.0.2"
+  description: "Interface de aplicação para sistema CertVet"
+  server:
+    # TODO: Checar a URL que será a base no momento do deploy
+    url: "https://certvet-back.us-east-1.elasticbeanstalk.com:8443"
+springdoc:
+  swagger-ui:
+    path: "/api/swagger-ui.html"

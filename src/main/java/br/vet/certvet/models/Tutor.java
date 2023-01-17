@@ -1,9 +1,10 @@
-package br.vet.certvet.model;
+package br.vet.certvet.models;
 
 import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -12,22 +13,25 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Medicamento {
-
+public class Tutor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    private String nome;
-    private String codigo;
+    @OneToOne
+    private Usuario usuario;
+
+    @ManyToMany(mappedBy = "tutores")
+    @ToString.Exclude
+    private List<Animal> animais;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Medicamento that = (Medicamento) o;
-        return id != null && Objects.equals(id, that.id);
+        Tutor tutor = (Tutor) o;
+        return id != null && Objects.equals(id, tutor.id);
     }
 
     @Override

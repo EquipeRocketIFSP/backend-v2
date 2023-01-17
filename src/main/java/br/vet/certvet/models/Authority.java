@@ -1,4 +1,4 @@
-package br.vet.certvet.model;
+package br.vet.certvet.models;
 
 import lombok.*;
 import org.hibernate.Hibernate;
@@ -15,7 +15,6 @@ import java.util.Objects;
 @Builder
 @Getter
 public class Authority implements GrantedAuthority {
-//public class Authority {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -2,8 +2,8 @@ package br.vet.certvet.unit;
 
 import br.vet.certvet.dto.requests.UsuarioAtivoRequestDto;
 import br.vet.certvet.dto.requests.UsuarioRequestDto;
-import br.vet.certvet.model.Clinica;
-import br.vet.certvet.model.Usuario;
+import br.vet.certvet.models.Clinica;
+import br.vet.certvet.models.Usuario;
 import br.vet.certvet.services.ClinicaService;
 import br.vet.certvet.services.UsuarioService;
 import org.junit.jupiter.api.BeforeAll;

@@ -1,4 +1,4 @@
-package br.vet.certvet.model;
+package br.vet.certvet.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

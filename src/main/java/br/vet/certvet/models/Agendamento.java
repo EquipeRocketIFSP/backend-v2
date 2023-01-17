@@ -1,37 +1,41 @@
-package br.vet.certvet.model;
+package br.vet.certvet.models;
 
 import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
-import java.util.List;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
-@Getter
-@ToString
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Tutor {
+@ToString
+@Builder
+@Getter
+public class Agendamento {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @OneToOne
-    private Usuario usuario;
+    @ManyToOne
+    @JoinColumn(name = "clinica_id")
+    private Clinica clinica;
 
-    @ManyToMany(mappedBy = "tutores")
-    @ToString.Exclude
-    private List<Animal> animais;
+    @ManyToOne
+    @JoinColumn(name = "animal_id")
+    private Animal animal;
+
+    private LocalDateTime dataAgendamento;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Tutor tutor = (Tutor) o;
-        return id != null && Objects.equals(id, tutor.id);
+        Agendamento that = (Agendamento) o;
+        return id != null && Objects.equals(id, that.id);
     }
 
     @Override

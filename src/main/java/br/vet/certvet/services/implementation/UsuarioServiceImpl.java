@@ -1,9 +1,9 @@
 package br.vet.certvet.services.implementation;
 
 import br.vet.certvet.dto.requests.UsuarioRequestDto;
-import br.vet.certvet.exceptions.ConfilctException;
-import br.vet.certvet.model.Clinica;
-import br.vet.certvet.model.Usuario;
+import br.vet.certvet.exceptions.ConflictException;
+import br.vet.certvet.models.Clinica;
+import br.vet.certvet.models.Usuario;
 import br.vet.certvet.repositories.UsuarioRepository;
 import br.vet.certvet.services.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +21,13 @@ public class UsuarioServiceImpl implements UsuarioService {
         Optional<Usuario> response = this.usuarioRepository.findByUsernameAndClinica(dto.email, clinica);
 
         if (response.isPresent())
-            throw new ConfilctException("Usuário já existe.");
+            throw new ConflictException("Usuário já existe.");
 
         return this.usuarioRepository.saveAndFlush(new Usuario(dto, clinica));
+    }
+
+    @Override
+    public Usuario find(Long id) {
+        return usuarioRepository.getReferenceById(id);
     }
 }

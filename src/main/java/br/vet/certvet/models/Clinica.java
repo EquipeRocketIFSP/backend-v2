@@ -1,4 +1,4 @@
-package br.vet.certvet.model;
+package br.vet.certvet.models;
 
 import br.vet.certvet.dto.requests.ClinicaInicialRequestDto;
 import lombok.*;

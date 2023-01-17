@@ -1,6 +1,6 @@
 package br.vet.certvet.dto.responses;
 
-import br.vet.certvet.model.Clinica;
+import br.vet.certvet.models.Clinica;
 
 public class ClinicaResponseDto {
     public Long id;

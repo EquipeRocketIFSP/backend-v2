@@ -3,8 +3,8 @@ package br.vet.certvet.controllers;
 import br.vet.certvet.dto.requests.ClinicaInicialRequestDto;
 import br.vet.certvet.dto.requests.UsuarioAtivoRequestDto;
 import br.vet.certvet.dto.responses.ClinicaResponseDto;
-import br.vet.certvet.model.Clinica;
-import br.vet.certvet.model.Usuario;
+import br.vet.certvet.models.Clinica;
+import br.vet.certvet.models.Usuario;
 import br.vet.certvet.services.ClinicaService;
 import br.vet.certvet.services.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/clinica")
 public class ClinicaController {
     @Autowired
     private ClinicaService clinicaService;
@@ -26,7 +26,7 @@ public class ClinicaController {
     @Autowired
     private UsuarioService usuarioService;
 
-    @PostMapping("/clinica")
+    @PostMapping
     public ResponseEntity<ClinicaResponseDto> criar(@RequestBody @Valid ClinicaInicialRequestDto dto) {
         Clinica clinica = this.clinicaService.criar(dto);
         Usuario dono = this.usuarioService.criar(ClinicaController.getDonoDto(dto), clinica);

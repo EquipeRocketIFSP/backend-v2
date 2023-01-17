@@ -1,7 +1,7 @@
 package br.vet.certvet.unit;
 
 import br.vet.certvet.dto.requests.ClinicaInicialRequestDto;
-import br.vet.certvet.model.Clinica;
+import br.vet.certvet.models.Clinica;
 import br.vet.certvet.services.ClinicaService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
