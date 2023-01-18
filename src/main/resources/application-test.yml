@@ -41,3 +41,7 @@ spring:
       mode: always
 http:
   port: 8080
+app:
+  jwt:
+    secret: test
+    expiration: "864000000"
