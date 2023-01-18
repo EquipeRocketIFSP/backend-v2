@@ -27,6 +27,10 @@ public class Authority implements GrantedAuthority {
     @ToString.Exclude
     private List<Usuario> users;
 
+    public Authority(String authority) {
+        this.authority = authority;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
