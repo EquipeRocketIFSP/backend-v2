@@ -1,5 +1,6 @@
 package br.vet.certvet.controllers;
 
+import br.vet.certvet.dto.requests.UsuarioAtivoRequestDto;
 import br.vet.certvet.dto.requests.UsuarioRequestDto;
 import br.vet.certvet.dto.responses.UsuarioResponseDto;
 import br.vet.certvet.models.Clinica;
@@ -28,10 +29,19 @@ public class UsuarioController {
     private ClinicaService clinicaService;
 
     //TODO: pegar id da clinica pelo token de autenticação
-    @PostMapping("/clinica/{clinica}/tutor")
-    public ResponseEntity<UsuarioResponseDto> criar(@RequestBody @Valid UsuarioRequestDto usuarioRequestDto, @PathVariable("clinica") Long clinicaId) {
+    @PostMapping({"/clinica/{clinica}/funcionario", "/clinica/{clinica}/veterinario"})
+    public ResponseEntity<UsuarioResponseDto> criar(@RequestBody @Valid UsuarioAtivoRequestDto dto, @PathVariable("clinica") Long clinicaId) {
         Clinica clinica = this.clinicaService.recuperar(clinicaId);
-        Usuario usuario = this.usuarioService.criar(usuarioRequestDto, clinica);
+        Usuario usuario = this.usuarioService.criar(dto, clinica);
+
+        return new ResponseEntity<>(new UsuarioResponseDto(usuario), HttpStatus.CREATED);
+    }
+
+    //TODO: pegar id da clinica pelo token de autenticação
+    @PostMapping("/clinica/{clinica}/tutor")
+    public ResponseEntity<UsuarioResponseDto> criar(@RequestBody @Valid UsuarioRequestDto dto, @PathVariable("clinica") Long clinicaId) {
+        Clinica clinica = this.clinicaService.recuperar(clinicaId);
+        Usuario usuario = this.usuarioService.criar(dto, clinica);
 
         return new ResponseEntity<>(new UsuarioResponseDto(usuario), HttpStatus.CREATED);
     }
