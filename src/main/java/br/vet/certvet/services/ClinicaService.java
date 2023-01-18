@@ -7,4 +7,5 @@ import org.springframework.stereotype.Service;
 @Service
 public interface ClinicaService {
     Clinica criar(ClinicaInicialRequestDto dto);
+    Clinica recuperar(Long id);
 }
