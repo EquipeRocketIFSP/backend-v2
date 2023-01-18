@@ -2,6 +2,7 @@ package br.vet.certvet.unit;
 
 import br.vet.certvet.dto.requests.UsuarioAtivoRequestDto;
 import br.vet.certvet.dto.requests.UsuarioRequestDto;
+import br.vet.certvet.exceptions.NotFoundException;
 import br.vet.certvet.models.Clinica;
 import br.vet.certvet.models.Usuario;
 import br.vet.certvet.services.ClinicaService;
@@ -44,6 +45,22 @@ public class UsuarioTestes {
         Usuario usuario = this.usuarioService.criar(UsuarioTestes.factoryUsuarioRequestDto(), UsuarioTestes.clinica);
 
         assertNotNull(usuario);
+    }
+
+    @Test
+    public void recuperarTutorExistente() {
+        Usuario usuarioTest = this.usuarioService.criar(UsuarioTestes.factoryUsuarioRequestDto(), UsuarioTestes.clinica);
+        Usuario usuario = this.usuarioService.find(usuarioTest.getId());
+
+        assertNotNull(usuario);
+        assertEquals(usuario, usuarioTest);
+    }
+
+    @Test
+    public void recuperarTutorInexistente() {
+        assertThrowsExactly(NotFoundException.class, () -> {
+            this.usuarioService.find(Long.getLong("999999999"));
+        });
     }
 
     public static UsuarioRequestDto factoryUsuarioRequestDto() {
