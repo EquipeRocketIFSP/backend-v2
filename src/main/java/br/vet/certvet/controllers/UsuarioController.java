@@ -1,7 +1,8 @@
 package br.vet.certvet.controllers;
 
-import br.vet.certvet.dto.requests.UsuarioAtivoRequestDto;
+import br.vet.certvet.dto.requests.FuncionarioRequestDto;
 import br.vet.certvet.dto.requests.UsuarioRequestDto;
+import br.vet.certvet.dto.requests.VeterinarioRequestDto;
 import br.vet.certvet.dto.responses.UsuarioResponseDto;
 import br.vet.certvet.models.Clinica;
 import br.vet.certvet.models.Usuario;
@@ -21,7 +22,6 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/api")
 public class UsuarioController {
-
     @Autowired
     private UsuarioService usuarioService;
 
@@ -29,17 +29,23 @@ public class UsuarioController {
     private ClinicaService clinicaService;
 
     //TODO: pegar id da clinica pelo token de autenticação
-    @PostMapping({"/clinica/{clinica}/funcionario", "/clinica/{clinica}/veterinario"})
-    public ResponseEntity<UsuarioResponseDto> criar(@RequestBody @Valid UsuarioAtivoRequestDto dto, @PathVariable("clinica") Long clinicaId) {
-        Clinica clinica = this.clinicaService.recuperar(clinicaId);
-        Usuario usuario = this.usuarioService.criar(dto, clinica);
+    @PostMapping({"/clinica/{clinica}/funcionario"})
+    public ResponseEntity<UsuarioResponseDto> criarFuncionario(@RequestBody @Valid FuncionarioRequestDto dto, @PathVariable("clinica") Long clinicaId) {
+        return this.criar(dto, clinicaId);
+    }
 
-        return new ResponseEntity<>(new UsuarioResponseDto(usuario), HttpStatus.CREATED);
+    @PostMapping({"/clinica/{clinica}/veterinario"})
+    public ResponseEntity<UsuarioResponseDto> criarVeterinario(@RequestBody @Valid VeterinarioRequestDto dto, @PathVariable("clinica") Long clinicaId) {
+        return this.criar(dto, clinicaId);
     }
 
     //TODO: pegar id da clinica pelo token de autenticação
     @PostMapping("/clinica/{clinica}/tutor")
-    public ResponseEntity<UsuarioResponseDto> criar(@RequestBody @Valid UsuarioRequestDto dto, @PathVariable("clinica") Long clinicaId) {
+    public ResponseEntity<UsuarioResponseDto> criarTutor(@RequestBody @Valid UsuarioRequestDto dto, @PathVariable("clinica") Long clinicaId) {
+        return this.criar(dto, clinicaId);
+    }
+
+    private ResponseEntity<UsuarioResponseDto> criar(UsuarioRequestDto dto, Long clinicaId) {
         Clinica clinica = this.clinicaService.recuperar(clinicaId);
         Usuario usuario = this.usuarioService.criar(dto, clinica);
 

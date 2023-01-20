@@ -1,10 +1,10 @@
 package br.vet.certvet.controllers;
 
 import br.vet.certvet.dto.requests.ClinicaInicialRequestDto;
-import br.vet.certvet.dto.requests.UsuarioAtivoRequestDto;
+import br.vet.certvet.dto.requests.FuncionarioRequestDto;
+import br.vet.certvet.dto.requests.VeterinarioRequestDto;
 import br.vet.certvet.dto.responses.ClinicaResponseDto;
 import br.vet.certvet.models.Clinica;
-import br.vet.certvet.models.Usuario;
 import br.vet.certvet.services.ClinicaService;
 import br.vet.certvet.services.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,14 +29,14 @@ public class ClinicaController {
     @PostMapping
     public ResponseEntity<ClinicaResponseDto> criar(@RequestBody @Valid ClinicaInicialRequestDto dto) {
         Clinica clinica = this.clinicaService.criar(dto);
-        Usuario dono = this.usuarioService.criar(ClinicaController.getDonoDto(dto), clinica);
-        Usuario tecnico = this.usuarioService.criar(ClinicaController.getTecnicoDto(dto), clinica);
+        this.usuarioService.criar(ClinicaController.getDonoDto(dto), clinica);
+        this.usuarioService.criar(ClinicaController.getTecnicoDto(dto), clinica);
 
         return new ResponseEntity<>(new ClinicaResponseDto(clinica), HttpStatus.ACCEPTED);
     }
 
-    private static UsuarioAtivoRequestDto getDonoDto(ClinicaInicialRequestDto dto) {
-        UsuarioAtivoRequestDto usuarioDto = new UsuarioAtivoRequestDto();
+    private static FuncionarioRequestDto getDonoDto(ClinicaInicialRequestDto dto) {
+        FuncionarioRequestDto usuarioDto = new FuncionarioRequestDto();
 
         usuarioDto.nome = dto.dono_nome;
         usuarioDto.email = dto.dono_email;
@@ -50,14 +50,13 @@ public class ClinicaController {
         usuarioDto.bairro = dto.dono_bairro;
         usuarioDto.cidade = dto.dono_cidade;
         usuarioDto.estado = dto.dono_estado;
-        usuarioDto.crmv = null;
         usuarioDto.senha = dto.dono_senha;
 
         return usuarioDto;
     }
 
-    private static UsuarioAtivoRequestDto getTecnicoDto(ClinicaInicialRequestDto dto) {
-        UsuarioAtivoRequestDto usuarioDto = new UsuarioAtivoRequestDto();
+    private static VeterinarioRequestDto getTecnicoDto(ClinicaInicialRequestDto dto) {
+        VeterinarioRequestDto usuarioDto = new VeterinarioRequestDto();
 
         usuarioDto.nome = dto.tecnico_nome;
         usuarioDto.email = dto.tecnico_email;
@@ -71,7 +70,7 @@ public class ClinicaController {
         usuarioDto.bairro = dto.tecnico_bairro;
         usuarioDto.cidade = dto.tecnico_cidade;
         usuarioDto.estado = dto.tecnico_estado;
-        usuarioDto.crmv = null;
+        usuarioDto.crmv = dto.tecnico_crmv;
         usuarioDto.senha = dto.tecnico_senha;
 
         return usuarioDto;

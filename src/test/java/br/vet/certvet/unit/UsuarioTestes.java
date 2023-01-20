@@ -1,6 +1,6 @@
 package br.vet.certvet.unit;
 
-import br.vet.certvet.dto.requests.UsuarioAtivoRequestDto;
+import br.vet.certvet.dto.requests.FuncionarioRequestDto;
 import br.vet.certvet.dto.requests.UsuarioRequestDto;
 import br.vet.certvet.exceptions.NotFoundException;
 import br.vet.certvet.models.Clinica;
@@ -83,8 +83,8 @@ public class UsuarioTestes {
         return dto;
     }
 
-    public static UsuarioAtivoRequestDto factoryUsuarioAtivoRequestDto() {
-        UsuarioAtivoRequestDto dto = new UsuarioAtivoRequestDto();
+    public static FuncionarioRequestDto factoryUsuarioAtivoRequestDto() {
+        FuncionarioRequestDto dto = new FuncionarioRequestDto();
 
         dto.nome = "Dono nome";
         dto.cpf = "920.137.300-71";

@@ -1,7 +1,8 @@
 package br.vet.certvet.models;
 
-import br.vet.certvet.dto.requests.UsuarioAtivoRequestDto;
+import br.vet.certvet.dto.requests.FuncionarioRequestDto;
 import br.vet.certvet.dto.requests.UsuarioRequestDto;
+import br.vet.certvet.dto.requests.VeterinarioRequestDto;
 import lombok.*;
 import org.hibernate.Hibernate;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -107,11 +109,13 @@ public class Usuario implements UserDetails {
         this.clinica = clinica;
         this.crmv = null;
         this.password = null;
+        this.authorities = new ArrayList<>();
 
-        if (dto instanceof UsuarioAtivoRequestDto) {
-            this.crmv = ((UsuarioAtivoRequestDto) dto).crmv;
-            this.password = ((UsuarioAtivoRequestDto) dto).senha;
-        }
+        if (dto instanceof FuncionarioRequestDto)
+            this.password = ((FuncionarioRequestDto) dto).senha;
+
+        if (dto instanceof VeterinarioRequestDto)
+            this.crmv = ((VeterinarioRequestDto) dto).crmv;
     }
 
     @Override

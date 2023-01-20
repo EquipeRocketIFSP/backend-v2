@@ -179,4 +179,7 @@ public class ClinicaInicialRequestDto {
     @NotEmpty(message = "Senha do responsável técnico da clínica não pode ser vazio")
     @Size(max = 255, message = "Senha do responsável técnico não pode ser maior que 255 caracteres")
     public String tecnico_senha;
+
+    @NotEmpty(message = "CRMV não pode estar vazio")
+    public String tecnico_crmv;
 }
