@@ -10,16 +10,15 @@ import br.vet.certvet.services.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+
 @RestController
 @RequestMapping("/api/clinica")
-public class ClinicaController {
+public class ClinicaController extends BaseController {
     @Autowired
     private ClinicaService clinicaService;
 
@@ -27,7 +26,9 @@ public class ClinicaController {
     private UsuarioService usuarioService;
 
     @PostMapping
-    public ResponseEntity<ClinicaResponseDto> criar(@RequestBody @Valid ClinicaInicialRequestDto dto) {
+    public ResponseEntity<ClinicaResponseDto> criar(
+            @RequestBody @Valid ClinicaInicialRequestDto dto
+    ) {
         Clinica clinica = this.clinicaService.criar(dto);
         this.usuarioService.criar(ClinicaController.getDonoDto(dto), clinica);
         this.usuarioService.criar(ClinicaController.getTecnicoDto(dto), clinica);
