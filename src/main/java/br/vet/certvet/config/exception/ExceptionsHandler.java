@@ -9,6 +9,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -35,5 +36,11 @@ public class ExceptionsHandler {
     @ExceptionHandler(ConflictException.class)
     public ResponseEntity<String> handleConflict(RuntimeException exception) {
         return new ResponseEntity<String>(exception.getLocalizedMessage(), HttpStatus.CONFLICT);
+    }
+
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<String> handleUnprocessableEntity(RuntimeException exception) {
+        return new ResponseEntity<String>("Não foi possivel processar o conteúdo dessa requisição", HttpStatus.UNPROCESSABLE_ENTITY);
     }
 }

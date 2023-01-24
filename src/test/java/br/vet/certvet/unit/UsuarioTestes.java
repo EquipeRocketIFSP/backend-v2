@@ -51,7 +51,7 @@ public class UsuarioTestes {
     @Test
     public void recuperarTutorExistente() {
         Usuario usuarioTest = this.usuarioService.criar(UsuarioTestes.factoryUsuarioRequestDto(), UsuarioTestes.clinica);
-        Usuario usuario = this.usuarioService.find(usuarioTest.getId());
+        Usuario usuario = this.usuarioService.findById(usuarioTest.getId());
 
         assertNotNull(usuario);
         assertEquals(usuario, usuarioTest);
@@ -60,7 +60,7 @@ public class UsuarioTestes {
     @Test
     public void recuperarTutorInexistente() {
         assertThrowsExactly(NotFoundException.class, () -> {
-            this.usuarioService.find(Long.getLong("999999999"));
+            this.usuarioService.findById(Long.getLong("999999999"));
         });
     }
 

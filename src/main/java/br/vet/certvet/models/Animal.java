@@ -1,10 +1,13 @@
 package br.vet.certvet.models;
 
+import br.vet.certvet.dto.requests.AnimalRequestDto;
+import br.vet.certvet.enums.SexoAnimal;
 import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,14 +27,33 @@ public class Animal {
     @Column(nullable = false)
     private Long id;
 
+    @Setter
+    @Column(nullable = false)
+    private String nome;
+
+    @Setter
+    @Column(nullable = false)
+    private int idade;
+
+    @Setter
+    @Column(nullable = false)
+    private String raca;
+
+    @Setter
+    @Column(nullable = false)
+    private String especie;
+
+    @Setter
+    @Column(nullable = false)
+    private String pelagem;
+
+    @Setter
+    @Column(nullable = false)
+    private SexoAnimal sexo;
+
     @OneToMany(mappedBy = "id")
     @ToString.Exclude
     private List<ParentescoAnimal> parentescos;
-
-    private String nome;
-
-    @NotBlank
-    private String sexo;
 
     @ManyToMany
     @JoinTable(name = "animal_tutores",
@@ -75,5 +97,20 @@ public class Animal {
     @Override
     public int hashCode() {
         return getClass().hashCode();
+    }
+
+    public Animal(AnimalRequestDto dto) {
+
+        System.out.println(dto.sexo);
+
+        this.nome = dto.nome;
+        this.especie = dto.especie;
+        this.sexo = SexoAnimal.valueOf(dto.sexo);
+        this.idade = dto.idade;
+        this.pelagem = dto.pelagem;
+        this.raca = dto.raca;
+
+        this.tutores = new ArrayList<>();
+        this.parentescos = new ArrayList<>();
     }
 }
