@@ -30,22 +30,22 @@ public class UsuarioController {
 
     //TODO: pegar id da clinica pelo token de autenticação
     @PostMapping({"/clinica/{clinica}/funcionario"})
-    public ResponseEntity<UsuarioResponseDto> criarFuncionario(@RequestBody @Valid FuncionarioRequestDto dto, @PathVariable("clinica") Long clinicaId) {
-        return this.criar(dto, clinicaId);
+    public ResponseEntity<UsuarioResponseDto> createFuncionario(@RequestBody @Valid FuncionarioRequestDto dto, @PathVariable("clinica") Long clinicaId) {
+        return this.create(dto, clinicaId);
     }
 
     @PostMapping({"/clinica/{clinica}/veterinario"})
-    public ResponseEntity<UsuarioResponseDto> criarVeterinario(@RequestBody @Valid VeterinarioRequestDto dto, @PathVariable("clinica") Long clinicaId) {
-        return this.criar(dto, clinicaId);
+    public ResponseEntity<UsuarioResponseDto> createVeterinario(@RequestBody @Valid VeterinarioRequestDto dto, @PathVariable("clinica") Long clinicaId) {
+        return this.create(dto, clinicaId);
     }
 
     //TODO: pegar id da clinica pelo token de autenticação
     @PostMapping("/clinica/{clinica}/tutor")
-    public ResponseEntity<UsuarioResponseDto> criarTutor(@RequestBody @Valid UsuarioRequestDto dto, @PathVariable("clinica") Long clinicaId) {
-        return this.criar(dto, clinicaId);
+    public ResponseEntity<UsuarioResponseDto> createTutor(@RequestBody @Valid UsuarioRequestDto dto, @PathVariable("clinica") Long clinicaId) {
+        return this.create(dto, clinicaId);
     }
 
-    private ResponseEntity<UsuarioResponseDto> criar(UsuarioRequestDto dto, Long clinicaId) {
+    private ResponseEntity<UsuarioResponseDto> create(UsuarioRequestDto dto, Long clinicaId) {
         Clinica clinica = this.clinicaService.recuperar(clinicaId);
         Usuario usuario = this.usuarioService.criar(dto, clinica);
 

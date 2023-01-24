@@ -4,6 +4,7 @@ import br.vet.certvet.dto.requests.FuncionarioRequestDto;
 import br.vet.certvet.dto.requests.UsuarioRequestDto;
 import br.vet.certvet.dto.requests.VeterinarioRequestDto;
 import br.vet.certvet.exceptions.ConflictException;
+import br.vet.certvet.exceptions.NotFoundException;
 import br.vet.certvet.models.Authority;
 import br.vet.certvet.models.Clinica;
 import br.vet.certvet.models.Usuario;
@@ -54,8 +55,13 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public Usuario find(Long id) {
-        return usuarioRepository.getReferenceById(id);
+    public Usuario findById(Long id) {
+        Optional<Usuario> response = usuarioRepository.findById(id);
+
+        if (response.isEmpty())
+            throw new NotFoundException("Usuário não encontrado");
+
+        return response.get();
     }
 
     private Usuario salvar(Usuario usuario, Clinica clinica) {

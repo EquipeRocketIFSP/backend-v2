@@ -69,7 +69,7 @@ public class TokenService {
     }
 
     public Usuario getUsuario(String token){
-        return usuarioService.find(getUsuarioId(
+        return usuarioService.findById(getUsuarioId(
                 token.startsWith("Bearer ")
                         ? token.substring(7)
                         : token

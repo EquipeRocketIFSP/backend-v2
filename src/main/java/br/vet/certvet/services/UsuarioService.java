@@ -12,5 +12,5 @@ public interface UsuarioService {
     Usuario criar(UsuarioRequestDto dto, Clinica clinica);
     Usuario criar(FuncionarioRequestDto dto, Clinica clinica);
     Usuario criar(VeterinarioRequestDto dto, Clinica clinica);
-    Usuario find(Long id);
+    Usuario findById(Long id);
 }
