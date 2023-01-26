@@ -4,6 +4,7 @@ import br.vet.certvet.dto.requests.FuncionarioRequestDto;
 import br.vet.certvet.dto.requests.UsuarioRequestDto;
 import br.vet.certvet.dto.requests.VeterinarioRequestDto;
 import br.vet.certvet.exceptions.ConflictException;
+import br.vet.certvet.exceptions.ForbiddenException;
 import br.vet.certvet.exceptions.NotFoundException;
 import br.vet.certvet.models.Authority;
 import br.vet.certvet.models.Clinica;
@@ -55,6 +56,40 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
+    public Usuario edit(UsuarioRequestDto dto, Usuario usuario) {
+        UsuarioServiceImpl.setDefaultUsuarioNewData(dto, usuario);
+
+        return this.usuarioRepository.saveAndFlush(usuario);
+    }
+
+    @Override
+    public Usuario edit(FuncionarioRequestDto dto, Usuario usuario) {
+        Optional<Authority> usuarioAuthority = UsuarioServiceImpl.getUsuarioAuthority(usuario, "FUNCIONARIO");
+
+        if (usuarioAuthority.isEmpty())
+            throw new ForbiddenException("Esse usuário não é um funcionário. Verifique a documentação da API.");
+
+        UsuarioServiceImpl.setDefaultUsuarioNewData(dto, usuario);
+        usuario.setPassword(dto.senha);
+
+        return this.usuarioRepository.saveAndFlush(usuario);
+    }
+
+    @Override
+    public Usuario edit(VeterinarioRequestDto dto, Usuario usuario) {
+        Optional<Authority> usuarioAuthority = UsuarioServiceImpl.getUsuarioAuthority(usuario, "VETERINARIO");
+
+        if (usuarioAuthority.isEmpty())
+            throw new ForbiddenException("Esse usuário não é um veterinário. Verifique a documentação da API.");
+
+        UsuarioServiceImpl.setDefaultUsuarioNewData(dto, usuario);
+        usuario.setPassword(dto.senha);
+        usuario.setCrmv(dto.crmv);
+
+        return this.usuarioRepository.saveAndFlush(usuario);
+    }
+
+    @Override
     public Usuario findById(Long id) {
         Optional<Usuario> response = usuarioRepository.findById(id);
 
@@ -71,5 +106,27 @@ public class UsuarioServiceImpl implements UsuarioService {
             throw new ConflictException("Usuário já existe.");
 
         return this.usuarioRepository.saveAndFlush(usuario);
+    }
+
+    private static Optional<Authority> getUsuarioAuthority(Usuario usuario, String authorityName) {
+        return usuario.getAuthorities()
+                .stream()
+                .filter((authority) -> authority.getAuthority().equals(authorityName))
+                .findFirst();
+    }
+
+    private static void setDefaultUsuarioNewData(UsuarioRequestDto dto, Usuario usuario) {
+        usuario.setNome(dto.nome);
+        usuario.setUsername(dto.email);
+        usuario.setRg(dto.rg);
+        usuario.setCpf(dto.cpf);
+        usuario.setCelular(dto.celular);
+        usuario.setTelefone(dto.telefone);
+        usuario.setLogradouro(dto.logradouro);
+        usuario.setCep(dto.cep);
+        usuario.setNumero(dto.numero);
+        usuario.setBairro(dto.bairro);
+        usuario.setCidade(dto.cidade);
+        usuario.setEstado(dto.estado);
     }
 }

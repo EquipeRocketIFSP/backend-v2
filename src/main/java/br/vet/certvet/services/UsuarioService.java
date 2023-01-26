@@ -10,7 +10,16 @@ import org.springframework.stereotype.Service;
 @Service
 public interface UsuarioService {
     Usuario criar(UsuarioRequestDto dto, Clinica clinica);
+
     Usuario criar(FuncionarioRequestDto dto, Clinica clinica);
+
     Usuario criar(VeterinarioRequestDto dto, Clinica clinica);
+
+    Usuario edit(UsuarioRequestDto dto, Usuario usuario);
+
+    Usuario edit(FuncionarioRequestDto dto, Usuario usuario);
+
+    Usuario edit(VeterinarioRequestDto dto, Usuario usuario);
+
     Usuario findById(Long id);
 }

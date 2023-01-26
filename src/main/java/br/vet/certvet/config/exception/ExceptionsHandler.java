@@ -1,6 +1,7 @@
 package br.vet.certvet.config.exception;
 
 import br.vet.certvet.exceptions.ConflictException;
+import br.vet.certvet.exceptions.ForbiddenException;
 import br.vet.certvet.exceptions.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,5 +43,11 @@ public class ExceptionsHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<String> handleUnprocessableEntity(RuntimeException exception) {
         return new ResponseEntity<String>("Não foi possivel processar o conteúdo dessa requisição", HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<String> handleForbidden(RuntimeException exception) {
+        return new ResponseEntity<String>(exception.getLocalizedMessage(), HttpStatus.FORBIDDEN);
     }
 }
