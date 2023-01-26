@@ -9,11 +9,11 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface UsuarioService {
-    Usuario criar(UsuarioRequestDto dto, Clinica clinica);
+    Usuario create(UsuarioRequestDto dto, Clinica clinica);
 
-    Usuario criar(FuncionarioRequestDto dto, Clinica clinica);
+    Usuario create(FuncionarioRequestDto dto, Clinica clinica);
 
-    Usuario criar(VeterinarioRequestDto dto, Clinica clinica);
+    Usuario create(VeterinarioRequestDto dto, Clinica clinica);
 
     Usuario edit(UsuarioRequestDto dto, Usuario usuario);
 

@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-
 @RestController
 @RequestMapping("/api/clinica")
 public class ClinicaController extends BaseController {
@@ -30,8 +28,8 @@ public class ClinicaController extends BaseController {
             @RequestBody @Valid ClinicaInicialRequestDto dto
     ) {
         Clinica clinica = this.clinicaService.criar(dto);
-        this.usuarioService.criar(ClinicaController.getDonoDto(dto), clinica);
-        this.usuarioService.criar(ClinicaController.getTecnicoDto(dto), clinica);
+        this.usuarioService.create(ClinicaController.getDonoDto(dto), clinica);
+        this.usuarioService.create(ClinicaController.getTecnicoDto(dto), clinica);
 
         return new ResponseEntity<>(new ClinicaResponseDto(clinica), HttpStatus.ACCEPTED);
     }

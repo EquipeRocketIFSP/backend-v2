@@ -26,7 +26,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     private AuthorityRepository authorityRepository;
 
     @Override
-    public Usuario criar(UsuarioRequestDto dto, Clinica clinica) {
+    public Usuario create(UsuarioRequestDto dto, Clinica clinica) {
         Usuario usuario = new Usuario(dto, clinica);
         Authority authority = this.authorityRepository.getByAuthority("TUTOR");
 
@@ -36,7 +36,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public Usuario criar(FuncionarioRequestDto dto, Clinica clinica) {
+    public Usuario create(FuncionarioRequestDto dto, Clinica clinica) {
         Usuario usuario = new Usuario(dto, clinica);
         Authority authority = this.authorityRepository.getByAuthority("FUNCIONARIO");
 
@@ -46,7 +46,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public Usuario criar(VeterinarioRequestDto dto, Clinica clinica) {
+    public Usuario create(VeterinarioRequestDto dto, Clinica clinica) {
         Usuario usuario = new Usuario(dto, clinica);
         Authority authority = this.authorityRepository.getByAuthority("VETERINARIO");
 

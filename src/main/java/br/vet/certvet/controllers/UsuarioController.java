@@ -79,7 +79,7 @@ public class UsuarioController {
 
     private ResponseEntity<UsuarioResponseDto> create(UsuarioRequestDto dto, Long clinicaId) {
         Clinica clinica = this.clinicaService.recuperar(clinicaId);
-        Usuario usuario = this.usuarioService.criar(dto, clinica);
+        Usuario usuario = this.usuarioService.create(dto, clinica);
 
         return new ResponseEntity<>(new UsuarioResponseDto(usuario), HttpStatus.CREATED);
     }

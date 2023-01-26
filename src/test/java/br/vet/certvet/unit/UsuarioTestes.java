@@ -36,21 +36,21 @@ public class UsuarioTestes {
 
     @Test
     public void criarUsuario() {
-        Usuario usuario = this.usuarioService.criar(UsuarioTestes.factoryUsuarioAtivoRequestDto(), UsuarioTestes.clinica);
+        Usuario usuario = this.usuarioService.create(UsuarioTestes.factoryUsuarioAtivoRequestDto(), UsuarioTestes.clinica);
 
         assertNotNull(usuario);
     }
 
     @Test
     public void criarTutor() {
-        Usuario usuario = this.usuarioService.criar(UsuarioTestes.factoryUsuarioRequestDto(), UsuarioTestes.clinica);
+        Usuario usuario = this.usuarioService.create(UsuarioTestes.factoryUsuarioRequestDto(), UsuarioTestes.clinica);
 
         assertNotNull(usuario);
     }
 
     @Test
     public void recuperarTutorExistente() {
-        Usuario usuarioTest = this.usuarioService.criar(UsuarioTestes.factoryUsuarioRequestDto(), UsuarioTestes.clinica);
+        Usuario usuarioTest = this.usuarioService.create(UsuarioTestes.factoryUsuarioRequestDto(), UsuarioTestes.clinica);
         Usuario usuario = this.usuarioService.findById(usuarioTest.getId());
 
         assertNotNull(usuario);
