@@ -31,7 +31,7 @@ public class UsuarioTestes {
 
     @BeforeAll
     public void criarClinica() {
-        UsuarioTestes.clinica = this.clinicaService.criar(ClinicaTestes.factoryClinicaInicialRequestDto());
+        UsuarioTestes.clinica = this.clinicaService.create(ClinicaTestes.factoryClinicaInicialRequestDto());
     }
 
     @Test

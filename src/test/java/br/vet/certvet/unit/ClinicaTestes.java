@@ -19,7 +19,7 @@ public class ClinicaTestes {
 
     @Test
     public void criarClinica() {
-        Clinica clinica = this.clinicaService.criar(ClinicaTestes.factoryClinicaInicialRequestDto());
+        Clinica clinica = this.clinicaService.create(ClinicaTestes.factoryClinicaInicialRequestDto());
 
         assertNotNull(clinica);
     }

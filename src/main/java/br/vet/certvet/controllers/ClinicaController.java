@@ -27,7 +27,7 @@ public class ClinicaController extends BaseController {
     public ResponseEntity<ClinicaResponseDto> criar(
             @RequestBody @Valid ClinicaInicialRequestDto dto
     ) {
-        Clinica clinica = this.clinicaService.criar(dto);
+        Clinica clinica = this.clinicaService.create(dto);
         this.usuarioService.create(ClinicaController.getDonoDto(dto), clinica);
         this.usuarioService.create(ClinicaController.getTecnicoDto(dto), clinica);
 

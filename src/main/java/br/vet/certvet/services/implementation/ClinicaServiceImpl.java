@@ -18,7 +18,7 @@ public class ClinicaServiceImpl implements ClinicaService {
     private ClinicaRepository clinicaRepository;
 
     @Override
-    public Clinica criar(ClinicaInicialRequestDto dto) {
+    public Clinica create(ClinicaInicialRequestDto dto) {
         Optional<Clinica> response = this.clinicaRepository.findByCnpj(dto.clinica_cnpj);
 
         if (response.isPresent())
@@ -28,7 +28,7 @@ public class ClinicaServiceImpl implements ClinicaService {
     }
 
     @Override
-    public Clinica recuperar(Long id) {
+    public Clinica findById(Long id) {
         Optional<Clinica> response = this.clinicaRepository.findById(id);
 
         if(response.isEmpty())
