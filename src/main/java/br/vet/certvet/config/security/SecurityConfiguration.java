@@ -45,10 +45,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/ping").permitAll()
                 .antMatchers(HttpMethod.POST, "/auth").permitAll()
                 .antMatchers(HttpMethod.GET, "/actuator/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/db/*").permitAll()
+                .antMatchers(HttpMethod.GET, "/db/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/auth/*").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/clinica/*").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/clinica/**").permitAll()
                 .anyRequest().authenticated()
-//                .authorizeRequests().anyRequest().permitAll() // TODO: Comentar essa linha ao ativar SSL
+                .and().headers().frameOptions().sameOrigin()
+                //.and().authorizeRequests().anyRequest().permitAll() // TODO: Comentar essa linha ao ativar SSL
                 .and().cors()
                 .and().csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -65,9 +70,4 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity web) throws Exception {
         super.configure(web);
     }
-
-//    public static void main(String[] args) {
-//        System.out.println(new BCryptPasswordEncoder().encode("123"));
-//    }
-
 }

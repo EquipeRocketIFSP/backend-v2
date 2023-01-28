@@ -86,7 +86,7 @@ public class Usuario implements UserDetails {
     @JoinColumn(name = "clinica_id", nullable = false)
     private Clinica clinica;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "Usuario_authorities",
             joinColumns = @JoinColumn(name = "users_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "authorities_id", referencedColumnName = "id"))
