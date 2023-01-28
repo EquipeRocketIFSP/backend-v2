@@ -101,4 +101,15 @@ public class UsuarioController extends BaseController {
 
         return ResponseEntity.ok(new UsuarioResponseDto(usuario));
     }
+
+    @GetMapping({"/funcionario/{id}", "/veterinario/{id}", "/tutor/{id}"})
+    public ResponseEntity<UsuarioResponseDto> findOne(
+            @RequestHeader(AUTHORIZATION) String token,
+            @PathVariable("id") Long id
+    ) {
+        Clinica clinica = this.tokenService.getClinica(token);
+        Usuario usuario = this.usuarioService.findOne(id, clinica);
+
+        return ResponseEntity.ok(new UsuarioResponseDto(usuario));
+    }
 }
