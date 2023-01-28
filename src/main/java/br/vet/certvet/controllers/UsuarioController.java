@@ -69,7 +69,8 @@ public class UsuarioController extends BaseController {
             @RequestBody @Valid FuncionarioRequestDto dto,
             @PathVariable("id") Long id
     ) {
-        Usuario usuario = this.usuarioService.findById(id);
+        Clinica clinica = this.tokenService.getClinica(token);
+        Usuario usuario = this.usuarioService.findOne(id, clinica);
         usuario = this.usuarioService.edit(dto, usuario);
 
         return ResponseEntity.ok(new UsuarioResponseDto(usuario));
@@ -81,7 +82,8 @@ public class UsuarioController extends BaseController {
             @RequestBody @Valid VeterinarioRequestDto dto,
             @PathVariable("id") Long id
     ) {
-        Usuario usuario = this.usuarioService.findById(id);
+        Clinica clinica = this.tokenService.getClinica(token);
+        Usuario usuario = this.usuarioService.findOne(id, clinica);
         usuario = this.usuarioService.edit(dto, usuario);
 
         return ResponseEntity.ok(new UsuarioResponseDto(usuario));
@@ -93,7 +95,8 @@ public class UsuarioController extends BaseController {
             @RequestBody @Valid UsuarioRequestDto dto,
             @PathVariable("id") Long id
     ) {
-        Usuario usuario = this.usuarioService.findById(id);
+        Clinica clinica = this.tokenService.getClinica(token);
+        Usuario usuario = this.usuarioService.findOne(id, clinica);
         usuario = this.usuarioService.edit(dto, usuario);
 
         return ResponseEntity.ok(new UsuarioResponseDto(usuario));

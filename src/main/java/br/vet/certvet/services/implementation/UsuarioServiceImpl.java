@@ -90,8 +90,8 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public Usuario findById(Long id) {
-        Optional<Usuario> response = usuarioRepository.findById(id);
+    public Usuario findOne(Long id, Clinica clinica) {
+        Optional<Usuario> response = usuarioRepository.findByIdAndClinica(id, clinica);
 
         if (response.isEmpty())
             throw new NotFoundException("Usuário não encontrado");

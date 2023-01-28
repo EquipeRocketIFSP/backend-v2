@@ -20,11 +20,9 @@ public class AnimalServiceImpl implements AnimalService {
     private AnimalRepository animalRepository;
 
     @Override
-    public Animal create(AnimalRequestDto dto) {
+    public Animal create(AnimalRequestDto dto, List<Usuario> tutores) {
         Animal animal = new Animal(dto);
-        List<Usuario> tutores = animal.getTutores();
-
-        dto.tutores.forEach((id) -> tutores.add(this.usuarioService.findById(id)));
+        animal.getTutores().addAll(tutores);
 
         return this.animalRepository.saveAndFlush(animal);
     }

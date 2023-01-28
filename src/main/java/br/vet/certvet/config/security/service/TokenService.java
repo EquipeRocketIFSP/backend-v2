@@ -67,11 +67,14 @@ public class TokenService {
     }
 
     public Usuario getUsuario(String token) {
-        return usuarioService.findById(getUsuarioId(
-                token.startsWith("Bearer ")
-                        ? token.substring(7)
-                        : token
-        ));
+        Clinica clinica = this.getClinica(token);
+        Long id = getUsuarioId(
+                token.startsWith("Bearer ") ?
+                        token.substring(7) :
+                        token
+        );
+
+        return usuarioService.findOne(id, clinica);
     }
 
     public Long getUsuarioId(String token) {
