@@ -87,6 +87,8 @@ public class TokenService {
     }
 
     private Jws<Claims> jwtDecode(String token) {
+        token = token.startsWith("Bearer ") ? token.substring(7) : token;
+
         return Jwts.parser()
                 .setSigningKey(SECRET)
                 .parseClaimsJws(token);

@@ -1,5 +1,6 @@
 package br.vet.certvet.controllers;
 
+import br.vet.certvet.config.security.service.TokenService;
 import br.vet.certvet.dto.requests.FuncionarioRequestDto;
 import br.vet.certvet.dto.requests.UsuarioRequestDto;
 import br.vet.certvet.dto.requests.VeterinarioRequestDto;
@@ -19,74 +20,82 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @RestController
 @RequestMapping("/api")
-public class UsuarioController extends BaseController{
+public class UsuarioController extends BaseController {
+    @Autowired
+    private TokenService tokenService;
+
     @Autowired
     private UsuarioService usuarioService;
 
     @Autowired
     private ClinicaService clinicaService;
 
-    //TODO: pegar id da clinica pelo token de autenticação
-    @PostMapping({"/clinica/{clinica}/funcionario"})
-    public ResponseEntity<UsuarioResponseDto> createFuncionario(
+    @PostMapping("/funcionario")
+    public ResponseEntity<UsuarioResponseDto> create(
             @RequestHeader(AUTHORIZATION) String token,
             @RequestBody @Valid FuncionarioRequestDto dto
     ) {
-        return null;
-        //return this.create(dto, clinicaId);
-    }
-
-    @PostMapping({"/clinica/{clinica}/veterinario"})
-    public ResponseEntity<UsuarioResponseDto> createVeterinario(@RequestBody @Valid VeterinarioRequestDto dto, @PathVariable("clinica") Long clinicaId) {
-        return this.create(dto, clinicaId);
-    }
-
-    //TODO: pegar id da clinica pelo token de autenticação
-    @PostMapping("/clinica/{clinica}/tutor")
-    public ResponseEntity<UsuarioResponseDto> createTutor(@RequestBody @Valid UsuarioRequestDto dto, @PathVariable("clinica") Long clinicaId) {
-        return this.create(dto, clinicaId);
-    }
-
-    @PutMapping("/clinica/{clinica}/funcionario/{id}")
-    public ResponseEntity<UsuarioResponseDto> editFuncionario(
-            @RequestBody @Valid FuncionarioRequestDto dto,
-            @PathVariable("clinica") Long clinicaId,
-            @PathVariable("id") Long id
-    ) {
-        Usuario usuario = this.usuarioService.findById(id);
-        usuario = this.usuarioService.edit(dto, usuario);
-
-        return ResponseEntity.ok(new UsuarioResponseDto(usuario));
-    }
-
-    @PutMapping("/clinica/{clinica}/veterinario/{id}")
-    public ResponseEntity<UsuarioResponseDto> editVeterinario(
-            @RequestBody @Valid VeterinarioRequestDto dto,
-            @PathVariable("clinica") Long clinicaId,
-            @PathVariable("id") Long id
-    ) {
-        Usuario usuario = this.usuarioService.findById(id);
-        usuario = this.usuarioService.edit(dto, usuario);
-
-        return ResponseEntity.ok(new UsuarioResponseDto(usuario));
-    }
-
-    @PutMapping("/clinica/{clinica}/tutor/{id}")
-    public ResponseEntity<UsuarioResponseDto> editTutor(
-            @RequestBody @Valid UsuarioRequestDto dto,
-            @PathVariable("clinica") Long clinicaId,
-            @PathVariable("id") Long id
-    ) {
-        Usuario usuario = this.usuarioService.findById(id);
-        usuario = this.usuarioService.edit(dto, usuario);
-
-        return ResponseEntity.ok(new UsuarioResponseDto(usuario));
-    }
-
-    private ResponseEntity<UsuarioResponseDto> create(UsuarioRequestDto dto, Long clinicaId) {
-        Clinica clinica = this.clinicaService.findById(clinicaId);
+        Clinica clinica = this.tokenService.getClinica(token);
         Usuario usuario = this.usuarioService.create(dto, clinica);
 
         return new ResponseEntity<>(new UsuarioResponseDto(usuario), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/veterinario")
+    public ResponseEntity<UsuarioResponseDto> create(
+            @RequestHeader(AUTHORIZATION) String token,
+            @RequestBody @Valid VeterinarioRequestDto dto
+    ) {
+        Clinica clinica = this.tokenService.getClinica(token);
+        Usuario usuario = this.usuarioService.create(dto, clinica);
+
+        return new ResponseEntity<>(new UsuarioResponseDto(usuario), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/tutor")
+    public ResponseEntity<UsuarioResponseDto> create(
+            @RequestHeader(AUTHORIZATION) String token,
+            @RequestBody @Valid UsuarioRequestDto dto
+    ) {
+        Clinica clinica = this.tokenService.getClinica(token);
+        Usuario usuario = this.usuarioService.create(dto, clinica);
+
+        return new ResponseEntity<>(new UsuarioResponseDto(usuario), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/funcionario/{id}")
+    public ResponseEntity<UsuarioResponseDto> edit(
+            @RequestHeader(AUTHORIZATION) String token,
+            @RequestBody @Valid FuncionarioRequestDto dto,
+            @PathVariable("id") Long id
+    ) {
+        Usuario usuario = this.usuarioService.findById(id);
+        usuario = this.usuarioService.edit(dto, usuario);
+
+        return ResponseEntity.ok(new UsuarioResponseDto(usuario));
+    }
+
+    @PutMapping("/veterinario/{id}")
+    public ResponseEntity<UsuarioResponseDto> edit(
+            @RequestHeader(AUTHORIZATION) String token,
+            @RequestBody @Valid VeterinarioRequestDto dto,
+            @PathVariable("id") Long id
+    ) {
+        Usuario usuario = this.usuarioService.findById(id);
+        usuario = this.usuarioService.edit(dto, usuario);
+
+        return ResponseEntity.ok(new UsuarioResponseDto(usuario));
+    }
+
+    @PutMapping("/tutor/{id}")
+    public ResponseEntity<UsuarioResponseDto> edit(
+            @RequestHeader(AUTHORIZATION) String token,
+            @RequestBody @Valid UsuarioRequestDto dto,
+            @PathVariable("id") Long id
+    ) {
+        Usuario usuario = this.usuarioService.findById(id);
+        usuario = this.usuarioService.edit(dto, usuario);
+
+        return ResponseEntity.ok(new UsuarioResponseDto(usuario));
     }
 }
