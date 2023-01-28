@@ -99,6 +99,16 @@ public class UsuarioServiceImpl implements UsuarioService {
         return response.get();
     }
 
+    @Override
+    public Usuario findByUsername(String username, Clinica clinica) {
+        Optional<Usuario> response = this.usuarioRepository.findByUsernameAndClinica(username, clinica);
+
+        if (response.isEmpty())
+            throw new NotFoundException("Usuário não encontrado");
+
+        return response.get();
+    }
+
     private Usuario salvar(Usuario usuario, Clinica clinica) {
         Optional<Usuario> response = this.usuarioRepository.findByUsernameAndClinica(usuario.getUsername(), clinica);
 

@@ -15,9 +15,11 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+
 @RestController
 @RequestMapping("/api")
-public class UsuarioController {
+public class UsuarioController extends BaseController{
     @Autowired
     private UsuarioService usuarioService;
 
@@ -26,8 +28,12 @@ public class UsuarioController {
 
     //TODO: pegar id da clinica pelo token de autenticação
     @PostMapping({"/clinica/{clinica}/funcionario"})
-    public ResponseEntity<UsuarioResponseDto> createFuncionario(@RequestBody @Valid FuncionarioRequestDto dto, @PathVariable("clinica") Long clinicaId) {
-        return this.create(dto, clinicaId);
+    public ResponseEntity<UsuarioResponseDto> createFuncionario(
+            @RequestHeader(AUTHORIZATION) String token,
+            @RequestBody @Valid FuncionarioRequestDto dto
+    ) {
+        return null;
+        //return this.create(dto, clinicaId);
     }
 
     @PostMapping({"/clinica/{clinica}/veterinario"})

@@ -31,7 +31,17 @@ public class ClinicaServiceImpl implements ClinicaService {
     public Clinica findById(Long id) {
         Optional<Clinica> response = this.clinicaRepository.findById(id);
 
-        if(response.isEmpty())
+        if (response.isEmpty())
+            throw new NotFoundException("Clínica não existe.");
+
+        return response.get();
+    }
+
+    @Override
+    public Clinica findByCnpj(String cnpj) {
+        Optional<Clinica> response = this.clinicaRepository.findByCnpj(cnpj);
+
+        if (response.isEmpty())
             throw new NotFoundException("Clínica não existe.");
 
         return response.get();

@@ -6,6 +6,7 @@ import br.vet.certvet.dto.requests.VeterinarioRequestDto;
 import lombok.*;
 import org.hibernate.Hibernate;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -31,7 +32,6 @@ public class Usuario implements UserDetails {
     @Setter
     @Column(nullable = false)
     private String username;
-    @Setter
     private String password;
 
     @Setter
@@ -112,7 +112,7 @@ public class Usuario implements UserDetails {
         this.authorities = new ArrayList<>();
 
         if (dto instanceof FuncionarioRequestDto)
-            this.password = ((FuncionarioRequestDto) dto).senha;
+            this.setPassword(((FuncionarioRequestDto) dto).senha);
 
         if (dto instanceof VeterinarioRequestDto)
             this.crmv = ((VeterinarioRequestDto) dto).crmv;
@@ -120,22 +120,22 @@ public class Usuario implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 
     @Override
@@ -149,5 +149,9 @@ public class Usuario implements UserDetails {
     @Override
     public int hashCode() {
         return getClass().hashCode();
+    }
+
+    public void setPassword(String password) {
+        this.password = new BCryptPasswordEncoder().encode(password);
     }
 }

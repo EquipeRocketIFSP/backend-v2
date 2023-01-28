@@ -22,4 +22,6 @@ public interface UsuarioService {
     Usuario edit(VeterinarioRequestDto dto, Usuario usuario);
 
     Usuario findById(Long id);
+
+    Usuario findByUsername(String username, Clinica clinica);
 }

@@ -8,4 +8,6 @@ import org.springframework.stereotype.Service;
 public interface ClinicaService {
     Clinica create(ClinicaInicialRequestDto dto);
     Clinica findById(Long id);
+
+    Clinica findByCnpj(String cnpj);
 }
