@@ -32,7 +32,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         usuario.getAuthorities().add(authority);
 
-        return this.salvar(usuario, clinica);
+        return this.save(usuario, clinica);
     }
 
     @Override
@@ -42,7 +42,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         usuario.getAuthorities().add(authority);
 
-        return this.salvar(usuario, clinica);
+        return this.save(usuario, clinica);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         usuario.getAuthorities().add(authority);
 
-        return this.salvar(usuario, clinica);
+        return this.save(usuario, clinica);
     }
 
     @Override
@@ -109,7 +109,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         return response.get();
     }
 
-    private Usuario salvar(Usuario usuario, Clinica clinica) {
+    private Usuario save(Usuario usuario, Clinica clinica) {
         Optional<Usuario> response = this.usuarioRepository.findByUsernameAndClinica(usuario.getUsername(), clinica);
 
         if (response.isPresent())
