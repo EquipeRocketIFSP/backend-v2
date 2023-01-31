@@ -36,7 +36,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     public Usuario create(UsuarioRequestDto dto, Clinica clinica) {
         Usuario usuario = new Usuario(dto, clinica);
-        Authority authority = this.authorityRepository.getByAuthority("TUTOR");
+        Authority authority = this.authorityRepository.findByAuthority("TUTOR");
 
         usuario.getAuthorities().add(authority);
 
@@ -46,7 +46,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     public Usuario create(FuncionarioRequestDto dto, Clinica clinica) {
         Usuario usuario = new Usuario(dto, clinica);
-        Authority authority = this.authorityRepository.getByAuthority("FUNCIONARIO");
+        Authority authority = this.authorityRepository.findByAuthority("FUNCIONARIO");
 
         usuario.getAuthorities().add(authority);
 
@@ -56,7 +56,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     public Usuario create(VeterinarioRequestDto dto, Clinica clinica) {
         Usuario usuario = new Usuario(dto, clinica);
-        Authority authority = this.authorityRepository.getByAuthority("VETERINARIO");
+        Authority authority = this.authorityRepository.findByAuthority("VETERINARIO");
 
         usuario.getAuthorities().add(authority);
 
@@ -123,7 +123,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         String[] pathnames = url.split("/");
         String path = pathnames[pathnames.length - 1].toUpperCase();
-        Authority authority = this.authorityRepository.getByAuthority(path);
+        Authority authority = this.authorityRepository.findByAuthority(path);
         Long total = this.usuarioRepository.countByAuthoritiesAndClinica(authority, clinica);
 
         Pageable pageable = PageRequest.of(page - 1, UsuarioServiceImpl.RESPONSE_LIMIT);

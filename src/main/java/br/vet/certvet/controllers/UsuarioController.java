@@ -33,9 +33,6 @@ public class UsuarioController extends BaseController {
     @Autowired
     private ClinicaService clinicaService;
 
-    @Autowired
-    private AuthorityRepository authorityRepository;
-
     @PostMapping("/funcionario")
     public ResponseEntity<UsuarioResponseDto> create(
             @RequestHeader(AUTHORIZATION) String token,
