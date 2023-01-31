@@ -3,6 +3,8 @@ package br.vet.certvet.services;
 import br.vet.certvet.dto.requests.FuncionarioRequestDto;
 import br.vet.certvet.dto.requests.UsuarioRequestDto;
 import br.vet.certvet.dto.requests.VeterinarioRequestDto;
+import br.vet.certvet.dto.responses.PaginatedResponse;
+import br.vet.certvet.dto.responses.UsuarioResponseDto;
 import br.vet.certvet.models.Clinica;
 import br.vet.certvet.models.Usuario;
 import org.springframework.stereotype.Service;
@@ -24,4 +26,6 @@ public interface UsuarioService {
     Usuario findOne(Long id, Clinica clinica);
 
     Usuario findOne(String username, Clinica clinica);
+
+    PaginatedResponse<UsuarioResponseDto> findAll(int page, String url, Clinica clinica);
 }

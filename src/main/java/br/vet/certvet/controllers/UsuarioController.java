@@ -4,9 +4,11 @@ import br.vet.certvet.config.security.service.TokenService;
 import br.vet.certvet.dto.requests.FuncionarioRequestDto;
 import br.vet.certvet.dto.requests.UsuarioRequestDto;
 import br.vet.certvet.dto.requests.VeterinarioRequestDto;
+import br.vet.certvet.dto.responses.PaginatedResponse;
 import br.vet.certvet.dto.responses.UsuarioResponseDto;
 import br.vet.certvet.models.Clinica;
 import br.vet.certvet.models.Usuario;
+import br.vet.certvet.repositories.AuthorityRepository;
 import br.vet.certvet.services.ClinicaService;
 import br.vet.certvet.services.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -29,6 +32,9 @@ public class UsuarioController extends BaseController {
 
     @Autowired
     private ClinicaService clinicaService;
+
+    @Autowired
+    private AuthorityRepository authorityRepository;
 
     @PostMapping("/funcionario")
     public ResponseEntity<UsuarioResponseDto> create(
@@ -111,5 +117,17 @@ public class UsuarioController extends BaseController {
         Usuario usuario = this.usuarioService.findOne(id, clinica);
 
         return ResponseEntity.ok(new UsuarioResponseDto(usuario));
+    }
+
+    @GetMapping({"/funcionario", "/veterinario", "/tutor"})
+    public ResponseEntity<PaginatedResponse<UsuarioResponseDto>> findAllVeterinarios(
+            @RequestHeader(AUTHORIZATION) String token,
+            @RequestParam(name = "pagina", defaultValue = "1") int page,
+            HttpServletRequest request
+    ) {
+        Clinica clinica = this.tokenService.getClinica(token);
+        PaginatedResponse<UsuarioResponseDto> response = this.usuarioService.findAll(page, request.getRequestURL().toString(), clinica);
+
+        return ResponseEntity.ok(response);
     }
 }

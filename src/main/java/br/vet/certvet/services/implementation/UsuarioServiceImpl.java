@@ -3,6 +3,9 @@ package br.vet.certvet.services.implementation;
 import br.vet.certvet.dto.requests.FuncionarioRequestDto;
 import br.vet.certvet.dto.requests.UsuarioRequestDto;
 import br.vet.certvet.dto.requests.VeterinarioRequestDto;
+import br.vet.certvet.dto.responses.Metadata;
+import br.vet.certvet.dto.responses.PaginatedResponse;
+import br.vet.certvet.dto.responses.UsuarioResponseDto;
 import br.vet.certvet.exceptions.ConflictException;
 import br.vet.certvet.exceptions.ForbiddenException;
 import br.vet.certvet.exceptions.NotFoundException;
@@ -13,8 +16,11 @@ import br.vet.certvet.repositories.AuthorityRepository;
 import br.vet.certvet.repositories.UsuarioRepository;
 import br.vet.certvet.services.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,6 +30,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Autowired
     private AuthorityRepository authorityRepository;
+
+    private static final short RESPONSE_LIMIT = 30;
 
     @Override
     public Usuario create(UsuarioRequestDto dto, Clinica clinica) {
@@ -107,6 +115,27 @@ public class UsuarioServiceImpl implements UsuarioService {
             throw new NotFoundException("Usuário não encontrado");
 
         return response.get();
+    }
+
+    @Override
+    public PaginatedResponse<UsuarioResponseDto> findAll(int page, String url, Clinica clinica) {
+        page = Math.max(page, 1);
+
+        String[] pathnames = url.split("/");
+        String path = pathnames[pathnames.length - 1].toUpperCase();
+        Authority authority = this.authorityRepository.getByAuthority(path);
+        Long total = this.usuarioRepository.countByAuthoritiesAndClinica(authority, clinica);
+
+        Pageable pageable = PageRequest.of(page - 1, UsuarioServiceImpl.RESPONSE_LIMIT);
+        Metadata meta = new Metadata(url, page, UsuarioServiceImpl.RESPONSE_LIMIT, total);
+
+        List<UsuarioResponseDto> usuariosResponseDtos = this.usuarioRepository
+                .findAllByAuthoritiesAndClinica(pageable, authority, clinica)
+                .stream()
+                .map((usuario) -> new UsuarioResponseDto(usuario))
+                .toList();
+
+        return new PaginatedResponse<>(meta, usuariosResponseDtos);
     }
 
     private Usuario save(Usuario usuario, Clinica clinica) {
