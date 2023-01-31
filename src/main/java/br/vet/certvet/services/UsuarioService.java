@@ -23,5 +23,5 @@ public interface UsuarioService {
 
     Usuario findOne(Long id, Clinica clinica);
 
-    Usuario findByUsername(String username, Clinica clinica);
+    Usuario findOne(String username, Clinica clinica);
 }

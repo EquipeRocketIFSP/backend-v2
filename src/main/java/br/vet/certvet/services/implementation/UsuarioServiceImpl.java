@@ -100,7 +100,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public Usuario findByUsername(String username, Clinica clinica) {
+    public Usuario findOne(String username, Clinica clinica) {
         Optional<Usuario> response = this.usuarioRepository.findByUsernameAndClinica(username, clinica);
 
         if (response.isEmpty())
