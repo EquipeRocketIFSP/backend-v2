@@ -39,7 +39,7 @@ public class AuthController {
         Authentication auth = authenticationManager.authenticate(dto.convert());
         Clinica clinica = this.clinicaService.findByCnpj(dto.cnpj_clinica);
         String token = tokenService.create(auth, clinica);
-        Usuario usuario = usuarioService.findByUsername(dto.email, clinica);
+        Usuario usuario = usuarioService.findOne(dto.email, clinica);
 
         this.tokenService.getUsuarioId(token);
 
