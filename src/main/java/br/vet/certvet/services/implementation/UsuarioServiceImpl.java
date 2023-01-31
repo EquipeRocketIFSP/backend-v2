@@ -20,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -136,6 +137,20 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .toList();
 
         return new PaginatedResponse<>(meta, usuariosResponseDtos);
+    }
+
+    @Override
+    public void delete(Usuario usuario) {
+        usuario.setDeletedAt(LocalDateTime.now());
+
+        this.usuarioRepository.saveAndFlush(usuario);
+    }
+
+    @Override
+    public Usuario recover(Usuario usuario) {
+        usuario.setDeletedAt(null);
+
+        return this.usuarioRepository.saveAndFlush(usuario);
     }
 
     private Usuario save(Usuario usuario, Clinica clinica) {

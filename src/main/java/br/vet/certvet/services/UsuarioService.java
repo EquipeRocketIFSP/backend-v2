@@ -28,4 +28,8 @@ public interface UsuarioService {
     Usuario findOne(String username, Clinica clinica);
 
     PaginatedResponse<UsuarioResponseDto> findAll(int page, String url, Clinica clinica);
+
+    void delete(Usuario usuario);
+
+    Usuario recover(Usuario usuario);
 }

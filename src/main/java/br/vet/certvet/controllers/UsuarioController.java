@@ -8,7 +8,6 @@ import br.vet.certvet.dto.responses.PaginatedResponse;
 import br.vet.certvet.dto.responses.UsuarioResponseDto;
 import br.vet.certvet.models.Clinica;
 import br.vet.certvet.models.Usuario;
-import br.vet.certvet.repositories.AuthorityRepository;
 import br.vet.certvet.services.ClinicaService;
 import br.vet.certvet.services.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,5 +125,30 @@ public class UsuarioController extends BaseController {
         PaginatedResponse<UsuarioResponseDto> response = this.usuarioService.findAll(page, request.getRequestURL().toString(), clinica);
 
         return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping({"/funcionario/{id}", "/veterinario/{id}", "/tutor/{id}"})
+    public ResponseEntity<Void> delete(
+            @RequestHeader(AUTHORIZATION) String token,
+            @PathVariable("id") Long id
+    ) {
+        Clinica clinica = this.tokenService.getClinica(token);
+        Usuario usuario = this.usuarioService.findOne(id, clinica);
+
+        this.usuarioService.delete(usuario);
+
+        return ResponseEntity.accepted().build();
+    }
+
+    @PutMapping({"/funcionario/{id}/restaurar", "/veterinario/{id}/restaurar", "/tutor/{id}/restaurar"})
+    public ResponseEntity<UsuarioResponseDto> recover(
+            @RequestHeader(AUTHORIZATION) String token,
+            @PathVariable("id") Long id
+    ) {
+        Clinica clinica = this.tokenService.getClinica(token);
+        Usuario usuario = this.usuarioService.findOne(id, clinica);
+        usuario = this.usuarioService.recover(usuario);
+
+        return ResponseEntity.ok(new UsuarioResponseDto(usuario));
     }
 }

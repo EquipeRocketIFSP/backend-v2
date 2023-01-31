@@ -11,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -81,6 +82,9 @@ public class Usuario implements UserDetails {
     @Setter
     private String crmv;
 
+    @Setter
+    private LocalDateTime deletedAt;
+
     @NotNull
     @ManyToOne
     @JoinColumn(name = "clinica_id", nullable = false)
@@ -108,6 +112,7 @@ public class Usuario implements UserDetails {
         this.telefone = dto.telefone;
         this.clinica = clinica;
         this.crmv = null;
+        this.deletedAt = null;
         this.password = null;
         this.authorities = new ArrayList<>();
 
@@ -135,7 +140,7 @@ public class Usuario implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return this.deletedAt == null;
     }
 
     @Override
