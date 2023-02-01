@@ -1,7 +1,9 @@
 package br.vet.certvet.models;
 
+import br.vet.certvet.dto.requests.AgendamentoRequestDto;
 import lombok.*;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -28,7 +30,26 @@ public class Agendamento {
     @JoinColumn(name = "animal_id")
     private Animal animal;
 
-    private LocalDateTime dataAgendamento;
+    @ManyToOne
+    @JoinColumn(name = "tutor_id")
+    private Usuario tutor;
+
+    @Column(nullable = false, length = 1000)
+    private String observacoes;
+
+    @Column(nullable = false)
+    private LocalDateTime dataConsulta;
+
+    @CreationTimestamp
+    private LocalDateTime criadoEm;
+
+    public Agendamento(AgendamentoRequestDto dto, Animal animal, Usuario tutor, Clinica clinica) {
+        this.observacoes = dto.observacoes;
+        this.dataConsulta = dto.dataConsulta;
+        this.animal = animal;
+        this.tutor = tutor;
+        this.clinica = clinica;
+    }
 
     @Override
     public boolean equals(Object o) {

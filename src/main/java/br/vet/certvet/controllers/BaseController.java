@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public abstract class BaseController {
 
     @Autowired
-    private TokenService tokenService;
+    protected TokenService tokenService;
 
     protected Long getClinicaFromRequester(String auth) {
         return tokenService.getUsuario(auth).getClinica().getId();
