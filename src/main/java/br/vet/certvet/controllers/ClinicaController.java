@@ -55,6 +55,13 @@ public class ClinicaController extends BaseController {
         return ResponseEntity.ok(new ClinicaResponseDto(clinica));
     }
 
+    @GetMapping("/clinica")
+    public ResponseEntity<ClinicaResponseDto> findOne(@RequestHeader(AUTHORIZATION) String token) {
+        Clinica clinica = this.tokenService.getClinica(token);
+
+        return ResponseEntity.ok(new ClinicaResponseDto(clinica));
+    }
+
     private static FuncionarioRequestDto getDonoDto(ClinicaInicialRequestDto dto) {
         FuncionarioRequestDto usuarioDto = new FuncionarioRequestDto();
 
