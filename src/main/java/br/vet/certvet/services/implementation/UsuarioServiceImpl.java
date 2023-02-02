@@ -78,7 +78,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public Usuario edit(UsuarioRequestDto dto, Usuario usuario) {
-        UsuarioServiceImpl.setDefaultUsuarioNewData(dto, usuario);
+        usuario.fill(dto);
 
         return this.usuarioRepository.saveAndFlush(usuario);
     }
@@ -90,8 +90,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         if (usuarioAuthority.isEmpty())
             throw new ForbiddenException("Esse usuário não é um funcionário. Verifique a documentação da API.");
 
-        UsuarioServiceImpl.setDefaultUsuarioNewData(dto, usuario);
-        usuario.setPassword(dto.senha);
+        usuario.fill(dto);
 
         return this.usuarioRepository.saveAndFlush(usuario);
     }
@@ -103,9 +102,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         if (usuarioAuthority.isEmpty())
             throw new ForbiddenException("Esse usuário não é um veterinário. Verifique a documentação da API.");
 
-        UsuarioServiceImpl.setDefaultUsuarioNewData(dto, usuario);
-        usuario.setPassword(dto.senha);
-        usuario.setCrmv(dto.crmv);
+        usuario.fill(dto);
 
         return this.usuarioRepository.saveAndFlush(usuario);
     }
@@ -184,20 +181,5 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .stream()
                 .filter((authority) -> authority.getAuthority().equals(authorityName))
                 .findFirst();
-    }
-
-    private static void setDefaultUsuarioNewData(UsuarioRequestDto dto, Usuario usuario) {
-        usuario.setNome(dto.nome);
-        usuario.setUsername(dto.email);
-        usuario.setRg(dto.rg);
-        usuario.setCpf(dto.cpf);
-        usuario.setCelular(dto.celular);
-        usuario.setTelefone(dto.telefone);
-        usuario.setLogradouro(dto.logradouro);
-        usuario.setCep(dto.cep);
-        usuario.setNumero(dto.numero);
-        usuario.setBairro(dto.bairro);
-        usuario.setCidade(dto.cidade);
-        usuario.setEstado(dto.estado);
     }
 }

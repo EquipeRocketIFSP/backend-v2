@@ -3,6 +3,7 @@ package br.vet.certvet.models;
 import br.vet.certvet.dto.requests.FuncionarioRequestDto;
 import br.vet.certvet.dto.requests.UsuarioRequestDto;
 import br.vet.certvet.dto.requests.VeterinarioRequestDto;
+import br.vet.certvet.models.contracts.Fillable;
 import lombok.*;
 import org.hibernate.Hibernate;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,7 +24,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "usuarios")
-public class Usuario implements UserDetails {
+public class Usuario implements UserDetails, Fillable<UsuarioRequestDto> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -98,6 +99,13 @@ public class Usuario implements UserDetails {
     private List<Authority> authorities;
 
     public Usuario(UsuarioRequestDto dto, Clinica clinica) {
+        this.clinica = clinica;
+
+        this.fill(dto);
+    }
+
+    @Override
+    public void fill(UsuarioRequestDto dto) {
         this.username = dto.email;
         this.nome = dto.nome;
         this.cpf = dto.cpf;
@@ -110,7 +118,6 @@ public class Usuario implements UserDetails {
         this.estado = dto.estado;
         this.celular = dto.celular;
         this.telefone = dto.telefone;
-        this.clinica = clinica;
         this.crmv = null;
         this.deletedAt = null;
         this.password = null;
