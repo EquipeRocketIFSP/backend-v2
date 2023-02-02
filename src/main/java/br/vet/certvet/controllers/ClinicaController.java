@@ -5,7 +5,9 @@ import br.vet.certvet.dto.requests.ClinicaRequestDto;
 import br.vet.certvet.dto.requests.FuncionarioRequestDto;
 import br.vet.certvet.dto.requests.VeterinarioRequestDto;
 import br.vet.certvet.dto.responses.ClinicaResponseDto;
+import br.vet.certvet.exceptions.ForbiddenException;
 import br.vet.certvet.models.Clinica;
+import br.vet.certvet.models.Usuario;
 import br.vet.certvet.services.ClinicaService;
 import br.vet.certvet.services.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +44,11 @@ public class ClinicaController extends BaseController {
             @RequestHeader(AUTHORIZATION) String token,
             @RequestBody @Valid ClinicaRequestDto dto
     ) {
+        Usuario usuario = this.tokenService.getUsuario(token);
+
+        if (this.usuarioService.findUsuarioAuthority(usuario, "ADMIN").isEmpty())
+            throw new ForbiddenException("Somente o administrador pode alterar os dados da clínica.");
+
         Clinica clinica = this.tokenService.getClinica(token);
         clinica = this.clinicaService.edit(dto, clinica);
 
@@ -64,6 +71,7 @@ public class ClinicaController extends BaseController {
         usuarioDto.cidade = dto.dono_cidade;
         usuarioDto.estado = dto.dono_estado;
         usuarioDto.senha = dto.dono_senha;
+        usuarioDto.is_admin = true;
 
         return usuarioDto;
     }

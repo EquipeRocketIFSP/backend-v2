@@ -5,9 +5,12 @@ import br.vet.certvet.dto.requests.UsuarioRequestDto;
 import br.vet.certvet.dto.requests.VeterinarioRequestDto;
 import br.vet.certvet.dto.responses.PaginatedResponse;
 import br.vet.certvet.dto.responses.UsuarioResponseDto;
+import br.vet.certvet.models.Authority;
 import br.vet.certvet.models.Clinica;
 import br.vet.certvet.models.Usuario;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public interface UsuarioService {
@@ -32,4 +35,6 @@ public interface UsuarioService {
     void delete(Usuario usuario);
 
     Usuario recover(Usuario usuario);
+
+    Optional<Authority> findUsuarioAuthority(Usuario usuario, String authority);
 }

@@ -48,8 +48,14 @@ public class UsuarioServiceImpl implements UsuarioService {
     public Usuario create(FuncionarioRequestDto dto, Clinica clinica) {
         Usuario usuario = new Usuario(dto, clinica);
         Authority authority = this.authorityRepository.findByAuthority("FUNCIONARIO");
+        List<Authority> authoritiesUsuario = usuario.getAuthorities();
 
-        usuario.getAuthorities().add(authority);
+        authoritiesUsuario.add(authority);
+
+        if (dto.is_admin) {
+            authority = this.authorityRepository.findByAuthority("ADMIN");
+            authoritiesUsuario.add(authority);
+        }
 
         return this.save(usuario, clinica);
     }
@@ -58,8 +64,14 @@ public class UsuarioServiceImpl implements UsuarioService {
     public Usuario create(VeterinarioRequestDto dto, Clinica clinica) {
         Usuario usuario = new Usuario(dto, clinica);
         Authority authority = this.authorityRepository.findByAuthority("VETERINARIO");
+        List<Authority> authoritiesUsuario = usuario.getAuthorities();
 
-        usuario.getAuthorities().add(authority);
+        authoritiesUsuario.add(authority);
+
+        if (dto.is_admin) {
+            authority = this.authorityRepository.findByAuthority("ADMIN");
+            authoritiesUsuario.add(authority);
+        }
 
         return this.save(usuario, clinica);
     }
@@ -151,6 +163,11 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuario.setDeletedAt(null);
 
         return this.usuarioRepository.saveAndFlush(usuario);
+    }
+
+    @Override
+    public Optional<Authority> findUsuarioAuthority(Usuario usuario, String authority) {
+        return UsuarioServiceImpl.getUsuarioAuthority(usuario, authority);
     }
 
     private Usuario save(Usuario usuario, Clinica clinica) {
