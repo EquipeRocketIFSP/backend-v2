@@ -27,7 +27,7 @@ public class ClinicaController extends BaseController {
     private UsuarioService usuarioService;
 
     @PostMapping("/clinica")
-    public ResponseEntity<ClinicaResponseDto> criar(
+    public ResponseEntity<ClinicaResponseDto> create(
             @RequestBody @Valid ClinicaInicialRequestDto dto
     ) {
         Clinica clinica = this.clinicaService.create(dto);
