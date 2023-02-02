@@ -17,7 +17,7 @@ import java.util.Objects;
 @Builder
 @Getter
 @Table(name = "clinicas")
-public class Clinica implements Fillable<ClinicaRequestDto, Clinica> {
+public class Clinica implements Fillable<ClinicaRequestDto> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -113,7 +113,7 @@ public class Clinica implements Fillable<ClinicaRequestDto, Clinica> {
     }
 
     @Override
-    public void fill(ClinicaRequestDto dto, Clinica clinica) {
+    public void fill(ClinicaRequestDto dto) {
         this.nomeFantasia = dto.nome_fantasia;
         this.razaoSocial = dto.razao_social;
         this.cep = dto.cep;

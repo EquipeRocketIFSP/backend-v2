@@ -50,7 +50,7 @@ public class ClinicaServiceImpl implements ClinicaService {
 
     @Override
     public Clinica edit(ClinicaRequestDto dto, Clinica clinica) {
-        clinica.fill(dto, clinica);
+        clinica.fill(dto);
 
         return this.clinicaRepository.saveAndFlush(clinica);
     }
