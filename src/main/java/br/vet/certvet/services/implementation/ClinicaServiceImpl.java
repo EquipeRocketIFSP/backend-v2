@@ -1,6 +1,7 @@
 package br.vet.certvet.services.implementation;
 
 import br.vet.certvet.dto.requests.ClinicaInicialRequestDto;
+import br.vet.certvet.dto.requests.ClinicaRequestDto;
 import br.vet.certvet.exceptions.ConflictException;
 import br.vet.certvet.exceptions.NotFoundException;
 import br.vet.certvet.models.Clinica;
@@ -45,5 +46,12 @@ public class ClinicaServiceImpl implements ClinicaService {
             throw new NotFoundException("Clínica não existe.");
 
         return response.get();
+    }
+
+    @Override
+    public Clinica edit(ClinicaRequestDto dto, Clinica clinica) {
+        clinica.fill(dto, clinica);
+
+        return this.clinicaRepository.saveAndFlush(clinica);
     }
 }

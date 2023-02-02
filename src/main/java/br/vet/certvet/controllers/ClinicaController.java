@@ -1,6 +1,7 @@
 package br.vet.certvet.controllers;
 
 import br.vet.certvet.dto.requests.ClinicaInicialRequestDto;
+import br.vet.certvet.dto.requests.ClinicaRequestDto;
 import br.vet.certvet.dto.requests.FuncionarioRequestDto;
 import br.vet.certvet.dto.requests.VeterinarioRequestDto;
 import br.vet.certvet.dto.responses.ClinicaResponseDto;
@@ -14,8 +15,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+
 @RestController
-@RequestMapping("/api/clinica")
+@RequestMapping("/api")
 public class ClinicaController extends BaseController {
     @Autowired
     private ClinicaService clinicaService;
@@ -23,7 +26,7 @@ public class ClinicaController extends BaseController {
     @Autowired
     private UsuarioService usuarioService;
 
-    @PostMapping
+    @PostMapping("/clinica")
     public ResponseEntity<ClinicaResponseDto> criar(
             @RequestBody @Valid ClinicaInicialRequestDto dto
     ) {
@@ -32,6 +35,17 @@ public class ClinicaController extends BaseController {
         this.usuarioService.create(ClinicaController.getTecnicoDto(dto), clinica);
 
         return new ResponseEntity<>(new ClinicaResponseDto(clinica), HttpStatus.ACCEPTED);
+    }
+
+    @PutMapping("/clinica")
+    public ResponseEntity<ClinicaResponseDto> edit(
+            @RequestHeader(AUTHORIZATION) String token,
+            @RequestBody @Valid ClinicaRequestDto dto
+    ) {
+        Clinica clinica = this.tokenService.getClinica(token);
+        clinica = this.clinicaService.edit(dto, clinica);
+
+        return ResponseEntity.ok(new ClinicaResponseDto(clinica));
     }
 
     private static FuncionarioRequestDto getDonoDto(ClinicaInicialRequestDto dto) {

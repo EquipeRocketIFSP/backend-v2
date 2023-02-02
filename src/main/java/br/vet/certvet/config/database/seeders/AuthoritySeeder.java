@@ -15,6 +15,8 @@ public class AuthoritySeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        this.authorityRepository.deleteAll();
+
         Authority[] authorities = {
                 new Authority("ADMIN"),
                 new Authority("VETERINARIO"),

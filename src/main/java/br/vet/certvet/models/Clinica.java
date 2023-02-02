@@ -1,6 +1,8 @@
 package br.vet.certvet.models;
 
 import br.vet.certvet.dto.requests.ClinicaInicialRequestDto;
+import br.vet.certvet.dto.requests.ClinicaRequestDto;
+import br.vet.certvet.models.contracts.Fillable;
 import lombok.*;
 import org.hibernate.Hibernate;
 
@@ -15,48 +17,61 @@ import java.util.Objects;
 @Builder
 @Getter
 @Table(name = "clinicas")
-public class Clinica {
+public class Clinica implements Fillable<ClinicaRequestDto, Clinica> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @Setter
     @Column(nullable = false)
     public String nomeFantasia;
 
+    @Setter
     @Column(nullable = false)
     private String razaoSocial;
 
+    @Setter
     @Column(nullable = false)
     public String cnpj;
 
+    @Setter
     @Column(nullable = false)
     public String cnae;
 
+    @Setter
     @Column(nullable = false)
     public String cep;
 
+    @Setter
     @Column(nullable = false)
     public String logradouro;
 
+    @Setter
     @Column(nullable = false)
     public String numero;
 
+    @Setter
     @Column(nullable = false)
     public String bairro;
 
+    @Setter
     @Column(nullable = false)
     public String cidade;
 
+    @Setter
     @Column(nullable = false)
     public String estado;
 
+    @Setter
     @Column(nullable = false)
     public String celular;
 
+    @Setter
     @Column(nullable = false)
     public String telefone;
 
+    @Setter
     @Column(nullable = false)
     public String email;
 
@@ -95,6 +110,23 @@ public class Clinica {
         this.email = dto.clinica_email;
         this.celular = dto.clinica_celular;
         this.telefone = dto.clinica_telefone;
+    }
+
+    @Override
+    public void fill(ClinicaRequestDto dto, Clinica clinica) {
+        this.nomeFantasia = dto.nome_fantasia;
+        this.razaoSocial = dto.razao_social;
+        this.cep = dto.cep;
+        this.logradouro = dto.logradouro;
+        this.numero = dto.numero;
+        this.bairro = dto.bairro;
+        this.cidade = dto.cidade;
+        this.estado = dto.estado;
+        this.cnae = dto.cnae;
+        this.cnpj = dto.cnpj;
+        this.email = dto.email;
+        this.celular = dto.celular;
+        this.telefone = dto.telefone;
     }
 
     @Override
