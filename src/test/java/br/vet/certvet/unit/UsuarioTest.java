@@ -43,7 +43,7 @@ public class UsuarioTest {
 
     @BeforeAll
     public void setup() {
-        UsuarioTest.clinica = this.clinicaService.create(ClinicaTestes.factoryClinicaInicialRequestDto());
+        UsuarioTest.clinica = this.clinicaService.create(ClinicaTest.factoryClinicaInicialRequestDto());
         UsuarioTest.passwordEncoder = new BCryptPasswordEncoder();
     }
 
