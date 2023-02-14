@@ -16,11 +16,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Arrays;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -37,10 +39,12 @@ public class UsuarioTest {
     private ClinicaServiceImpl clinicaService;
 
     private static Clinica clinica;
+    private static BCryptPasswordEncoder passwordEncoder;
 
     @BeforeAll
     public void setup() {
         UsuarioTest.clinica = this.clinicaService.create(ClinicaTestes.factoryClinicaInicialRequestDto());
+        UsuarioTest.passwordEncoder = new BCryptPasswordEncoder();
     }
 
     @AfterEach
@@ -97,7 +101,126 @@ public class UsuarioTest {
     }
 
     @Test
-    public void recuperarTutorExistente() {
+    public void editDono() {
+        final String[] AUTHORITIES = {"FUNCIONARIO", "ADMIN"};
+
+        FuncionarioRequestDto dto = UsuarioTest.factoryDonoRequestDto();
+        Usuario usuario = this.usuarioService.create(dto, UsuarioTest.clinica);
+        Long idUsuario = usuario.getId();
+
+        UsuarioTest.updateUsuarioDto(dto);
+        dto.senha = "4321";
+
+        final Usuario USUARIO_COMPARATION = new Usuario(dto, UsuarioTest.clinica);
+        usuario = this.usuarioService.edit(dto, usuario);
+
+        List<String> usuarioAuthorities = usuario.getAuthorities().stream().map(Authority::getAuthority).toList();
+
+        assertNotNull(usuario);
+        assertEquals(usuario.getId(), idUsuario);
+        assertEquals(Arrays.stream(AUTHORITIES).toList(), usuarioAuthorities);
+        assertTrue(UsuarioTest.passwordEncoder.matches(dto.senha, usuario.getPassword()));
+
+        assertThat(usuario.getClinica().getId())
+                .isEqualTo(UsuarioTest.clinica.getId());
+
+        assertThat(usuario)
+                .usingRecursiveComparison()
+                .ignoringFields("id", "clinica", "password")
+                .isEqualTo(USUARIO_COMPARATION);
+    }
+
+    @Test
+    public void editTutor() {
+        final String[] AUTHORITIES = {"TUTOR"};
+
+        UsuarioRequestDto dto = UsuarioTest.factoryTutorRequestDto();
+        Usuario usuario = this.usuarioService.create(dto, UsuarioTest.clinica);
+        Long idUsuario = usuario.getId();
+
+        UsuarioTest.updateUsuarioDto(dto);
+
+        final Usuario USUARIO_COMPARATION = new Usuario(dto, UsuarioTest.clinica);
+        usuario = this.usuarioService.edit(dto, usuario);
+
+        List<String> usuarioAuthorities = usuario.getAuthorities().stream().map(Authority::getAuthority).toList();
+
+        assertNotNull(usuario);
+        assertEquals(usuario.getId(), idUsuario);
+        assertEquals(Arrays.stream(AUTHORITIES).toList(), usuarioAuthorities);
+
+        assertThat(usuario.getClinica().getId())
+                .isEqualTo(UsuarioTest.clinica.getId());
+
+        assertThat(usuario)
+                .usingRecursiveComparison()
+                .ignoringFields("id", "clinica", "password")
+                .isEqualTo(USUARIO_COMPARATION);
+    }
+
+    @Test
+    public void editVeterinario() {
+        final String[] AUTHORITIES = {"VETERINARIO"};
+
+        VeterinarioRequestDto dto = UsuarioTest.factoryVeterinarioRequestDto();
+        Usuario usuario = this.usuarioService.create(dto, UsuarioTest.clinica);
+        Long idUsuario = usuario.getId();
+
+        UsuarioTest.updateUsuarioDto(dto);
+        dto.senha = "4321";
+        dto.crmv = "RJ-12345";
+
+        final Usuario USUARIO_COMPARATION = new Usuario(dto, UsuarioTest.clinica);
+        usuario = this.usuarioService.edit(dto, usuario);
+
+        List<String> usuarioAuthorities = usuario.getAuthorities().stream().map(Authority::getAuthority).toList();
+
+        assertNotNull(usuario);
+        assertEquals(usuario.getId(), idUsuario);
+        assertEquals(Arrays.stream(AUTHORITIES).toList(), usuarioAuthorities);
+        assertTrue(UsuarioTest.passwordEncoder.matches(dto.senha, usuario.getPassword()));
+
+        assertThat(usuario.getClinica().getId())
+                .isEqualTo(UsuarioTest.clinica.getId());
+
+        assertThat(usuario)
+                .usingRecursiveComparison()
+                .ignoringFields("id", "clinica", "password")
+                .isEqualTo(USUARIO_COMPARATION);
+    }
+
+    @Test
+    public void editFuncionario() {
+        final String[] AUTHORITIES = {"FUNCIONARIO"};
+
+        FuncionarioRequestDto dto = UsuarioTest.factoryFuncionarioRequestDto();
+        Usuario usuario = this.usuarioService.create(dto, UsuarioTest.clinica);
+        Long idUsuario = usuario.getId();
+
+        UsuarioTest.updateUsuarioDto(dto);
+        dto.senha = "4321";
+
+        final Usuario USUARIO_COMPARATION = new Usuario(dto, UsuarioTest.clinica);
+        usuario = this.usuarioService.edit(dto, usuario);
+
+        List<String> usuarioAuthorities = usuario.getAuthorities().stream().map(Authority::getAuthority).toList();
+
+        assertNotNull(usuario);
+        assertEquals(usuario.getId(), idUsuario);
+        assertEquals(Arrays.stream(AUTHORITIES).toList(), usuarioAuthorities);
+        assertTrue(UsuarioTest.passwordEncoder.matches(dto.senha, usuario.getPassword()));
+
+        assertThat(usuario.getClinica().getId())
+                .isEqualTo(UsuarioTest.clinica.getId());
+
+        assertThat(usuario)
+                .usingRecursiveComparison()
+                .ignoringFields("id", "clinica", "password")
+                .isEqualTo(USUARIO_COMPARATION);
+    }
+
+    @Test
+    public void getExistentTutor() {
         Usuario usuarioTest = this.usuarioService.create(UsuarioTest.factoryTutorRequestDto(), UsuarioTest.clinica);
         Usuario usuario = this.usuarioService.findOne(usuarioTest.getId(), UsuarioTest.clinica);
 
@@ -106,10 +229,71 @@ public class UsuarioTest {
     }
 
     @Test
-    public void recuperarTutorInexistente() {
+    public void getUnexistentTutor() {
         assertThrowsExactly(NotFoundException.class, () -> {
             this.usuarioService.findOne(Long.getLong("999999999"), UsuarioTest.clinica);
         });
+    }
+
+    @Test
+    public void softDeleteUsuario() {
+        Usuario usuario = this.usuarioService.create(UsuarioTest.factoryVeterinarioRequestDto(), UsuarioTest.clinica);
+        this.usuarioService.delete(usuario);
+
+        assertThat(usuario.getDeletedAt()).isNotNull();
+    }
+
+    @Test
+    public void recoverDeleteUsuario() {
+        Usuario usuario = this.usuarioService.create(UsuarioTest.factoryTutorRequestDto(), UsuarioTest.clinica);
+        this.usuarioService.delete(usuario);
+        this.usuarioService.recover(usuario);
+
+        assertThat(usuario.getDeletedAt()).isNull();
+    }
+
+    @Test
+    public void findTutorAuthority() {
+        Usuario usuario = this.usuarioService.create(UsuarioTest.factoryTutorRequestDto(), UsuarioTest.clinica);
+
+        assertThat(this.usuarioService.findUsuarioAuthority(usuario, "TUTOR")).isPresent();
+
+        assertThat(this.usuarioService.findUsuarioAuthority(usuario, "ADMIN")).isEmpty();
+        assertThat(this.usuarioService.findUsuarioAuthority(usuario, "VETERINARIO")).isEmpty();
+        assertThat(this.usuarioService.findUsuarioAuthority(usuario, "FUNCIONARIO")).isEmpty();
+    }
+
+    @Test
+    public void findFuncionarioAuthority() {
+        Usuario usuario = this.usuarioService.create(UsuarioTest.factoryFuncionarioRequestDto(), UsuarioTest.clinica);
+
+        assertThat(this.usuarioService.findUsuarioAuthority(usuario, "FUNCIONARIO")).isPresent();
+
+        assertThat(this.usuarioService.findUsuarioAuthority(usuario, "ADMIN")).isEmpty();
+        assertThat(this.usuarioService.findUsuarioAuthority(usuario, "VETERINARIO")).isEmpty();
+        assertThat(this.usuarioService.findUsuarioAuthority(usuario, "TUTOR")).isEmpty();
+    }
+
+    @Test
+    public void findVeterinarioAuthority() {
+        Usuario usuario = this.usuarioService.create(UsuarioTest.factoryVeterinarioRequestDto(), UsuarioTest.clinica);
+
+        assertThat(this.usuarioService.findUsuarioAuthority(usuario, "VETERINARIO")).isPresent();
+
+        assertThat(this.usuarioService.findUsuarioAuthority(usuario, "ADMIN")).isEmpty();
+        assertThat(this.usuarioService.findUsuarioAuthority(usuario, "TUTOR")).isEmpty();
+        assertThat(this.usuarioService.findUsuarioAuthority(usuario, "FUNCIONARIO")).isEmpty();
+    }
+
+    @Test
+    public void findDonoAuthority() {
+        Usuario usuario = this.usuarioService.create(UsuarioTest.factoryDonoRequestDto(), UsuarioTest.clinica);
+
+        assertThat(this.usuarioService.findUsuarioAuthority(usuario, "ADMIN")).isPresent();
+        assertThat(this.usuarioService.findUsuarioAuthority(usuario, "FUNCIONARIO")).isPresent();
+
+        assertThat(this.usuarioService.findUsuarioAuthority(usuario, "TUTOR")).isEmpty();
+        assertThat(this.usuarioService.findUsuarioAuthority(usuario, "FUNCIONARIO")).isEmpty();
     }
 
     public static UsuarioRequestDto factoryTutorRequestDto() {
@@ -193,5 +377,19 @@ public class UsuarioTest {
         dto.crmv = "SP-1234";
 
         return dto;
+    }
+
+    public static void updateUsuarioDto(UsuarioRequestDto dto) {
+        dto.nome = "Nome Teste";
+        dto.email = "teste@teste.com";
+        dto.cep = "11111-000";
+        dto.bairro = "Bairro Teste";
+        dto.logradouro = "Logradouro Teste";
+        dto.cidade = "Cidade Teste";
+        dto.estado = "SP";
+        dto.cpf = "111.111.111-11";
+        dto.rg = "11.111.111-1";
+        dto.celular = "(11) 90000-1111";
+        dto.telefone = "(11) 0000-1111";
     }
 }
