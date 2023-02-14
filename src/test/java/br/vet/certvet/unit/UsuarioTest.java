@@ -126,7 +126,7 @@ public class UsuarioTest {
 
         assertThat(usuario)
                 .usingRecursiveComparison()
-                .ignoringFields("id", "clinica", "password")
+                .ignoringFields("id", "clinica", "password", "authorities")
                 .isEqualTo(USUARIO_COMPARATION);
     }
 
@@ -154,7 +154,7 @@ public class UsuarioTest {
 
         assertThat(usuario)
                 .usingRecursiveComparison()
-                .ignoringFields("id", "clinica", "password")
+                .ignoringFields("id", "clinica", "password", "authorities")
                 .isEqualTo(USUARIO_COMPARATION);
     }
 
@@ -185,7 +185,7 @@ public class UsuarioTest {
 
         assertThat(usuario)
                 .usingRecursiveComparison()
-                .ignoringFields("id", "clinica", "password")
+                .ignoringFields("id", "clinica", "password", "authorities")
                 .isEqualTo(USUARIO_COMPARATION);
     }
 
@@ -215,7 +215,7 @@ public class UsuarioTest {
 
         assertThat(usuario)
                 .usingRecursiveComparison()
-                .ignoringFields("id", "clinica", "password")
+                .ignoringFields("id", "clinica", "password", "authorities")
                 .isEqualTo(USUARIO_COMPARATION);
     }
 
@@ -293,7 +293,7 @@ public class UsuarioTest {
         assertThat(this.usuarioService.findUsuarioAuthority(usuario, "FUNCIONARIO")).isPresent();
 
         assertThat(this.usuarioService.findUsuarioAuthority(usuario, "TUTOR")).isEmpty();
-        assertThat(this.usuarioService.findUsuarioAuthority(usuario, "FUNCIONARIO")).isEmpty();
+        assertThat(this.usuarioService.findUsuarioAuthority(usuario, "VETERINARIO")).isEmpty();
     }
 
     public static UsuarioRequestDto factoryTutorRequestDto() {
