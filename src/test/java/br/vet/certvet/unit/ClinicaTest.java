@@ -1,6 +1,8 @@
 package br.vet.certvet.unit;
 
 import br.vet.certvet.dto.requests.ClinicaInicialRequestDto;
+import br.vet.certvet.dto.requests.ClinicaRequestDto;
+import br.vet.certvet.exceptions.NotFoundException;
 import br.vet.certvet.models.Clinica;
 import br.vet.certvet.repositories.ClinicaRepository;
 import br.vet.certvet.services.ClinicaService;
@@ -11,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -35,6 +38,60 @@ public class ClinicaTest {
 
         assertThat(clinica).isNotNull();
         assertThat(clinica.getId()).isNotNull();
+
+        assertThat(clinica)
+                .usingRecursiveComparison()
+                .ignoringFields("id", "usuarios", "agendamentos", "prontuarios")
+                .isEqualTo(CLINICA_COMPARATION);
+    }
+
+    @Test
+    public void getExistentClinica() {
+        ClinicaInicialRequestDto dto = ClinicaTest.factoryClinicaInicialRequestDto();
+
+        Clinica clinicaTest = this.clinicaService.create(dto);
+        Clinica clinica = this.clinicaService.findById(clinicaTest.getId());
+
+        assertThat(clinica).isEqualTo(clinicaTest);
+    }
+
+    @Test
+    public void getExistentClinicaByCnpj() {
+        ClinicaInicialRequestDto dto = ClinicaTest.factoryClinicaInicialRequestDto();
+
+        Clinica clinicaTest = this.clinicaService.create(dto);
+        Clinica clinica = this.clinicaService.findByCnpj(clinicaTest.getCnpj());
+
+        assertThat(clinica).isEqualTo(clinicaTest);
+    }
+
+    @Test
+    public void getNotExistentClinica() {
+        ClinicaInicialRequestDto dto = ClinicaTest.factoryClinicaInicialRequestDto();
+
+        this.clinicaService.create(dto);
+
+        assertThrowsExactly(NotFoundException.class, () -> this.clinicaService.findById(Long.parseLong("999999999")));
+    }
+
+    @Test
+    public void getNotExistentClinicaByCnpj() {
+        ClinicaInicialRequestDto dto = ClinicaTest.factoryClinicaInicialRequestDto();
+
+        this.clinicaService.create(dto);
+
+        assertThrowsExactly(NotFoundException.class, () -> this.clinicaService.findByCnpj("11.222.333/0001-11"));
+    }
+
+    @Test
+    public void editClinica() {
+        Clinica clinica = this.clinicaService.create(ClinicaTest.factoryClinicaInicialRequestDto());
+        ClinicaRequestDto dto = ClinicaTest.factoryUpdatedClinicaDto();
+
+        final Clinica CLINICA_COMPARATION = new Clinica(ClinicaTest.factoryClinicaInicialRequestDto());
+        CLINICA_COMPARATION.fill(dto);
+
+        clinica = this.clinicaService.edit(dto, clinica);
 
         assertThat(clinica)
                 .usingRecursiveComparison()
@@ -87,6 +144,26 @@ public class ClinicaTest {
         dto.tecnico_email = "buior@teste.com";
         dto.tecnico_senha = "1234";
         dto.tecnico_crmv = "SP-1234";
+
+        return dto;
+    }
+
+    public static ClinicaRequestDto factoryUpdatedClinicaDto() {
+        ClinicaRequestDto dto = new ClinicaRequestDto();
+
+        dto.nome_fantasia = "Nome fantasia 2";
+        dto.razao_social = "Razão social 2";
+        dto.cnpj = "11.243.612/0001-00";
+        dto.cnae = "15";
+        dto.cep = "01111-970";
+        dto.logradouro = "Rua Doutor Miguel Torres";
+        dto.numero = "12";
+        dto.bairro = "Centro 2";
+        dto.cidade = "São Paulo";
+        dto.estado = "SP";
+        dto.celular = "(11) 91222-1111";
+        dto.telefone = "(11) 1112-1111";
+        dto.email = "clinica2@teste.com";
 
         return dto;
     }
