@@ -102,6 +102,8 @@ public class Usuario implements UserDetails, Fillable<UsuarioRequestDto> {
 
     public Usuario(UsuarioRequestDto dto, Clinica clinica) {
         this.clinica = clinica;
+        this.authorities = new ArrayList<>();
+        this.deletedAt = null;
 
         this.fill(dto);
     }
@@ -121,9 +123,7 @@ public class Usuario implements UserDetails, Fillable<UsuarioRequestDto> {
         this.celular = dto.celular;
         this.telefone = dto.telefone;
         this.crmv = null;
-        this.deletedAt = null;
         this.password = null;
-        this.authorities = new ArrayList<>();
 
         if (dto instanceof FuncionarioRequestDto)
             this.setPassword(((FuncionarioRequestDto) dto).senha);
