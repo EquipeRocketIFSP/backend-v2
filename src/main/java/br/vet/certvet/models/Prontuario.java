@@ -44,6 +44,9 @@ public class Prontuario {
     @OneToMany(mappedBy = "prontuario")
     @ToString.Exclude
     private List<Exame> exames;
+    private String codigo;
+
+    private Usuario tutor;
 
     @Override
     public boolean equals(Object o) {
@@ -57,4 +60,9 @@ public class Prontuario {
     public int hashCode() {
         return getClass().hashCode();
     }
+
+    public String getCodigo() {
+        return this.codigo;
+    }
+
 }

@@ -5,11 +5,11 @@ public enum SexoAnimal {
 
     private final String sexo;
 
-    private SexoAnimal(String sexo) {
+    SexoAnimal(String sexo) {
         this.sexo = sexo;
     }
 
-    public String getSexo() {
+    public String getSigla() {
         return sexo;
     }
 }
