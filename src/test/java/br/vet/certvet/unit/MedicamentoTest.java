@@ -1,6 +1,7 @@
 package br.vet.certvet.unit;
 
 import br.vet.certvet.dto.requests.MedicamentoRequestDto;
+import br.vet.certvet.exceptions.ConflictException;
 import br.vet.certvet.exceptions.NotFoundException;
 import br.vet.certvet.models.Medicamento;
 import br.vet.certvet.repositories.MedicamentoRespository;
@@ -12,7 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -34,6 +35,15 @@ public class MedicamentoTest {
 
         assertThat(medicamento).isNotNull();
         assertThat(medicamento.getId()).isNotNull();
+    }
+
+    @Test
+    public void createDuplicateMedicamento() {
+        this.medicamentoService.create(MedicamentoTest.factoryMedicamentoDto());
+
+        assertThrowsExactly(ConflictException.class, () -> {
+            this.medicamentoService.create(MedicamentoTest.factoryMedicamentoDto());
+        });
     }
 
     @Test
