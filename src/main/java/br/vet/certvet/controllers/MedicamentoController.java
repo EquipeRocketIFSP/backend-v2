@@ -2,6 +2,7 @@ package br.vet.certvet.controllers;
 
 import br.vet.certvet.dto.requests.MedicamentoRequestDto;
 import br.vet.certvet.dto.responses.MedicamentoResponseDto;
+import br.vet.certvet.dto.responses.PaginatedResponse;
 import br.vet.certvet.models.Medicamento;
 import br.vet.certvet.services.MedicamentoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @RestController
@@ -22,5 +24,22 @@ public class MedicamentoController extends BaseController {
         Medicamento medicamento = this.medicamentoService.create(dto);
 
         return new ResponseEntity<>(new MedicamentoResponseDto(medicamento), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/medicamento")
+    ResponseEntity<PaginatedResponse<MedicamentoResponseDto>> findAll(
+            @RequestParam(name = "pagina", defaultValue = "1") int page,
+            HttpServletRequest request
+    ) {
+        PaginatedResponse<MedicamentoResponseDto> response = this.medicamentoService.findAll(page, request.getRequestURL().toString());
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/medicamento/{id}")
+    public ResponseEntity<MedicamentoResponseDto> findOne(@PathVariable("id") Long id) {
+        Medicamento medicamento = this.medicamentoService.findOne(id);
+
+        return ResponseEntity.ok(new MedicamentoResponseDto(medicamento));
     }
 }
