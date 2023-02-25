@@ -1,5 +1,6 @@
 package br.vet.certvet.config;
 
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.Properties;
 
 @Component
+@Getter
 public class EmailConfiguration {
     @Value("${spring.mail.host}")
     private String mailServerHost;
