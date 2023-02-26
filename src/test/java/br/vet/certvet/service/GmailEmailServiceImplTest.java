@@ -32,18 +32,21 @@ public class GmailEmailServiceImplTest {
 
     @BeforeEach
     void setUp(){
-//        service = new GmailEmailServiceImpl(new  JavaMailSenderImpl());
         sample = new File("src/test/resources/sample.pdf");
     }
 
     @AfterEach
     void tearDown(){
-//        service = null;
+        service = null;
         sample = null;
     }
 
     @Test
     @DisplayName("Não deve lançar exceção")
+    /**
+     * Em caso de quebra por credenciais, verificar credenciais nos comenários em:
+     * https://rocket-ifsp.atlassian.net/jira/software/projects/ERI/boards/1?selectedIssue=ERI-397
+     */
     void whenSendSimpleMailReceivesText_thenNotThrowException(){
         assertDoesNotThrow(
                 () -> service.sendTextMessage(sender,"Sample Message Title", "Sample Message Body")

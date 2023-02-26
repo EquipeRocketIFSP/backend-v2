@@ -32,7 +32,6 @@ public class MedicamentoServiceImpl implements MedicamentoService {
             throw new ConflictException("Medicamento já existe");
 
         Medicamento medicamento = new Medicamento(dto);
-
         return this.medicamentoRespository.saveAndFlush(medicamento);
     }
 
