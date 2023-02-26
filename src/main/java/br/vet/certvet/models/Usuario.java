@@ -97,6 +97,8 @@ public class Usuario implements UserDetails, Fillable<UsuarioRequestDto> {
             inverseJoinColumns = @JoinColumn(name = "authorities_id", referencedColumnName = "id"))
     @ToString.Exclude
     private List<Authority> authorities;
+    private String registroCRMV;
+    private String email;
 
     public Usuario(UsuarioRequestDto dto, Clinica clinica) {
         this.clinica = clinica;
@@ -165,5 +167,13 @@ public class Usuario implements UserDetails, Fillable<UsuarioRequestDto> {
 
     public void setPassword(String password) {
         this.password = new BCryptPasswordEncoder().encode(password);
+    }
+
+    public String getRegistroCRMV() {
+        return this.registroCRMV;
+    }
+
+    public String getEmail() {
+        return this.email;
     }
 }
