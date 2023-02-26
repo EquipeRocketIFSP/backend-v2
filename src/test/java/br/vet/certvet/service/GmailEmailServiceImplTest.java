@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.io.File;
@@ -23,22 +22,17 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 @EnableConfigurationProperties
 public class GmailEmailServiceImplTest {
 
-    @Qualifier("gmailEmailServiceImpl")
     @Autowired
-    private EmailService service;
-    private File sample;
+    private GmailEmailServiceImpl service;
     @Value("${spring.mail.username}")
-    private String sender;
+    private String to;
 
     @BeforeEach
     void setUp(){
-        sample = new File("src/test/resources/sample.pdf");
     }
 
     @AfterEach
     void tearDown(){
-        service = null;
-        sample = null;
     }
 
     @Test
@@ -47,11 +41,18 @@ public class GmailEmailServiceImplTest {
      * Em caso de quebra por credenciais, verificar credenciais nos comenários em:
      * https://rocket-ifsp.atlassian.net/jira/software/projects/ERI/boards/1?selectedIssue=ERI-397
      */
-    void whenSendSimpleMailReceivesText_thenNotThrowException(){
+    void whenSendSimpleMailReceivesText_ThenNotThrowException(){
         assertDoesNotThrow(
-                () -> service.sendTextMessage(sender,"Sample Message Title", "Sample Message Body")
+                () -> service.sendTextMessage(to,"Sample Message Title", "Sample Message Body")
         );
     }
 
+    @Test
+    @DisplayName("Envia email com anexo sem lançar exceção")
+    void whenSendEmailWithAttachment_ThenDoesNotThrowException(){
+        assertDoesNotThrow(
+                () -> service.sendMessageWithAttachment(to,"Sample Message Title with attachment", "Sample Message Body with attachment", "sample.pdf", "src/test/resources/sample.pdf")
+        );
+    }
 
 }

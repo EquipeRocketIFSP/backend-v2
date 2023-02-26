@@ -21,7 +21,7 @@ import java.io.File;
 public class GmailEmailServiceImpl implements EmailService {
 
     @Value("${spring.mail.username}")
-    private static String sender;
+    private String sender;
 
     @Autowired
     private JavaMailSender emailSender;
