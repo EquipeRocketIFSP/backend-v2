@@ -50,7 +50,7 @@ spring:
           auth: true
           starttls:
             enable: true
-    templates: "path"
+#    templates: "path"
 server:
   port:
     8443
