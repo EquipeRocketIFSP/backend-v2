@@ -24,6 +24,68 @@ public class Prontuario {
     @ManyToOne
     private Clinica clinica;
 
+    @Column(nullable = false)
+    private int frequenciaCardiaca;
+
+    @Column(nullable = false)
+    private int frequenciaRespiratoria;
+
+    @Column(nullable = false)
+    private int temperatura;
+
+    @Column(nullable = false)
+    private String hidratacao;
+
+    @Column(nullable = false)
+    private String tpc;
+
+    @Column(nullable = false)
+    private String mucosa;
+
+    @Column(nullable = false)
+    private String conciencia;
+
+    @Column(nullable = false)
+    private String escoreCorporal;
+
+    @Column(length = 2000)
+    private String supeitaDiagnostica;
+
+    @Column(nullable = false)
+    private boolean prostracao;
+
+    @Column(nullable = false)
+    private boolean febre;
+
+    @Column(nullable = false)
+    private boolean vomito;
+
+    @Column(nullable = false)
+    private boolean diarreia;
+
+    @Column(nullable = false)
+    private boolean espasmosConvulsao;
+
+    @Column(nullable = false)
+    private boolean deambulacao;
+
+    @Column(nullable = false)
+    private boolean sensibilidadeDor;
+
+    @Column(nullable = false)
+    private boolean lesoesNodulos;
+
+    private String apetite;
+    private String linfonodos;
+    private String linfonodosObs;
+    private String regiaoCervical;
+    private String regiaoAbdomen;
+    private String regiaoMToracicos;
+    private String regiaoMPelvicos;
+
+    private boolean regiaoCabeca;
+    private boolean regiaoTorax;
+
     private LocalDateTime dataAtendimento;
 
     @ManyToOne(optional = false)
