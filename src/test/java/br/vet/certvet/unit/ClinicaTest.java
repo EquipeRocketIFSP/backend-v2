@@ -9,6 +9,7 @@ import br.vet.certvet.services.ClinicaService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -17,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 
 @SpringBootTest
 @ActiveProfiles("test")
+@EnableConfigurationProperties
 public class ClinicaTest {
     @Autowired
     private ClinicaRepository clinicaRepository;

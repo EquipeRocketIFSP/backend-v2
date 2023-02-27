@@ -38,6 +38,19 @@ spring:
       platform: mysql
       continue-on-error: true
       mode: always
+# Gmail SMTP
+  mail:
+    host: "smtp.gmail.com"
+    port: 587
+    username: ${MAIL_USR}
+    password: ${MAIL_PASS}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+#    templates: "path"
 server:
   port:
     8443
