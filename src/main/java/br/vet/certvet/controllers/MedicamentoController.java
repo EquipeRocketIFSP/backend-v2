@@ -14,19 +14,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/medicamento")
 public class MedicamentoController extends BaseController {
     @Autowired
     private MedicamentoService medicamentoService;
 
-    @PostMapping("/medicamento")
+    @PostMapping
     public ResponseEntity<MedicamentoResponseDto> create(@RequestBody @Valid MedicamentoRequestDto dto) {
         Medicamento medicamento = this.medicamentoService.create(dto);
 
         return new ResponseEntity<>(new MedicamentoResponseDto(medicamento), HttpStatus.CREATED);
     }
 
-    @GetMapping("/medicamento")
+    @GetMapping
     ResponseEntity<PaginatedResponse<MedicamentoResponseDto>> findAll(
             @RequestParam(name = "pagina", defaultValue = "1") int page,
             HttpServletRequest request
@@ -36,7 +36,7 @@ public class MedicamentoController extends BaseController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/medicamento/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<MedicamentoResponseDto> findOne(@PathVariable("id") Long id) {
         Medicamento medicamento = this.medicamentoService.findOne(id);
 

@@ -6,7 +6,6 @@ import br.vet.certvet.dto.responses.Metadata;
 import br.vet.certvet.dto.responses.PaginatedResponse;
 import br.vet.certvet.exceptions.ConflictException;
 import br.vet.certvet.exceptions.NotFoundException;
-import br.vet.certvet.models.Clinica;
 import br.vet.certvet.models.Medicamento;
 import br.vet.certvet.repositories.MedicamentoRespository;
 import br.vet.certvet.services.MedicamentoService;
@@ -26,7 +25,7 @@ public class MedicamentoServiceImpl implements MedicamentoService {
     private MedicamentoRespository medicamentoRespository;
 
     @Override
-    public Medicamento create(MedicamentoRequestDto dto, Clinica clinica) {
+    public Medicamento create(MedicamentoRequestDto dto) {
         Optional<Medicamento> response = this.medicamentoRespository.findByCodigoRegistro(dto.codigoRegistro);
 
         if (response.isPresent())

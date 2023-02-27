@@ -28,7 +28,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.SQLException;
 import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -37,7 +36,7 @@ import java.util.*;
  */
 @Service
 @Slf4j
-public class PdfServicePdfBoxImpl implements PdfService {
+public class PdfBoxPdfServiceImpl implements PdfService {
 
     @Autowired
     private PdfRepository pdfRepository;
