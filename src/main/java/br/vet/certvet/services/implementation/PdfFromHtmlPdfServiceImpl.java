@@ -18,6 +18,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.Objects;
 
@@ -38,8 +40,9 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
     @Override
     public byte[] writeProntuario(Prontuario prontuario) throws Exception {
 
-        final String fileName = "res/" + prontuario.getCodigo() + ".pdf";
-        String layout = Objects.requireNonNull(getClass().getResourceAsStream("src/main/resources/documents/prontuario/ProntuarioLayout.html")).toString();
+        String from = "src/main/resources/documents/prontuario/ProntuarioLayout.html";
+        String fileName = "res/" + prontuario.getCodigo() + ".pdf";
+        String layout = Files.readString(Path.of(from));
         Map<String, String> parameters = Map.of(
                 "animal.nome", prontuario.getAnimal().getNome(),
                 "veterinario.nome", prontuario.getVeterinario().getNome(),
@@ -49,7 +52,7 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
                 "prontuario.codigo", prontuario.getCodigo()
         );
         String result = new StringSubstitutor(parameters).replace(layout);
-        Document document = Jsoup.parse(result);
+        Document document = Jsoup.parse(result, "UTF-8");
         document.outputSettings().syntax(Document.OutputSettings.Syntax.xml);
         generatePdfFromHtml(document, new File(fileName));
         return result.getBytes();

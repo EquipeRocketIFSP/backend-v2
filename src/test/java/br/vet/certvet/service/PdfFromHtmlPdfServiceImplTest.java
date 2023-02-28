@@ -3,6 +3,7 @@ package br.vet.certvet.service;
 import br.vet.certvet.enums.SexoAnimal;
 import br.vet.certvet.models.*;
 import br.vet.certvet.repositories.ClinicaRepository;
+import br.vet.certvet.repositories.PdfRepository;
 import br.vet.certvet.repositories.ProntuarioRepository;
 import br.vet.certvet.services.implementation.PdfFromHtmlPdfServiceImpl;
 import org.junit.jupiter.api.AfterEach;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -30,7 +32,10 @@ public class PdfFromHtmlPdfServiceImplTest {
 
     @Mock private ClinicaRepository clinicaRepository; // = mock(ClinicaRepository.class);
 
+    @Mock private PdfRepository pdfRepository;
+
     @InjectMocks
+    @Qualifier("pdfFromHtmlPdfServiceImpl")
     private PdfFromHtmlPdfServiceImpl service;
 
     @BeforeEach
@@ -42,7 +47,10 @@ public class PdfFromHtmlPdfServiceImplTest {
     }
 
     private Prontuario getProntuarioInstance(){
-        Clinica clinica = Clinica.builder().build();
+        Clinica clinica = Clinica.builder()
+                .razaoSocial("Clinica vet")
+                .telefone("(12) 3456-7890")
+                .build();
         Usuario tutor = Usuario.builder()
                 .nome("Caio Felipe Pires")
                 .cpf("175.578.151-22")
@@ -76,9 +84,11 @@ public class PdfFromHtmlPdfServiceImplTest {
                 .username("diogo.rodrigo.novaes@diebold.com")
                 .password("m4y4KxmMTf")
                 .clinica(clinica)
+                .registroCRMV("123456")
                 .build();
 
         return Prontuario.builder()
+                .codigo("code")
                 .dataAtendimento(LocalDateTime.now())
                 .animal(Animal.builder()
                         .especie("gato")
@@ -119,7 +129,7 @@ public class PdfFromHtmlPdfServiceImplTest {
     void whenRequestProntuarioPdf_ThenReturnPdfFile() throws Exception {
 
         Prontuario parametro = getProntuarioInstance();
-        File outputFile = new File("src/test/resources/prontuario/htmlToPdf/sample.pdf");
+        File outputFile = new File("src/test/resources/prontuario/htmlToPdf/test.pdf");
         Files.write(outputFile.toPath(), service.writeProntuario(getProntuarioInstance()));
     }
 }
