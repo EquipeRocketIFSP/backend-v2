@@ -107,6 +107,10 @@ public class Prontuario {
     @ToString.Exclude
     private List<Exame> exames;
 
+    @OneToMany(mappedBy = "prontuario")
+    @ToString.Exclude
+    private List<Documento> documentos;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
