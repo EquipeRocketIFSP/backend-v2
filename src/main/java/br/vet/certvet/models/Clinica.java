@@ -32,7 +32,7 @@ public class Clinica implements Fillable<ClinicaRequestDto> {
     private String razaoSocial;
 
     @Setter
-    @Column(nullable = false)
+    @Column(nullable = false, length = 18)
     public String cnpj;
 
     @Setter
@@ -40,7 +40,7 @@ public class Clinica implements Fillable<ClinicaRequestDto> {
     public String cnae;
 
     @Setter
-    @Column(nullable = false)
+    @Column(nullable = false, length = 9)
     public String cep;
 
     @Setter
@@ -48,7 +48,7 @@ public class Clinica implements Fillable<ClinicaRequestDto> {
     public String logradouro;
 
     @Setter
-    @Column(nullable = false)
+    @Column(nullable = false, length = 6)
     public String numero;
 
     @Setter
@@ -60,15 +60,15 @@ public class Clinica implements Fillable<ClinicaRequestDto> {
     public String cidade;
 
     @Setter
-    @Column(nullable = false)
+    @Column(nullable = false, length = 2)
     public String estado;
 
     @Setter
-    @Column(nullable = false)
+    @Column(nullable = false, length = 15)
     public String celular;
 
     @Setter
-    @Column(nullable = false)
+    @Column(length = 14)
     public String telefone;
 
     @Setter

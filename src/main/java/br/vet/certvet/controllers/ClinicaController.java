@@ -20,6 +20,7 @@ import javax.validation.Valid;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api")
 public class ClinicaController extends BaseController {
     @Autowired
@@ -34,7 +35,7 @@ public class ClinicaController extends BaseController {
     ) {
         Clinica clinica = this.clinicaService.create(dto);
         this.usuarioService.create(ClinicaController.getDonoDto(dto), clinica);
-        this.usuarioService.create(ClinicaController.getTecnicoDto(dto), clinica);
+        //this.usuarioService.create(ClinicaController.getTecnicoDto(dto), clinica);
 
         return new ResponseEntity<>(new ClinicaResponseDto(clinica), HttpStatus.ACCEPTED);
     }
@@ -83,7 +84,7 @@ public class ClinicaController extends BaseController {
         return usuarioDto;
     }
 
-    private static VeterinarioRequestDto getTecnicoDto(ClinicaInicialRequestDto dto) {
+    /*private static VeterinarioRequestDto getTecnicoDto(ClinicaInicialRequestDto dto) {
         VeterinarioRequestDto usuarioDto = new VeterinarioRequestDto();
 
         usuarioDto.nome = dto.tecnico_nome;
@@ -102,5 +103,5 @@ public class ClinicaController extends BaseController {
         usuarioDto.senha = dto.tecnico_senha;
 
         return usuarioDto;
-    }
+    }*/
 }
