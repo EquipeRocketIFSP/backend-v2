@@ -84,6 +84,10 @@ public class Clinica implements Fillable<ClinicaRequestDto> {
     @ToString.Exclude
     private List<Usuario> usuarios;
 
+    @Setter
+    @OneToOne
+    private Usuario responsavelTecnico;
+
     @OneToMany
     @ToString.Exclude
     private List<Agendamento> agendamentos;
