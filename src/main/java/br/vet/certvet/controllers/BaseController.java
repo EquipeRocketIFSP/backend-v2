@@ -1,6 +1,7 @@
 package br.vet.certvet.controllers;
 
 import br.vet.certvet.config.security.service.TokenService;
+import br.vet.certvet.models.Clinica;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -10,7 +11,11 @@ public abstract class BaseController {
     @Autowired
     protected TokenService tokenService;
 
-    protected Long getClinicaFromRequester(String auth) {
+    protected Clinica getClinicaFromRequester(String auth) {
+        return tokenService.getUsuario(auth).getClinica();
+    }
+
+    protected Long getClinicaIdFromRequester(String auth) {
         return tokenService.getUsuario(auth).getClinica().getId();
     }
 

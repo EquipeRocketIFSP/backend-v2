@@ -79,7 +79,6 @@ public class TokenService {
 
     public Long getUsuarioId(String token) {
         String[] ids = jwtDecode(token).getBody().getSubject().split(":");
-
         return Long.parseLong(ids[USUARIO_ID_INDEX]);
     }
 

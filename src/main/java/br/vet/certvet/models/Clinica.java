@@ -32,7 +32,7 @@ public class Clinica implements Fillable<ClinicaRequestDto> {
     private String razaoSocial;
 
     @Setter
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     public String cnpj;
 
     @Setter

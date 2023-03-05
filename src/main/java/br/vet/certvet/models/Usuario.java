@@ -34,6 +34,8 @@ public class Usuario implements UserDetails, Fillable<UsuarioRequestDto> {
     @Setter
     @Column(nullable = false)
     private String username;
+
+    @Column(nullable = false)
     private String password;
 
     @Setter
@@ -97,7 +99,6 @@ public class Usuario implements UserDetails, Fillable<UsuarioRequestDto> {
             inverseJoinColumns = @JoinColumn(name = "authorities_id", referencedColumnName = "id"))
     @ToString.Exclude
     private List<Authority> authorities;
-    private String registroCRMV;
     private String email;
 
     public Usuario(UsuarioRequestDto dto, Clinica clinica) {
@@ -170,7 +171,7 @@ public class Usuario implements UserDetails, Fillable<UsuarioRequestDto> {
     }
 
     public String getRegistroCRMV() {
-        return this.registroCRMV;
+        return this.crmv;
     }
 
     public String getEmail() {

@@ -43,7 +43,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers(HttpMethod.GET, "/hello").permitAll()
                 .antMatchers(HttpMethod.GET, "/ping").permitAll()
-                .antMatchers(HttpMethod.POST, "/auth").permitAll()
                 .antMatchers(HttpMethod.GET, "/actuator/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/db/*").permitAll()
                 .antMatchers(HttpMethod.GET, "/db/**").permitAll()
@@ -70,4 +69,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity web) throws Exception {
         super.configure(web);
     }
+
+//    public static void main(String[] args) {
+//        System.out.println(new BCryptPasswordEncoder().encode("123"));
+//    }
 }

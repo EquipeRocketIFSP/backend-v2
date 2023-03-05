@@ -55,7 +55,12 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
         Document document = Jsoup.parse(result, "UTF-8");
         document.outputSettings().syntax(Document.OutputSettings.Syntax.xml);
         generatePdfFromHtml(document, new File(fileName));
-        return result.getBytes();
+        Path of = Path.of(fileName);
+        try {
+            return Files.readAllBytes(of);
+        } finally {
+            Files.deleteIfExists(of);
+        }
     }
 
     private static void generatePdfFromHtml(Document document, File outputPdf) throws IOException {
