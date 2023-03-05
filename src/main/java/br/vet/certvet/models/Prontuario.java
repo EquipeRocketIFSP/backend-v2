@@ -108,7 +108,17 @@ public class Prontuario {
     private List<Exame> exames;
     private String codigo;
 
+    @ManyToOne
+    @JoinColumn(name = "tutor_id")
     private Usuario tutor;
+
+    @OneToMany // removido atributo mappedBy por não se tratar de uma relação bidirecional
+    @ToString.Exclude
+    private List<Documento> documentos;
+
+    public void setTutor(Usuario tutor) {
+        this.tutor = tutor;
+    }
 
     @Override
     public boolean equals(Object o) {
