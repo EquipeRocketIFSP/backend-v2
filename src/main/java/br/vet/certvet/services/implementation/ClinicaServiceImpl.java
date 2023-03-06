@@ -3,6 +3,7 @@ package br.vet.certvet.services.implementation;
 import br.vet.certvet.dto.requests.ClinicaInicialRequestDto;
 import br.vet.certvet.dto.requests.ClinicaRequestDto;
 import br.vet.certvet.dto.requests.FuncionarioRequestDto;
+import br.vet.certvet.dto.requests.VeterinarioRequestDto;
 import br.vet.certvet.exceptions.ConflictException;
 import br.vet.certvet.exceptions.NotFoundException;
 import br.vet.certvet.models.Clinica;
@@ -32,12 +33,13 @@ public class ClinicaServiceImpl implements ClinicaService {
             throw new ConflictException("Clínica já existe.");
 
         Clinica clinica = this.clinicaRepository.saveAndFlush(new Clinica(dto));
-        Usuario usuario = this.usuarioService.create(ClinicaServiceImpl.getDonoDto(dto), clinica);
 
         if (dto.dono_crmv != null && !dto.dono_crmv.isEmpty()) {
+            Usuario usuario = this.usuarioService.create(ClinicaServiceImpl.getDonoResponsavelTecnicoDto(dto), clinica);
+
             clinica.setResponsavelTecnico(usuario);
             this.clinicaRepository.saveAndFlush(clinica);
-        }
+        } else this.usuarioService.create(ClinicaServiceImpl.getDonoDto(dto), clinica);
 
         return clinica;
     }
@@ -70,7 +72,11 @@ public class ClinicaServiceImpl implements ClinicaService {
     }
 
     private static FuncionarioRequestDto getDonoDto(ClinicaInicialRequestDto dto) {
-        FuncionarioRequestDto usuarioDto = new FuncionarioRequestDto();
+        return ClinicaServiceImpl.getDonoResponsavelTecnicoDto(dto);
+    }
+
+    private static VeterinarioRequestDto getDonoResponsavelTecnicoDto(ClinicaInicialRequestDto dto) {
+        VeterinarioRequestDto usuarioDto = new VeterinarioRequestDto();
 
         usuarioDto.nome = dto.dono_nome;
         usuarioDto.email = dto.dono_email;
@@ -85,6 +91,7 @@ public class ClinicaServiceImpl implements ClinicaService {
         usuarioDto.cidade = dto.dono_cidade;
         usuarioDto.estado = dto.dono_estado;
         usuarioDto.senha = dto.dono_senha;
+        usuarioDto.crmv = dto.dono_crmv;
         usuarioDto.is_admin = true;
 
         return usuarioDto;
