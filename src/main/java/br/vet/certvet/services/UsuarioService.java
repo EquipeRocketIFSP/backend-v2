@@ -10,6 +10,7 @@ import br.vet.certvet.models.Clinica;
 import br.vet.certvet.models.Usuario;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -37,4 +38,6 @@ public interface UsuarioService {
     Usuario recover(Usuario usuario);
 
     Optional<Authority> findUsuarioAuthority(Usuario usuario, String authority);
+
+    List<Clinica> findClinicasFromUsuario(String email);
 }

@@ -4,6 +4,7 @@ import br.vet.certvet.config.security.service.TokenService;
 import br.vet.certvet.dto.requests.FuncionarioRequestDto;
 import br.vet.certvet.dto.requests.UsuarioRequestDto;
 import br.vet.certvet.dto.requests.VeterinarioRequestDto;
+import br.vet.certvet.dto.responses.ClinicasFromUsuarioResponseDto;
 import br.vet.certvet.dto.responses.PaginatedResponse;
 import br.vet.certvet.dto.responses.UsuarioResponseDto;
 import br.vet.certvet.models.Clinica;
@@ -18,9 +19,12 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import java.util.List;
+
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api")
 public class UsuarioController extends BaseController {
     @Autowired
@@ -125,6 +129,17 @@ public class UsuarioController extends BaseController {
         PaginatedResponse<UsuarioResponseDto> response = this.usuarioService.findAll(page, request.getRequestURL().toString(), clinica);
 
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/usuario/clinicas")
+    public ResponseEntity<List<ClinicasFromUsuarioResponseDto>> findClinicasFromUsuario(@RequestParam(name = "email") String email) {
+        List<ClinicasFromUsuarioResponseDto> clinicas = this.usuarioService
+                .findClinicasFromUsuario(email)
+                .stream()
+                .map((clinica) -> new ClinicasFromUsuarioResponseDto(clinica))
+                .toList();
+
+        return ResponseEntity.ok(clinicas);
     }
 
     @DeleteMapping({"/funcionario/{id}", "/veterinario/{id}", "/tutor/{id}"})
