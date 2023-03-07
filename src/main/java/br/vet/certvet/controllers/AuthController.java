@@ -37,7 +37,7 @@ public class AuthController {
     @SecurityRequirements(value = {})
     public ResponseEntity<TokenResponseDto> authenticate(@Validated @RequestBody LoginRequestDto dto) {
         Authentication auth = authenticationManager.authenticate(dto.convert());
-        Clinica clinica = this.clinicaService.findByCnpj(dto.cnpj_clinica);
+        Clinica clinica = this.clinicaService.findById(dto.clinica);
         String token = tokenService.create(auth, clinica);
         Usuario usuario = usuarioService.findOne(dto.email, clinica);
 
