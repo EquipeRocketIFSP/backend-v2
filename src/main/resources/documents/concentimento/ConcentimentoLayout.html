@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="UTF-8">
+<title>Termo para Realização de Exames - ${animal.nome}</title>
+
+<style>
+    body {
+        border: 1px solid black;
+        width: 650px;
+    }
+
+    body > div {
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+
+    #cabecalho {
+        display: flex;
+    }
+
+    #cabecalho_logo {
+        padding: 10px 20px 10px 20px;
+    }
+
+    #cabecalho_texto {
+        padding-top: 10px;
+    }
+
+    #cabecalho_texto>* {
+        margin: 0px;
+    }
+
+    #titulo {
+        text-align: center;
+    }
+
+    #local_data {
+        display: flex;
+        justify-content: end;
+    }
+
+    #assinatura_responsavel {
+        padding-top: 35px;
+    }
+
+    #assinatura_responsavel>hr {
+        text-align: center;
+        width: 50%;
+    }
+
+    #assinatura_responsavel>p {
+        text-align: center;
+    }
+</style>
+
+<body>
+
+    <div id="cabecalho">
+        <div id="cabecalho_logo">
+            <img src="certvet_logo.png" height="100">
+        </div>
+        <div id="cabecalho_texto">
+            <h2>Clínica: ${clinica.razaoSocial}</h2>
+            <h3>Nome veterinário: ${veterinario.nome}</h3>
+            <h3>Crmv: ${veterinario.crmv}</h3>
+            <p>Telefone: ${clinica.telefone}</p>
+        </div>
+    </div>
+
+    <div id="titulo">
+        <b>TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO PARA REALIZAÇÃO DE EXAMES</b>
+    </div>
+
+    <div id="declara_concentimento">
+        <p>
+            Declaro o livre consentimento para a realização do(s) exame(s) ${prontuario.exames} no animal
+            abaixo identificado, a ser realizado pelo(a) Médico(a) Veterinário(a) ${veterinario.nome}
+            CRMV-${veterinario.crmv}:
+        </p>
+    </div>
+
+    <div id="identifica_animal">
+        <p>
+            Identificação do animal (nome, sexo, raça, idade real ou presumida, cor de pelagem ou
+            plumagem, sinais particulares, tatuagem, brinco, microchip, registro genealógico e,
+            conforme o caso, resenha detalhada):
+        </p>
+        <div>
+            <p>
+                <span>Nome: ${animal.nome}</span>
+                <span>Espécie: ${animal.especie}</span>
+                <span>Raça: ${animal.raca}</span>
+
+            </p>
+            <p>
+                <span>Sexo: ${animal.sexo}</span>
+                <span>Idade: ${animal.idade}</span>
+                <span>Cor de pelagem/plumagem: ${animal.pelagem}</span>
+            </p>
+        </div>
+    </div>
+
+    <div id="declara_ciencia_riscos">
+        <p>
+            Declaro, ainda, ter sido esclarecido(a) acerca dos possíveis riscos inerentes ao procedimento,
+            durante ou após a realização do(s) citado(s) exame(s), estando o(a) referido(a) profissional
+            isento(a) de quaisquer responsabilidades decorrentes de tais riscos.
+        </p>
+    </div>
+
+    <div id="observacoes_veterinario">
+        <p>
+            Observações de interesse a serem fornecidas pelo(a) Médico(a) Veterinário(a):
+        </p>
+        <span>${documento.observacaoVet}</span>
+    </div>
+
+    <div id="observacoes_responsavel">
+        <p>
+            Observações de interesse a serem fornecidas pelo(a) tutor(a)/proprietário(a)/responsável:
+        </p>
+        <span>${documento.observacaoTutor}</span>
+    </div>
+
+    <div id="identifica_responsavel">
+        <p>Identificação do(a) responsável pelo animal:</p>
+        <p>Nome: ${tutor.nome}</p>
+        <p>CPF: ${tutor.cpf}</p>
+        <p>Endereço completo: ${tutor.endereco}</p>
+    </div>
+
+    <div id="local_data">
+        ${cidade}, ${data.dia} de ${data.mes} de ${data.ano}.
+    </div>
+
+    <div id="assinatura_responsavel">
+        <hr>
+        <p>Assinatura do(a) responsável pelo animal</p>
+    </div>
+
+    <div id="explica_duas_vias">
+        <span>
+            (documento a ser emitido em 2 vias: 1ª via: médico-veterinário; 2ª via: proprietário,
+            tutor/responsável)
+        </span>
+    </div>
+</body>
+
+</html>
