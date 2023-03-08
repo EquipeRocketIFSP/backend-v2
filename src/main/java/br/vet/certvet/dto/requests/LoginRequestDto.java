@@ -16,6 +16,6 @@ public class LoginRequestDto {
     public String senha;
 
     public UsernamePasswordAuthenticationToken convert() {
-        return new UsernamePasswordAuthenticationToken(email, senha);
+        return new UsernamePasswordAuthenticationToken(this.email + " - " + this.clinica, this.senha);
     }
 }
