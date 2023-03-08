@@ -1,6 +1,6 @@
 package br.vet.certvet.services.implementation;
 
-import br.vet.certvet.dto.requests.PasswordRequestDto;
+import br.vet.certvet.dto.requests.PasswordResetEmailRequestDto;
 import br.vet.certvet.exceptions.BadGatewayException;
 import br.vet.certvet.models.Clinica;
 import br.vet.certvet.models.Usuario;
@@ -28,7 +28,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     private EmailService emailService;
 
     @Override
-    public void sendPasswordResetEmail(PasswordRequestDto dto) {
+    public void sendPasswordResetEmail(PasswordResetEmailRequestDto dto) {
         final String subject = "CertVet - Redefinição de Senha";
         final String hash = DigestUtils.sha256Hex(dto.email + dto.clinica + LocalDateTime.now());
 

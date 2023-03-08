@@ -1,7 +1,7 @@
 package br.vet.certvet.services;
 
-import br.vet.certvet.dto.requests.PasswordRequestDto;
+import br.vet.certvet.dto.requests.PasswordResetEmailRequestDto;
 
 public interface PasswordResetService {
-    void sendPasswordResetEmail(PasswordRequestDto dto);
+    void sendPasswordResetEmail(PasswordResetEmailRequestDto dto);
 }
