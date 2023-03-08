@@ -1,4 +1,4 @@
-package br.vet.certvet.service;
+package br.vet.certvet.services.implementation;
 
 import br.vet.certvet.services.EmailService;
 import br.vet.certvet.services.implementation.GmailEmailServiceImpl;
