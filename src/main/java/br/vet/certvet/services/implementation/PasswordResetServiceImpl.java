@@ -38,7 +38,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
 
         String message = "<h1>Redefinir senha - CertVet</h1>";
         message += "<br/>";
-        message += "<p>Click <a href=\"http://localhost:8080/api/redefinir-senha?t=" + hash + "\">aqui</a> para redefinir a sua senha</p>";
+        message += "<p>Click <a href=\"http://localhost:3000/redefinir-senha?t=" + hash + "\">aqui</a> para redefinir a sua senha</p>";
 
         try {
             this.emailService.sendTextMessage(dto.email, subject, message);
