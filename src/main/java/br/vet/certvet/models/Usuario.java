@@ -86,6 +86,9 @@ public class Usuario implements UserDetails, Fillable<UsuarioRequestDto> {
     @Setter
     private LocalDateTime deletedAt;
 
+    @Setter
+    private String resetPasswordToken;
+
     @NotNull
     @ManyToOne
     @JoinColumn(name = "clinica_id", nullable = false)

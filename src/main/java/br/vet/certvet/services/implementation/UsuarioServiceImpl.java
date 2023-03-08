@@ -77,6 +77,11 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
+    public Usuario edit(Usuario usuario) {
+        return this.usuarioRepository.saveAndFlush(usuario);
+    }
+
+    @Override
     public Usuario edit(UsuarioRequestDto dto, Usuario usuario) {
         usuario.fill(dto);
 

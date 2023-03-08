@@ -21,6 +21,8 @@ public interface UsuarioService {
 
     Usuario create(VeterinarioRequestDto dto, Clinica clinica);
 
+    Usuario edit(Usuario usuario);
+
     Usuario edit(UsuarioRequestDto dto, Usuario usuario);
 
     Usuario edit(FuncionarioRequestDto dto, Usuario usuario);

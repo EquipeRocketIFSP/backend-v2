@@ -2,10 +2,12 @@ package br.vet.certvet.controllers;
 
 import br.vet.certvet.config.security.service.TokenService;
 import br.vet.certvet.dto.requests.LoginRequestDto;
+import br.vet.certvet.dto.requests.PasswordRequestDto;
 import br.vet.certvet.dto.responses.TokenResponseDto;
 import br.vet.certvet.models.Clinica;
 import br.vet.certvet.models.Usuario;
 import br.vet.certvet.services.ClinicaService;
+import br.vet.certvet.services.PasswordResetService;
 import br.vet.certvet.services.UsuarioService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +17,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api")
@@ -33,6 +37,9 @@ public class AuthController {
     @Autowired
     private TokenService tokenService;
 
+    @Autowired
+    private PasswordResetService passwordResetService;
+
     @PostMapping("/auth")
     @SecurityRequirements(value = {})
     public ResponseEntity<TokenResponseDto> authenticate(@Validated @RequestBody LoginRequestDto dto) {
@@ -50,5 +57,12 @@ public class AuthController {
                 .build();
 
         return ResponseEntity.ok(tokenDto);
+    }
+
+    @PostMapping("/esqueci-minha-senha")
+    public ResponseEntity<Void> formPasswordResetRequest(@Valid @RequestBody PasswordRequestDto dto) {
+        this.passwordResetService.sendPasswordResetEmail(dto);
+
+        return ResponseEntity.ok().build();
     }
 }
