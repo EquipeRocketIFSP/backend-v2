@@ -1,6 +1,7 @@
 package br.vet.certvet.services.implementation;
 
 import br.vet.certvet.dto.requests.PasswordResetEmailRequestDto;
+import br.vet.certvet.dto.requests.PasswordResetRequestDto;
 import br.vet.certvet.exceptions.BadGatewayException;
 import br.vet.certvet.models.Clinica;
 import br.vet.certvet.models.Usuario;
@@ -48,5 +49,14 @@ public class PasswordResetServiceImpl implements PasswordResetService {
 
             throw new BadGatewayException("Não foi possivel enviar o e-mail de recuperação");
         }
+    }
+
+    @Override
+    public void resetPassword(PasswordResetRequestDto dto) {
+        Usuario usuario = this.usuarioService.findOne(dto.token);
+        usuario.setPassword(dto.senha);
+        usuario.setResetPasswordToken(null);
+
+        this.usuarioService.edit(usuario);
     }
 }

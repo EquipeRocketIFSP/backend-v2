@@ -33,6 +33,8 @@ public interface UsuarioService {
 
     Usuario findOne(String username, Clinica clinica);
 
+    Usuario findOne(String passwordResetToken);
+
     PaginatedResponse<UsuarioResponseDto> findAll(int page, String url, Clinica clinica);
 
     void delete(Usuario usuario);

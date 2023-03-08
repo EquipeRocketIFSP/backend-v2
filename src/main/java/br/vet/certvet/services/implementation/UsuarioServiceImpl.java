@@ -133,6 +133,16 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
+    public Usuario findOne(String passwordResetToken) {
+        Optional<Usuario> response = this.usuarioRepository.findByResetPasswordToken(passwordResetToken);
+
+        if (response.isEmpty())
+            throw new NotFoundException("Usuário não encontrado");
+
+        return response.get();
+    }
+
+    @Override
     public PaginatedResponse<UsuarioResponseDto> findAll(int page, String url, Clinica clinica) {
         page = Math.max(page, 1);
 
