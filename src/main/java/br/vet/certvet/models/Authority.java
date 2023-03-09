@@ -21,6 +21,7 @@ public class Authority implements GrantedAuthority {
     @Column(nullable = false)
     private Long id;
 
+    @Column(unique = true)
     private String authority;
 
     @ManyToMany(mappedBy = "authorities")

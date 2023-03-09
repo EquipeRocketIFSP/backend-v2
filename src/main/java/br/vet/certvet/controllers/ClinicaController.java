@@ -33,7 +33,7 @@ public class ClinicaController extends BaseController {
     ) {
         Clinica clinica = this.clinicaService.create(dto);
 
-        return new ResponseEntity<>(new ClinicaResponseDto(clinica), HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(new ClinicaResponseDto(clinica), HttpStatus.CREATED);
     }
 
     @PutMapping("/clinica")
