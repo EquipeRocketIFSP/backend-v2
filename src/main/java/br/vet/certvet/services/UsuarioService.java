@@ -21,6 +21,8 @@ public interface UsuarioService {
 
     Usuario create(VeterinarioRequestDto dto, Clinica clinica);
 
+    Usuario edit(Usuario usuario);
+
     Usuario edit(UsuarioRequestDto dto, Usuario usuario);
 
     Usuario edit(FuncionarioRequestDto dto, Usuario usuario);
@@ -30,6 +32,8 @@ public interface UsuarioService {
     Usuario findOne(Long id, Clinica clinica);
 
     Usuario findOne(String username, Clinica clinica);
+
+    Usuario findOne(String passwordResetToken);
 
     PaginatedResponse<UsuarioResponseDto> findAll(int page, String url, Clinica clinica);
 

@@ -17,6 +17,8 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     Optional<Usuario> findByUsername(String username);
 
+    Optional<Usuario> findByResetPasswordToken(String token);
+
     List<Usuario> findAllByUsername(String username);
 
     List<Usuario> findAllByAuthoritiesAndClinica(Pageable pageable, Authority authority, Clinica clinica);

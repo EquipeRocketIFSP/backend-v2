@@ -77,6 +77,11 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
+    public Usuario edit(Usuario usuario) {
+        return this.usuarioRepository.saveAndFlush(usuario);
+    }
+
+    @Override
     public Usuario edit(UsuarioRequestDto dto, Usuario usuario) {
         usuario.fill(dto);
 
@@ -120,6 +125,16 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     public Usuario findOne(String username, Clinica clinica) {
         Optional<Usuario> response = this.usuarioRepository.findByUsernameAndClinica(username, clinica);
+
+        if (response.isEmpty())
+            throw new NotFoundException("Usuário não encontrado");
+
+        return response.get();
+    }
+
+    @Override
+    public Usuario findOne(String passwordResetToken) {
+        Optional<Usuario> response = this.usuarioRepository.findByResetPasswordToken(passwordResetToken);
 
         if (response.isEmpty())
             throw new NotFoundException("Usuário não encontrado");
