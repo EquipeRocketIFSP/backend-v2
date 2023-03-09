@@ -1,6 +1,6 @@
 FROM public.ecr.aws/amazoncorretto/amazoncorretto:17.0.4
 
-ARG WAR_FILE=target/poc*.jar
+ARG WAR_FILE=target/certvet*.jar
 
 ARG PROFILE
 
