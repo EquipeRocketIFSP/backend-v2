@@ -7,6 +7,7 @@ import br.vet.certvet.dto.requests.VeterinarioRequestDto;
 import br.vet.certvet.dto.responses.ClinicasFromUsuarioResponseDto;
 import br.vet.certvet.dto.responses.PaginatedResponse;
 import br.vet.certvet.dto.responses.UsuarioResponseDto;
+import br.vet.certvet.models.Authority;
 import br.vet.certvet.models.Clinica;
 import br.vet.certvet.models.Usuario;
 import br.vet.certvet.services.ClinicaService;
@@ -140,6 +141,14 @@ public class UsuarioController extends BaseController {
                 .toList();
 
         return ResponseEntity.ok(clinicas);
+    }
+
+    @GetMapping("/usuario/autoridades")
+    public ResponseEntity<List<String>> findAuthorities(@RequestHeader(AUTHORIZATION) String token) {
+        Usuario usuario = this.tokenService.getUsuario(token);
+        List<String> authorities = usuario.getAuthorities().stream().map(Authority::getAuthority).toList();
+
+        return ResponseEntity.ok(authorities);
     }
 
     @DeleteMapping({"/funcionario/{id}", "/veterinario/{id}", "/tutor/{id}"})
