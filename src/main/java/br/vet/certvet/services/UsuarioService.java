@@ -1,8 +1,6 @@
 package br.vet.certvet.services;
 
-import br.vet.certvet.dto.requests.FuncionarioRequestDto;
-import br.vet.certvet.dto.requests.UsuarioRequestDto;
-import br.vet.certvet.dto.requests.VeterinarioRequestDto;
+import br.vet.certvet.dto.requests.*;
 import br.vet.certvet.dto.responses.PaginatedResponse;
 import br.vet.certvet.dto.responses.UsuarioResponseDto;
 import br.vet.certvet.models.Authority;
@@ -25,9 +23,9 @@ public interface UsuarioService {
 
     Usuario edit(UsuarioRequestDto dto, Usuario usuario);
 
-    Usuario edit(FuncionarioRequestDto dto, Usuario usuario);
+    Usuario edit(FuncionarioEditRequestDto dto, Usuario usuario);
 
-    Usuario edit(VeterinarioRequestDto dto, Usuario usuario);
+    Usuario edit(VeterinarioEditRequestDto dto, Usuario usuario);
 
     Usuario findOne(Long id, Clinica clinica);
 

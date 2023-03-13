@@ -1,8 +1,6 @@
 package br.vet.certvet.services.implementation;
 
-import br.vet.certvet.dto.requests.FuncionarioRequestDto;
-import br.vet.certvet.dto.requests.UsuarioRequestDto;
-import br.vet.certvet.dto.requests.VeterinarioRequestDto;
+import br.vet.certvet.dto.requests.*;
 import br.vet.certvet.dto.responses.Metadata;
 import br.vet.certvet.dto.responses.PaginatedResponse;
 import br.vet.certvet.dto.responses.UsuarioResponseDto;
@@ -89,7 +87,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public Usuario edit(FuncionarioRequestDto dto, Usuario usuario) {
+    public Usuario edit(FuncionarioEditRequestDto dto, Usuario usuario) {
         Optional<Authority> usuarioAuthority = UsuarioServiceImpl.getUsuarioAuthority(usuario, "FUNCIONARIO");
 
         if (usuarioAuthority.isEmpty())
@@ -101,7 +99,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public Usuario edit(VeterinarioRequestDto dto, Usuario usuario) {
+    public Usuario edit(VeterinarioEditRequestDto dto, Usuario usuario) {
         Optional<Authority> usuarioAuthority = UsuarioServiceImpl.getUsuarioAuthority(usuario, "VETERINARIO");
 
         if (usuarioAuthority.isEmpty())

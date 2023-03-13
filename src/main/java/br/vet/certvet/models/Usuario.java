@@ -1,8 +1,6 @@
 package br.vet.certvet.models;
 
-import br.vet.certvet.dto.requests.FuncionarioRequestDto;
-import br.vet.certvet.dto.requests.UsuarioRequestDto;
-import br.vet.certvet.dto.requests.VeterinarioRequestDto;
+import br.vet.certvet.dto.requests.*;
 import br.vet.certvet.models.contracts.Fillable;
 import lombok.*;
 import org.hibernate.Hibernate;
@@ -124,13 +122,19 @@ public class Usuario implements UserDetails, Fillable<UsuarioRequestDto> {
         this.celular = dto.celular;
         this.telefone = dto.telefone;
         this.crmv = null;
-        this.password = null;
+
+        if (!(dto instanceof FuncionarioEditRequestDto))
+            this.password = null;
 
         if (dto instanceof FuncionarioRequestDto)
             this.setPassword(((FuncionarioRequestDto) dto).senha);
+        else if (dto instanceof FuncionarioEditRequestDto && ((FuncionarioEditRequestDto) dto).senha != null && !((FuncionarioEditRequestDto) dto).senha.isEmpty())
+            this.setPassword(((FuncionarioEditRequestDto) dto).senha);
 
         if (dto instanceof VeterinarioRequestDto)
             this.crmv = ((VeterinarioRequestDto) dto).crmv;
+        else if (dto instanceof VeterinarioEditRequestDto)
+            this.crmv = ((VeterinarioEditRequestDto) dto).crmv;
     }
 
     @Override
