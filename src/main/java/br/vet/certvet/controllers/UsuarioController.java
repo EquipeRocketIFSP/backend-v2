@@ -2,7 +2,6 @@ package br.vet.certvet.controllers;
 
 import br.vet.certvet.config.security.service.TokenService;
 import br.vet.certvet.dto.requests.*;
-import br.vet.certvet.dto.responses.ClinicasFromUsuarioResponseDto;
 import br.vet.certvet.dto.responses.PaginatedResponse;
 import br.vet.certvet.dto.responses.UsuarioResponseDto;
 import br.vet.certvet.dto.responses.VeterinarioResponseDto;
@@ -141,17 +140,6 @@ public class UsuarioController extends BaseController {
         PaginatedResponse<UsuarioResponseDto> response = this.usuarioService.findAll(page, request.getRequestURL().toString(), clinica);
 
         return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/usuario/clinicas")
-    public ResponseEntity<List<ClinicasFromUsuarioResponseDto>> findClinicasFromUsuario(@RequestParam(name = "email") String email) {
-        List<ClinicasFromUsuarioResponseDto> clinicas = this.usuarioService
-                .findClinicasFromUsuario(email)
-                .stream()
-                .map((clinica) -> new ClinicasFromUsuarioResponseDto(clinica))
-                .toList();
-
-        return ResponseEntity.ok(clinicas);
     }
 
     @GetMapping("/usuario/autoridades")
