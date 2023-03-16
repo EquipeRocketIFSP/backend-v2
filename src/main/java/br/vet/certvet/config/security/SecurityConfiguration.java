@@ -16,7 +16,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.*;
 
 @EnableWebSecurity
 @NoArgsConstructor
@@ -58,12 +58,23 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/api/redefinir-senha/*").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/redefinir-senha/**").permitAll()
                 .anyRequest().authenticated()
-                .and().headers().frameOptions().sameOrigin()
-                //.and().authorizeRequests().anyRequest().permitAll() // TODO: Comentar essa linha ao ativar SSL
+//                .and().headers().frameOptions().sameOrigin()
+//                .and().authorizeRequests().anyRequest().permitAll() // TODO: Comentar essa linha ao ativar SSL
                 .and().cors()
                 .and().csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and().addFilterBefore(new TokenAuthenticationFilter(tokenService, repository), UsernamePasswordAuthenticationFilter.class);
+                .and().addFilterBefore(new TokenAuthenticationFilter(tokenService, repository), UsernamePasswordAuthenticationFilter.class)
+                .formLogin()
+                .loginPage("/api/auth").permitAll().successHandler(loginSuccessHandler()).failureHandler(loginFailureHandler())
+                .and().logout().permitAll().logoutSuccessUrl("/api/auth");
+    }
+
+    private AuthenticationSuccessHandler loginSuccessHandler() {
+        return new SimpleUrlAuthenticationSuccessHandler();
+    }
+
+    private AuthenticationFailureHandler loginFailureHandler() {
+        return new SimpleUrlAuthenticationFailureHandler();
     }
 
     @Override

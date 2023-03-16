@@ -1,6 +1,7 @@
 version: '3'
 services:
   back:
+    image: equiperocket/backend-v2_back:latest
     build:
       dockerfile: ./Dockerfile
       args:

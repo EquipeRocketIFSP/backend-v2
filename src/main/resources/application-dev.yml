@@ -52,8 +52,7 @@ spring:
             enable: true
 #    templates: "path"
 server:
-  port:
-    8443
+  port: 80
 #  ssl:
 #    certificate: "classpath:keystore/public.crt"
 #    certificate-private-key: "classpath:keystore/privatekey.pem"
