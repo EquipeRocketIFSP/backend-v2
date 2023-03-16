@@ -180,15 +180,6 @@ public class UsuarioServiceImpl implements UsuarioService {
         return UsuarioServiceImpl.getUsuarioAuthority(usuario, authority);
     }
 
-    @Override
-    public List<Clinica> findClinicasFromUsuario(String email) {
-        return this.usuarioRepository
-                .findAllByUsername(email)
-                .stream()
-                .map(Usuario::getClinica)
-                .toList();
-    }
-
     private Usuario save(Usuario usuario, Clinica clinica) {
         Optional<Usuario> response = this.usuarioRepository.findByUsernameAndClinica(usuario.getUsername(), clinica);
 

@@ -65,6 +65,16 @@ public class ClinicaServiceImpl implements ClinicaService {
     }
 
     @Override
+    public Clinica findOne(String code) {
+        Optional<Clinica> response = this.clinicaRepository.findByCode(code);
+
+        if (response.isEmpty())
+            throw new NotFoundException("Clínica não existe.");
+
+        return response.get();
+    }
+
+    @Override
     public Clinica edit(ClinicaRequestDto dto, Clinica clinica) {
         clinica.fill(dto);
 

@@ -35,7 +35,7 @@ public class AuthenticationService implements UserDetailsService {
             throw new UsernameNotFoundException(NOT_AUTHORIZED);
 
         String email = strArray[0];
-        Optional<Clinica> response = this.clinicaRepository.findById(Long.parseLong(strArray[1]));
+        Optional<Clinica> response = this.clinicaRepository.findByCode(strArray[1]);
 
         if (response.isEmpty())
             throw new UsernameNotFoundException(NOT_AUTHORIZED);
