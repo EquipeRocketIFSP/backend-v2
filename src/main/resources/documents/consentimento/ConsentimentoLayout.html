@@ -122,6 +122,21 @@
         <span>${documento.observacaoTutor}</span>
     </div>
 
+    <div id="causaMortis">
+        <p>
+            Outras informações complementares à provável causa mortis e informação de ter sido feita
+a notificação obrigatória quando for o caso:
+        </p>
+        <span>${documento.causaMortis}</span>
+    </div>
+
+    <div id="orientaDestinoCorpo">
+        <p>
+            Orientações para destinação do corpo animal (aspectos sanitários e ambientais):
+        </p>
+        <span>${documento.orientaDestinoCorpo}</span>
+    </div>
+
     <div id="identifica_responsavel">
         <p>Identificação do(a) responsável pelo animal:</p>
         <p>Nome: ${tutor.nome}</p>
@@ -129,11 +144,23 @@
         <p>Endereço completo: ${tutor.endereco}</p>
     </div>
 
+    <div id="outrasObservacoes">
+        <p>
+            Outras observações:
+        </p>
+        <span>${documento.outrasObservacoes}</span>
+    </div>
+
     <div id="local_data">
         ${cidade}, ${data.dia} de ${data.mes} de ${data.ano}.
     </div>
 
     <div id="assinatura_responsavel">
+        <hr>
+        <p>Assinatura do(a) responsável pelo animal</p>
+    </div>
+
+    <div id="assinatura_vet">
         <hr>
         <p>Assinatura do(a) responsável pelo animal</p>
     </div>
