@@ -19,7 +19,7 @@
     "obito": {
         "cabecalho": true,
         "titulo": "ATESTADO DE ÓBITO",
-        "declara_concentimento": "Atesto para os devidos fins que o animal abaixo identificado veio a óbito na localidade ...............,às ..............., horas do dia (__/__/___), sendo a provável causa mortis ................",
+        "declara_concentimento": "Atesto para os devidos fins que o animal abaixo identificado veio a óbito na localidade ${prontuario.obito.local}, às ${prontuario.obito.horas}, horas do dia (${prontuario.obito.data}), sendo a provável causa mortis ${prontuario.obito.causa}.",
         "identifica_animal": true,
         "declara_ciencia_riscos": false,
         "observacoes_veterinario": false,
@@ -53,7 +53,7 @@
     "terapeutico": {
         "cabecalho": true,
         "titulo": "TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO PARA REALIZAÇÃO DE PROCEDIMENTO TERAPÊUTICO DE RISCO",
-        "declara_concentimento": "Declaro o livre consentimento para a realização do(s) procedimento(s) terapêutico(s) de risco ${prontuario.terapias} no animal abaixo identificado, a ser realizado pelo(a) Médico(a) Veterinário(a) .................. CRMV-...... ",
+        "declara_concentimento": "Declaro o livre consentimento para a realização do(s) procedimento(s) terapêutico(s) de risco ${prontuario.terapias} no animal abaixo identificado, a ser realizado pelo(a) Médico(a) Veterinário(a) ${veterinario.nome} CRMV-${veterinario.crmv}.",
         "identifica_animal": true,
         "declara_ciencia_riscos": "Declaro, ainda, ter sido esclarecido(a) acerca dos possíveis riscos inerentes, durante ou após a realização do(s) procedimento(s) terapêutico(s), estando o referido o(a) profissional isento(a) de quaisquer responsabilidades decorrentes de tais riscos.",
         "observacoes_veterinario": true,
@@ -70,7 +70,7 @@
     "retiraCorpo": {
         "cabecalho": true,
         "titulo": "TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO PARA RETIRADA DE CORPO DE ANIMAL EM ÓBITO",
-        "declara_concentimento": "Declaro para os devidos fins, que, nesta ocasião, retiro o cadáver do animal abaixo identificado, que veio a óbito na localidade .........…..., às .........…..., horas do dia (__/__/___), cujo óbito, provocado pela provável <b>causa mortis</b> ........... foi constatado pelo médico-veterinário que subscreve a presente, e que recebi esclarecimentos quanto à necessidade de dar tratamento respeitoso e destinação ambiental adequada ao cadáver, em respeito às normas ambientais.",
+        "declara_concentimento": "Declaro para os devidos fins, que, nesta ocasião, retiro o cadáver do animal abaixo identificado, que veio a óbito na localidade ${prontuario.obito.local}, às ${prontuario.obito.horas}, horas do dia (${prontuario.obito.data}), cujo óbito, provocado pela provável <b>causa mortis</b> ${prontuario.obito.causa} foi constatado pelo médico-veterinário que subscreve a presente, e que recebi esclarecimentos quanto à necessidade de dar tratamento respeitoso e destinação ambiental adequada ao cadáver, em respeito às normas ambientais.",
         "identifica_animal": true,
         "declara_ciencia_riscos": false,
         "observacoes_veterinario": true,
@@ -87,7 +87,7 @@
     "cirurgia": {
         "cabecalho": true,
         "titulo": "TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO PARA REALIZAÇÃO DE PROCEDIMENTO CIRÚRGICO",
-        "declara_concentimento": "Declaro o livre consentimento para a realização do procedimento cirúrgico de ...............................no animal abaixo identificado, a ser realizado pelo(a) Médico(a) Veterinário(a) .................. CRMV-......",
+        "declara_concentimento": "Declaro o livre consentimento para a realização do procedimento cirúrgico de ${prontuario.cirurgia} no animal abaixo identificado, a ser realizado pelo(a) Médico(a) Veterinário(a) ${veterinario.nome} CRMV-${veterinario.crmv}.",
         "identifica_animal": true,
         "declara_ciencia_riscos": "Declaro, ainda, ter sido esclarecido(a) acerca dos riscos inerentes, durante ou após a realização do procedimento cirúrgico citado, estando o(a) referido(a) profissional isento(a) de quaisquer responsabilidades decorrentes de tais riscos.",
         "observacoes_veterinario": true,
@@ -104,7 +104,7 @@
     "tratamentoClinico": {
         "cabecalho": true,
         "titulo": "TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO PARA REALIZAÇÃO DE INTERNAÇÃO E TRATAMENTO CLÍNICO OU PÓS-CIRÚRGICO",
-        "declara_concentimento": "Declaro o livre consentimento para a realização de internação e tratamento(s) necessário(s) no animal abaixo identificado, a ser realizado pelo(a) Médico(a) Veterinário(a) .................. CRMV-......",
+        "declara_concentimento": "Declaro o livre consentimento para a realização de internação e tratamento(s) necessário(s) no animal abaixo identificado, a ser realizado pelo(a) Médico(a) Veterinário(a) ${veterinario.nome} CRMV-${veterinario.crmv}.",
         "identifica_animal": true,
         "declara_ciencia_riscos": "Declaro, ainda, ter sido esclarecido(a) acerca dos possíveis riscos inerentes à situação clínica do animal, bem como do(s) tratamento(s) proposto(s), estando o(a) referido(a) profissional isento(a) de quaisquer responsabilidades decorrentes de tais riscos.",
         "observacoes_veterinario": true,
@@ -121,9 +121,9 @@
     "anestesia": {
         "cabecalho": true,
         "titulo": "TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO PARA REALIZAÇÃO DE PROCEDIMENTOS ANESTÉSICOS",
-        "declara_concentimento": "Declaro o livre consentimento para a realização do(s) procedimento(s) anestésico(s) necessário(s) no animal abaixo identificado, a ser realizado pelo(a) Médico(a) Veterinário(a) .................. CRMV-...........",
+        "declara_concentimento": "Declaro o livre consentimento para a realização do(s) procedimento(s) anestésico(s) necessário(s) no animal abaixo identificado, a ser realizado pelo(a) Médico(a) Veterinário(a) ${veterinario.nome} CRMV-${veterinario.crmv}.",
         "identifica_animal": true,
-        "declara_ciencia_riscos": "Declaro, ainda, ter sido esclarecido(a) acerca dos possíveis riscos, inerentes ao(s) procedimento(s) proposto(s), estando o(a) referido(a) profissional isento(a) de quaisquer responsabilidades decorrentes de tais riscos. Tipo de procedimento Anestésico indicado:....................................................",
+        "declara_ciencia_riscos": "Declaro, ainda, ter sido esclarecido(a) acerca dos possíveis riscos, inerentes ao(s) procedimento(s) proposto(s), estando o(a) referido(a) profissional isento(a) de quaisquer responsabilidades decorrentes de tais riscos. Tipo de procedimento Anestésico indicado: ${prontuario.anestesia}.",
         "observacoes_veterinario": true,
         "observacoes_responsavel": true,
         "causaMortis": false,
@@ -138,7 +138,7 @@
     "eutanasia": {
         "cabecalho": true,
         "titulo": "TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO PARA REALIZAÇÃO DE EUTANÁSIA",
-        "declara_concentimento": "Declaro estar ciente dos motivos que levam à necessidade de realização da eutanásia, que reconheço que esta é a opção escolhida por mim para cessar definitivamente o sofrimento do animal e, portanto, declaro o livre consentimento para a realização da eutanásia do animal abaixo identificado, a ser realizado pelo(a) Médico(a) Veterinário(a) .................. CRMV-.......... ",
+        "declara_concentimento": "Declaro estar ciente dos motivos que levam à necessidade de realização da eutanásia, que reconheço que esta é a opção escolhida por mim para cessar definitivamente o sofrimento do animal e, portanto, declaro o livre consentimento para a realização da eutanásia do animal abaixo identificado, a ser realizado pelo(a) Médico(a) Veterinário(a) ${veterinario.nome} CRMV-${veterinario.crmv}",
         "identifica_animal": true,
         "declara_ciencia_riscos": "Declaro, ainda, que fui devidamente esclarecido(a) do método que será utilizado, assim como de que este é um processo irreversível.",
         "observacoes_veterinario": true,
