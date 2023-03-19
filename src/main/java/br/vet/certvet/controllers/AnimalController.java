@@ -3,6 +3,7 @@ package br.vet.certvet.controllers;
 import br.vet.certvet.config.security.service.TokenService;
 import br.vet.certvet.dto.requests.AnimalRequestDto;
 import br.vet.certvet.dto.responses.AnimalResponseDto;
+import br.vet.certvet.dto.responses.PaginatedResponse;
 import br.vet.certvet.models.Animal;
 import br.vet.certvet.models.Clinica;
 import br.vet.certvet.models.Usuario;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -40,5 +42,21 @@ public class AnimalController extends BaseController {
         Animal animal = this.animalService.create(dto, tutores);
 
         return new ResponseEntity<>(new AnimalResponseDto(animal), HttpStatus.CREATED);
+    }
+
+    @GetMapping("tutor/{tutor_id}/animal")
+    public ResponseEntity<PaginatedResponse> findAll(
+            @RequestHeader(AUTHORIZATION) String token,
+            @PathVariable("tutor_id") Long tutorId,
+            @RequestParam(name = "pagina", defaultValue = "1") int page,
+            @RequestParam(name = "buscar", defaultValue = "") String search,
+            HttpServletRequest request
+    ) {
+        Clinica clinica = this.tokenService.getClinica(token);
+        Usuario tutor = this.usuarioService.findOne(tutorId, clinica);
+
+        PaginatedResponse<AnimalResponseDto> response = this.animalService.findAll(page, search, request.getRequestURL().toString(), tutor);
+
+        return ResponseEntity.ok(response);
     }
 }
