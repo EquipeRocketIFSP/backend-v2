@@ -7,7 +7,10 @@ import br.vet.certvet.models.Usuario;
 import java.util.stream.Collectors;
 
 public class AnimalResponseDto extends AnimalRequestDto {
+    public Long id;
+
     public AnimalResponseDto(Animal animal) {
+        this.id = animal.getId();
         this.nome = animal.getNome();
         this.especie = animal.getEspecie();
         this.idade = animal.getIdade();
