@@ -32,7 +32,7 @@ public interface UsuarioService {
 
     Usuario findOne(String passwordResetToken);
 
-    PaginatedResponse<UsuarioResponseDto> findAll(int page, String url, Clinica clinica);
+    PaginatedResponse<UsuarioResponseDto> findAll(int page, String search, String url, Clinica clinica);
 
     void delete(Usuario usuario);
 
