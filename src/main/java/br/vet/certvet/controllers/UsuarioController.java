@@ -134,10 +134,11 @@ public class UsuarioController extends BaseController {
     public ResponseEntity<PaginatedResponse<UsuarioResponseDto>> findAllVeterinarios(
             @RequestHeader(AUTHORIZATION) String token,
             @RequestParam(name = "pagina", defaultValue = "1") int page,
+            @RequestParam(name = "buscar", defaultValue = "") String search,
             HttpServletRequest request
     ) {
         Clinica clinica = this.tokenService.getClinica(token);
-        PaginatedResponse<UsuarioResponseDto> response = this.usuarioService.findAll(page, request.getRequestURL().toString(), clinica);
+        PaginatedResponse<UsuarioResponseDto> response = this.usuarioService.findAll(page, search, request.getRequestURL().toString(), clinica);
 
         return ResponseEntity.ok(response);
     }

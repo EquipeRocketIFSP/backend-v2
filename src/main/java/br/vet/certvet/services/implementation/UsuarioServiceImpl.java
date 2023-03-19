@@ -141,20 +141,24 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public PaginatedResponse<UsuarioResponseDto> findAll(int page, String url, Clinica clinica) {
+    public PaginatedResponse<UsuarioResponseDto> findAll(int page, String search, String url, Clinica clinica) {
         page = Math.max(page, 1);
 
         String[] pathnames = url.split("/");
         String path = pathnames[pathnames.length - 1].toUpperCase();
         Authority authority = this.authorityRepository.findByAuthority(path);
-        Long total = this.usuarioRepository.countByAuthoritiesAndClinica(authority, clinica);
+        Long total = search.trim().isEmpty() ?
+                this.usuarioRepository.countByAuthoritiesAndClinica(authority, clinica) :
+                this.usuarioRepository.countByNomeContainingAndAuthoritiesAndClinica(search, authority, clinica);
 
         Pageable pageable = PageRequest.of(page - 1, UsuarioServiceImpl.RESPONSE_LIMIT);
         Metadata meta = new Metadata(url, page, UsuarioServiceImpl.RESPONSE_LIMIT, total);
 
-        List<UsuarioResponseDto> usuariosResponseDtos = this.usuarioRepository
-                .findAllByAuthoritiesAndClinica(pageable, authority, clinica)
-                .stream()
+        List<Usuario> usuarios = search.trim().isEmpty() ?
+                this.usuarioRepository.findAllByAuthoritiesAndClinica(pageable, authority, clinica) :
+                this.usuarioRepository.findAllByNomeContainingAndAuthoritiesAndClinica(pageable, search, authority, clinica);
+
+        List<UsuarioResponseDto> usuariosResponseDtos = usuarios.stream()
                 .map((usuario) -> new UsuarioResponseDto(usuario))
                 .toList();
 
