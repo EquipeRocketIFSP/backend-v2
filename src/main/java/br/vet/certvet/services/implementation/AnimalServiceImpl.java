@@ -4,8 +4,10 @@ import br.vet.certvet.dto.requests.AnimalRequestDto;
 import br.vet.certvet.dto.responses.AnimalResponseDto;
 import br.vet.certvet.dto.responses.Metadata;
 import br.vet.certvet.dto.responses.PaginatedResponse;
+import br.vet.certvet.exceptions.ForbiddenException;
 import br.vet.certvet.exceptions.NotFoundException;
 import br.vet.certvet.models.Animal;
+import br.vet.certvet.models.Authority;
 import br.vet.certvet.models.Usuario;
 import br.vet.certvet.repositories.AnimalRepository;
 import br.vet.certvet.services.AnimalService;
@@ -30,6 +32,13 @@ public class AnimalServiceImpl implements AnimalService {
 
     @Override
     public Animal create(AnimalRequestDto dto, List<Usuario> tutores) {
+        tutores.forEach((tutor) -> {
+            Optional<Authority> response = this.usuarioService.findUsuarioAuthority(tutor, "TUTOR");
+
+            if (response.isEmpty())
+                throw new ForbiddenException("Um dos usuários não é um tutor");
+        });
+
         Animal animal = new Animal(dto);
         animal.getTutores().addAll(tutores);
 
@@ -66,6 +75,6 @@ public class AnimalServiceImpl implements AnimalService {
                 .map(animal -> new AnimalResponseDto(animal))
                 .toList();
 
-        return new PaginatedResponse<>(metadata,animalResponseDtos);
+        return new PaginatedResponse<>(metadata, animalResponseDtos);
     }
 }
