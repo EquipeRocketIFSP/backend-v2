@@ -45,6 +45,13 @@ public class AnimalController extends BaseController {
         return new ResponseEntity<>(new AnimalResponseDto(animal), HttpStatus.CREATED);
     }
 
+    @GetMapping("/animal/{id}")
+    public ResponseEntity<AnimalResponseDto> findOne(@PathVariable("id") Long id) {
+        Animal animal = this.animalService.findOne(id);
+
+        return ResponseEntity.ok(new AnimalResponseDto(animal));
+    }
+
     @GetMapping("tutor/{tutor_id}/animal")
     public ResponseEntity<PaginatedResponse> findAll(
             @RequestHeader(AUTHORIZATION) String token,
