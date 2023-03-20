@@ -1,8 +1,6 @@
 package br.vet.certvet.services;
 
-import br.vet.certvet.dto.requests.FuncionarioRequestDto;
-import br.vet.certvet.dto.requests.UsuarioRequestDto;
-import br.vet.certvet.dto.requests.VeterinarioRequestDto;
+import br.vet.certvet.dto.requests.*;
 import br.vet.certvet.dto.responses.PaginatedResponse;
 import br.vet.certvet.dto.responses.UsuarioResponseDto;
 import br.vet.certvet.models.Authority;
@@ -10,7 +8,6 @@ import br.vet.certvet.models.Clinica;
 import br.vet.certvet.models.Usuario;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -25,9 +22,9 @@ public interface UsuarioService {
 
     Usuario edit(UsuarioRequestDto dto, Usuario usuario);
 
-    Usuario edit(FuncionarioRequestDto dto, Usuario usuario);
+    Usuario edit(FuncionarioEditRequestDto dto, Usuario usuario);
 
-    Usuario edit(VeterinarioRequestDto dto, Usuario usuario);
+    Usuario edit(VeterinarioEditRequestDto dto, Usuario usuario);
 
     Usuario findOne(Long id, Clinica clinica);
 
@@ -35,13 +32,11 @@ public interface UsuarioService {
 
     Usuario findOne(String passwordResetToken);
 
-    PaginatedResponse<UsuarioResponseDto> findAll(int page, String url, Clinica clinica);
+    PaginatedResponse<UsuarioResponseDto> findAll(int page, String search, String url, Clinica clinica);
 
     void delete(Usuario usuario);
 
     Usuario recover(Usuario usuario);
 
     Optional<Authority> findUsuarioAuthority(Usuario usuario, String authority);
-
-    List<Clinica> findClinicasFromUsuario(String email);
 }

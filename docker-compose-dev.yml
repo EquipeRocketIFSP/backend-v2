@@ -11,7 +11,7 @@ services:
       - PROFILE=dev
       - DB_PASSWORD=kASe1QkIm5xQUZMF7cXo5000
       - DB_USER=admin
-      - MAIL_PASS=certvet2023
-      - MAIL_USR=certvet.ifsp@gmail.com
+      - MAIL_PASS=yvayjysaldpubihr
+      - MAIL_USR=cartvet.ifsp@gmail.com
       - DEFAULT_PDF_PASS=86E9tj9Z0ip4OLN
       - AUTH_USER=admin

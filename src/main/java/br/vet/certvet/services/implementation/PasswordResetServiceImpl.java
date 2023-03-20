@@ -33,13 +33,14 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         final String subject = "CertVet - Redefinição de Senha";
         final String hash = DigestUtils.sha256Hex(dto.email + dto.clinica + LocalDateTime.now());
 
-        Clinica clinica = this.clinicaService.findById(dto.clinica);
+        Clinica clinica = this.clinicaService.findOne(dto.clinica);
         Usuario usuario = this.usuarioService.findOne(dto.email, clinica);
         usuario.setResetPasswordToken(hash);
 
-        String message = "<h1>Redefinir senha - CertVet</h1>";
-        message += "<br/>";
-        message += "<p>Click <a href=\"http://localhost:3000/redefinir-senha?t=" + hash + "\">aqui</a> para redefinir a sua senha</p>";
+        String message = "<h1>Redefinir senha - CertVet</h1>" +
+                "<br/>" +
+                "<p>Click <a href=\"http://localhost:3000/redefinir-senha?t=" + hash + "\">aqui</a> para redefinir a sua senha</p>" +
+                "<b>Aviso: Esse link pode ser utilizado apenas uma vez.</b>";
 
         try {
             this.emailService.sendTextMessage(dto.email, subject, message);
