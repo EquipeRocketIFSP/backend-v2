@@ -65,17 +65,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().addFilterBefore(new TokenAuthenticationFilter(tokenService, repository), UsernamePasswordAuthenticationFilter.class)
                 .formLogin()
-                .loginPage("/api/auth").permitAll().successHandler(loginSuccessHandler()).failureHandler(loginFailureHandler())
-                .and().logout().permitAll().logoutSuccessUrl("/api/auth");
+//                .loginPage("/api/auth").permitAll().successHandler(loginSuccessHandler()).failureHandler(loginFailureHandler()).and()
+                .and().addFilterBefore(new TokenAuthenticationFilter(tokenService, repository), UsernamePasswordAuthenticationFilter.class)
+                .logout().permitAll().logoutSuccessUrl("/api/auth");
     }
-
-    private AuthenticationSuccessHandler loginSuccessHandler() {
-        return new SimpleUrlAuthenticationSuccessHandler();
-    }
-
-    private AuthenticationFailureHandler loginFailureHandler() {
-        return new SimpleUrlAuthenticationFailureHandler();
-    }
+//
+//    private AuthenticationSuccessHandler loginSuccessHandler() {
+//        return new SimpleUrlAuthenticationSuccessHandler();
+//    }
+//
+//    private AuthenticationFailureHandler loginFailureHandler() {
+//        return new SimpleUrlAuthenticationFailureHandler();
+//    }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
