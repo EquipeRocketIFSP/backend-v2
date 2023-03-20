@@ -2,12 +2,13 @@ package br.vet.certvet.dto.responses;
 
 import br.vet.certvet.dto.requests.AnimalRequestDto;
 import br.vet.certvet.models.Animal;
-import br.vet.certvet.models.Usuario;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class AnimalResponseDto extends AnimalRequestDto {
     public Long id;
+    public List<UsuarioResponseDto> tutores;
 
     public AnimalResponseDto(Animal animal) {
         this.id = animal.getId();
@@ -18,7 +19,7 @@ public class AnimalResponseDto extends AnimalRequestDto {
         this.raca = animal.getRaca();
         this.sexo = String.valueOf(animal.getSexo());
         this.tutores = animal.getTutores().stream()
-                .map(Usuario::getId)
+                .map((tutor) -> new UsuarioResponseDto(tutor))
                 .collect(Collectors.toList());
     }
 }
