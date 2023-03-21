@@ -1,6 +1,7 @@
 version: '3'
 services:
   back:
+    image: equiperocket/backend-v2_back:latest
     build:
       dockerfile: ./Dockerfile
       args:
@@ -12,7 +13,7 @@ services:
         - MAIL_PASS=yvayjysaldpubihr
         - MAIL_USR=cartvet.ifsp@gmail.com
     ports:
-      - '8443:8443'
+      - '80:80'
       - '5000:5000'
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3306/certvet?useUnicode=true&characterEncoding=utf8&useSSL=true&allowPublicKeyRetrieval=true
