@@ -16,7 +16,7 @@ import java.util.Optional;
 @RequestMapping("/api/prontuario")
 public class ProntuarioController extends BaseController {
 
-    @Autowired
+    /*@Autowired
     private ProntuarioService prontuarioService;
     @Autowired
     private PdfService pdfService;
@@ -42,7 +42,7 @@ public class ProntuarioController extends BaseController {
         return prontuario.isPresent()
                 ? ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF).body(pdfService.retrieveFromRepository(prontuario.get()))
                 : ResponseEntity.notFound().build();
-    }
+    }*/
 
 
 }
