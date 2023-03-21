@@ -10,9 +10,9 @@ public class AnimalRequestDto {
     @NotEmpty(message = "Nome não pode ser vazio")
     public String nome;
 
-    @NotNull(message = "Idade não pode ser vazio")
-    @Positive(message = "Idade não pode ser negativo")
-    public int idade;
+    @NotNull(message = "Ano de nascimento não pode ser vazio")
+    @Positive(message = "Ano de nascimento não pode ser negativo")
+    public int ano_nascimento;
 
     @NotNull(message = "Peso não pode ser vazio")
     @Positive(message = "Peso não pode ser negativo")

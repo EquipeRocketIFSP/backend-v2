@@ -33,7 +33,7 @@ public class Animal implements Fillable<AnimalRequestDto> {
 
     @Setter
     @Column(nullable = false)
-    private int idade;
+    private int anoNascimento;
 
     @Setter
     @Column(nullable = false)
@@ -115,7 +115,7 @@ public class Animal implements Fillable<AnimalRequestDto> {
         this.nome = dto.nome;
         this.especie = dto.especie;
         this.sexo = SexoAnimal.valueOf(dto.sexo);
-        this.idade = dto.idade;
+        this.anoNascimento = dto.ano_nascimento;
         this.peso = dto.peso;
         this.pelagem = dto.pelagem;
         this.raca = dto.raca;

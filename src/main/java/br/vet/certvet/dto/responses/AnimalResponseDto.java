@@ -14,7 +14,7 @@ public class AnimalResponseDto extends AnimalRequestDto {
         this.id = animal.getId();
         this.nome = animal.getNome();
         this.especie = animal.getEspecie();
-        this.idade = animal.getIdade();
+        this.ano_nascimento = animal.getAnoNascimento();
         this.peso = animal.getPeso();
         this.pelagem = animal.getPelagem();
         this.raca = animal.getRaca();
