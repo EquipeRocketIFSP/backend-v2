@@ -5,8 +5,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import javax.validation.constraints.NotEmpty;
 
 public class LoginRequestDto {
-    @NotEmpty(message = "Insira o CNPJ da clínica")
-    public String cnpj_clinica;
+    @NotEmpty(message = "Insira o apelido da clínica")
+    public String clinica;
 
     @NotEmpty(message = "Insira um e-mail válido")
     public String email;
@@ -15,6 +15,6 @@ public class LoginRequestDto {
     public String senha;
 
     public UsernamePasswordAuthenticationToken convert() {
-        return new UsernamePasswordAuthenticationToken(email, senha);
+        return new UsernamePasswordAuthenticationToken(this.email + " - " + this.clinica, this.senha);
     }
 }

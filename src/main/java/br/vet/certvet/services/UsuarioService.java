@@ -1,8 +1,6 @@
 package br.vet.certvet.services;
 
-import br.vet.certvet.dto.requests.FuncionarioRequestDto;
-import br.vet.certvet.dto.requests.UsuarioRequestDto;
-import br.vet.certvet.dto.requests.VeterinarioRequestDto;
+import br.vet.certvet.dto.requests.*;
 import br.vet.certvet.dto.responses.PaginatedResponse;
 import br.vet.certvet.dto.responses.UsuarioResponseDto;
 import br.vet.certvet.models.Authority;
@@ -20,17 +18,21 @@ public interface UsuarioService {
 
     Usuario create(VeterinarioRequestDto dto, Clinica clinica);
 
+    Usuario edit(Usuario usuario);
+
     Usuario edit(UsuarioRequestDto dto, Usuario usuario);
 
-    Usuario edit(FuncionarioRequestDto dto, Usuario usuario);
+    Usuario edit(FuncionarioEditRequestDto dto, Usuario usuario);
 
-    Usuario edit(VeterinarioRequestDto dto, Usuario usuario);
+    Usuario edit(VeterinarioEditRequestDto dto, Usuario usuario);
 
     Usuario findOne(Long id, Clinica clinica);
 
     Usuario findOne(String username, Clinica clinica);
 
-    PaginatedResponse<UsuarioResponseDto> findAll(int page, String url, Clinica clinica);
+    Usuario findOne(String passwordResetToken);
+
+    PaginatedResponse<UsuarioResponseDto> findAll(int page, String search, String url, Clinica clinica);
 
     void delete(Usuario usuario);
 

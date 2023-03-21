@@ -18,9 +18,8 @@ public class ClinicaInicialRequestDto {
     public String clinica_razao_social;
 
     @NotEmpty(message = "CNPJ da clínica não pode ser vazio")
-    @Size(max = 255, message = "CNPJ da clínica não pode ser maior que 255 caracteres")
-//    @Pattern(regexp = "\\d{2}\\.\\d{3}\\.\\d{3}\\/\\d{4}-\\d{2}", message = "O CNPJ da clínica deve manter o padrão 99.999.999/9999-99")
-    @CNPJ(message = "O CNPJ da clínica deve manter o padrão 99.999.999/9999-99")
+    @Size(max = 18, message = "CNPJ da clínica não pode ser maior que 18 caracteres")
+    @CNPJ(message = "Insira um CNPJ válido")
     public String clinica_cnpj;
 
     @NotEmpty(message = "CNAE da clínica não pode ser vazio")
@@ -72,8 +71,7 @@ public class ClinicaInicialRequestDto {
 
     @NotEmpty(message = "CPF do dono não pode ser vazio")
     @Size(max = 14, message = "CPF do dono da clínica não pode ser maior que 14 caracteres")
-//    @Pattern(regexp = "\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}", message = "O CPF do dono deve manter o padrão 999.999.999-99")
-    @CPF(message = "O CPF do dono deve manter o padrão 999.999.999-99")
+    @CPF(message = "Insira um CPF válido")
     public String dono_cpf;
 
     @NotEmpty(message = "RG do dono não pode ser vazio")
@@ -110,7 +108,7 @@ public class ClinicaInicialRequestDto {
     @Pattern(regexp = "\\(\\d{2}\\) \\d{5}-\\d{4}", message = "O Celular do dono deve manter o padrão (99) 99999-9999")
     public String dono_celular;
 
-    @Size(max = 15, message = "Telefone do dono da clínica não pode ser maior que 14 caracteres")
+    @Size(max = 14, message = "Telefone do dono da clínica não pode ser maior que 14 caracteres")
     @Pattern(regexp = "\\(\\d{2}\\) \\d{4,5}-\\d{4}", message = "O Telefone do dono deve manter o padrão (99) 9999-9999")
     public String dono_telefone;
 
@@ -123,63 +121,6 @@ public class ClinicaInicialRequestDto {
     @Size(max = 255, message = "Senha do dono da clínica não pode ser maior que 255 caracteres")
     public String dono_senha;
 
-    @NotEmpty(message = "Nome do responsável técnico da clínica não pode ser vazio")
-    @Size(max = 255, message = "Nome do responsável técnico não pode ser maior que 255 caracteres")
-    public String tecnico_nome;
-
-    @NotEmpty(message = "CPF do responsável técnico da clínica não pode ser vazio")
-    @Size(max = 14, message = "CPF do responsável técnico não pode ser maior que 14 caracteres")
-//    @Pattern(regexp = "\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}", message = "O CPF do responsável técnico deve manter o padrão 999.999.999-99")
-    @CPF(message = "O CPF do responsável técnico deve manter o padrão 999.999.999-99")
-    public String tecnico_cpf;
-
-    @NotEmpty(message = "RG do responsável técnico da clínica não pode ser vazio")
-    @Size(max = 255, message = "RG do responsável técnico não pode ser maior que 255 caracteres")
-    public String tecnico_rg;
-
-    @NotEmpty(message = "CEP do responsável técnico da clínica não pode ser vazio")
-    @Size(max = 9, message = "CEP do responsável técnico não pode ser maior que 9 caracteres")
-    @Pattern(regexp = "\\d{5}-\\d{3}", message = "O CEP do responsável técnico deve manter o padrão 99999-999.")
-    public String tecnico_cep;
-
-    @NotEmpty(message = "LogradouroNúmero do responsável técnico da clínica não pode ser vazio")
-    @Size(max = 255, message = "LogradouroNúmero do responsável técnico não pode ser maior que 255 caracteres")
-    public String tecnico_logradouro;
-
-    @NotEmpty(message = "Número do responsável técnico da clínica não pode ser vazio")
-    @Size(max = 6, message = "Número do responsável técnico não pode ser maior que 6 caracteres")
-    public String tecnico_numero;
-
-    @NotEmpty(message = "Bairro do responsável técnico da clínica não pode ser vazio")
-    @Size(max = 255, message = "Bairro do responsável técnico não pode ser maior que 255 caracteres")
-    public String tecnico_bairro;
-
-    @NotEmpty(message = "Cidade do responsável técnico da clínica não pode ser vazio")
-    @Size(max = 255, message = "Cidade do responsável técnico não pode ser maior que 255 caracteres")
-    public String tecnico_cidade;
-
-    @NotEmpty(message = "Estado do responsável técnico da clínica não pode ser vazio")
-    @Size(max = 2, message = "Estado do responsável técnico não pode ser maior que 2 caracteres")
-    public String tecnico_estado;
-
-    @NotEmpty(message = "Celular do responsável técnico da clínica não pode ser vazio")
-    @Size(max = 15, message = "Celular do responsável técnico não pode ser maior que 15 caracteres")
-    @Pattern(regexp = "\\(\\d{2}\\) \\d{5}-\\d{4}", message = "O Celular da técnico deve manter o padrão (99) 99999-9999")
-    public String tecnico_celular;
-
-    @Size(max = 15, message = "Telefone do responsável técnico não pode ser maior que 14 caracteres")
-    @Pattern(regexp = "\\(\\d{2}\\) \\d{4,5}-\\d{4}", message = "O Telefone da técnico deve manter o padrão (99) 9999-9999")
-    public String tecnico_telefone;
-
-    @NotEmpty(message = "E-mail do responsável técnico da clínica não pode ser vazio")
-    @Size(max = 255, message = "E-mail do responsável técnico não pode ser maior que 255 caracteres")
-    @Email(message = "Insira um e-mail válido")
-    public String tecnico_email;
-
-    @NotEmpty(message = "Senha do responsável técnico da clínica não pode ser vazio")
-    @Size(max = 255, message = "Senha do responsável técnico não pode ser maior que 255 caracteres")
-    public String tecnico_senha;
-
-    @NotEmpty(message = "CRMV não pode estar vazio")
-    public String tecnico_crmv;
+    @Size(max = 255, message = "CRMV não pode ser maior que 255 caracteres")
+    public String dono_crmv;
 }

@@ -17,6 +17,7 @@ public class ClinicaResponseDto {
     public String celular;
     public String telefone;
     public String email;
+    public String code;
 
     public ClinicaResponseDto(Clinica clinica) {
         this.id = clinica.getId();
@@ -33,5 +34,6 @@ public class ClinicaResponseDto {
         this.celular = clinica.getCelular();
         this.telefone = clinica.getTelefone();
         this.cep = clinica.getCep();
+        this.code = clinica.getCode();
     }
 }

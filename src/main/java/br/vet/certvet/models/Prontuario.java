@@ -110,6 +110,10 @@ public class Prontuario {
 
     private Usuario tutor;
 
+    @OneToMany(mappedBy = "prontuario")
+    @ToString.Exclude
+    private List<Documento> documentos;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

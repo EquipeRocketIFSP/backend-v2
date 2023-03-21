@@ -4,6 +4,7 @@ import br.vet.certvet.dto.requests.ClinicaInicialRequestDto;
 import br.vet.certvet.dto.requests.ClinicaRequestDto;
 import br.vet.certvet.models.contracts.Fillable;
 import lombok.*;
+import net.bytebuddy.utility.RandomString;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
@@ -32,7 +33,7 @@ public class Clinica implements Fillable<ClinicaRequestDto> {
     private String razaoSocial;
 
     @Setter
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, length = 18)
     public String cnpj;
 
     @Setter
@@ -40,7 +41,7 @@ public class Clinica implements Fillable<ClinicaRequestDto> {
     public String cnae;
 
     @Setter
-    @Column(nullable = false)
+    @Column(nullable = false, length = 9)
     public String cep;
 
     @Setter
@@ -48,7 +49,7 @@ public class Clinica implements Fillable<ClinicaRequestDto> {
     public String logradouro;
 
     @Setter
-    @Column(nullable = false)
+    @Column(nullable = false, length = 6)
     public String numero;
 
     @Setter
@@ -60,20 +61,23 @@ public class Clinica implements Fillable<ClinicaRequestDto> {
     public String cidade;
 
     @Setter
-    @Column(nullable = false)
+    @Column(nullable = false, length = 2)
     public String estado;
 
     @Setter
-    @Column(nullable = false)
+    @Column(nullable = false, length = 15)
     public String celular;
 
     @Setter
-    @Column(nullable = false)
+    @Column(length = 14)
     public String telefone;
 
     @Setter
     @Column(nullable = false)
     public String email;
+
+    @Column(nullable = false)
+    public String code;
 
     @OneToMany
     @JoinTable(
@@ -83,6 +87,10 @@ public class Clinica implements Fillable<ClinicaRequestDto> {
     )
     @ToString.Exclude
     private List<Usuario> usuarios;
+
+    @Setter
+    @OneToOne
+    private Usuario responsavelTecnico;
 
     @OneToMany
     @ToString.Exclude
@@ -110,6 +118,8 @@ public class Clinica implements Fillable<ClinicaRequestDto> {
         this.email = dto.clinica_email;
         this.celular = dto.clinica_celular;
         this.telefone = dto.clinica_telefone;
+
+        this.code = RandomString.hashOf(this.cnpj);
     }
 
     @Override
