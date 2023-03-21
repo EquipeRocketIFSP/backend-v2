@@ -4,6 +4,7 @@ import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.Objects;
 
 @Table(name = "MedicamentoEstoque")
@@ -20,7 +21,7 @@ public class Estoque {
     @Column(nullable = false)
     private Long id;
 
-    private int quantidade;
+    private BigDecimal quantidade;
     private String medida;
 
     @ManyToOne

@@ -106,6 +106,9 @@ public class Prontuario {
     @OneToMany(mappedBy = "prontuario")
     @ToString.Exclude
     private List<Exame> exames;
+    private String codigo;
+
+    private Usuario tutor;
 
     @OneToMany(mappedBy = "prontuario")
     @ToString.Exclude
@@ -123,4 +126,9 @@ public class Prontuario {
     public int hashCode() {
         return getClass().hashCode();
     }
+
+    public String getCodigo() {
+        return this.codigo;
+    }
+
 }

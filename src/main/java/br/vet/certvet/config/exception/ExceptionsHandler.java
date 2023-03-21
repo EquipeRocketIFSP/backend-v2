@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -29,9 +30,9 @@ public class ExceptionsHandler {
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(NotFoundException.class)
+    @ExceptionHandler({NotFoundException.class, EntityNotFoundException.class})
     public ResponseEntity<String> handleNotFound(RuntimeException exception) {
-        return new ResponseEntity<String>(exception.getLocalizedMessage(), HttpStatus.NOT_FOUND);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getLocalizedMessage());
     }
 
     @ResponseStatus(HttpStatus.CONFLICT)

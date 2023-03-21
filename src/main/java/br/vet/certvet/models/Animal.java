@@ -50,6 +50,8 @@ public class Animal {
     @Column(nullable = false)
     private SexoAnimal sexo;
 
+    private String formaIdentificacao;
+
     @OneToMany(mappedBy = "id")
     @ToString.Exclude
     private List<ParentescoAnimal> parentescos;
@@ -112,4 +114,5 @@ public class Animal {
         this.tutores = new ArrayList<>();
         this.parentescos = new ArrayList<>();
     }
+
 }
