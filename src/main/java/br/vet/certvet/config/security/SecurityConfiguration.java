@@ -66,8 +66,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and().addFilterBefore(new TokenAuthenticationFilter(tokenService, repository), UsernamePasswordAuthenticationFilter.class)
                 .formLogin()
 //                .loginPage("/api/auth").permitAll().successHandler(loginSuccessHandler()).failureHandler(loginFailureHandler()).and()
-                .and().addFilterBefore(new TokenAuthenticationFilter(tokenService, repository), UsernamePasswordAuthenticationFilter.class)
-                .logout().permitAll().logoutSuccessUrl("/api/auth");
+//                .logout().permitAll().logoutSuccessUrl("/api/auth")
+                ;
     }
 //
 //    private AuthenticationSuccessHandler loginSuccessHandler() {
