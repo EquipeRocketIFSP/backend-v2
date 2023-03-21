@@ -1,5 +1,6 @@
 package br.vet.certvet.config.exception;
 
+import br.vet.certvet.exceptions.BadGatewayException;
 import br.vet.certvet.exceptions.ConflictException;
 import br.vet.certvet.exceptions.ForbiddenException;
 import br.vet.certvet.exceptions.NotFoundException;
@@ -50,5 +51,11 @@ public class ExceptionsHandler {
     @ExceptionHandler(ForbiddenException.class)
     public ResponseEntity<String> handleForbidden(RuntimeException exception) {
         return new ResponseEntity<String>(exception.getLocalizedMessage(), HttpStatus.FORBIDDEN);
+    }
+
+    @ResponseStatus(HttpStatus.BAD_GATEWAY)
+    @ExceptionHandler(BadGatewayException.class)
+    public ResponseEntity<String> handleBadGateway(RuntimeException exception) {
+        return new ResponseEntity<String>(exception.getLocalizedMessage(), HttpStatus.BAD_GATEWAY);
     }
 }

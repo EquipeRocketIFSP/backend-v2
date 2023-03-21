@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -25,12 +24,15 @@ public class GmailEmailServiceImpl implements EmailService {
     private JavaMailSender emailSender;
 
     @Override
-    public void sendTextMessage(String to, String subject, String text) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(sender);
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(text);
+    public void sendTextMessage(String to, String subject, String text) throws MessagingException {
+        MimeMessage message = emailSender.createMimeMessage();
+
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+        helper.setFrom(sender);
+        helper.setTo(to);
+        helper.setSubject(subject);
+        helper.setText(text, true);
+
         emailSender.send(message);
     }
 
@@ -43,7 +45,7 @@ public class GmailEmailServiceImpl implements EmailService {
         helper.setFrom(sender);
         helper.setTo(to);
         helper.setSubject(subject);
-        helper.setText(text);
+        helper.setText(text, true);
         helper.addAttachment(attachmentName, new FileSystemResource(new File(pathToAttachment)));
 
         emailSender.send(message);

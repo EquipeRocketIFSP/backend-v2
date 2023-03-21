@@ -1,0 +1,18 @@
+version: '3'
+services:
+  back:
+    image: "equiperocket/backend-v2_back:latest"
+    ports:
+      - '8080:8080'
+      - '8443:8443'
+      - '5000:5000'
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://poc.cy57hfox1fy1.us-east-1.rds.amazonaws.com:3306/certvet?useUnicode=true&characterEncoding=utf8&useSSL=true&allowPublicKeyRetrieval=true
+      - ARGS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5000 -Xmx1G -Xms128m -XX:MaxMetaspaceSize=128m
+      - PROFILE=dev
+      - DB_PASSWORD=kASe1QkIm5xQUZMF7cXo
+      - DB_USER=admin
+      - MAIL_PASS=yvayjysaldpubihr
+      - MAIL_USR=cartvet.ifsp@gmail.com
+      - DEFAULT_PDF_PASS=86E9tj9Z0ip4OLN
+      - AUTH_USER=admin

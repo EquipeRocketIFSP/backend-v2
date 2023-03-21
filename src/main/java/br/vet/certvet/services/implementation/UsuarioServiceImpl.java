@@ -1,8 +1,6 @@
 package br.vet.certvet.services.implementation;
 
-import br.vet.certvet.dto.requests.FuncionarioRequestDto;
-import br.vet.certvet.dto.requests.UsuarioRequestDto;
-import br.vet.certvet.dto.requests.VeterinarioRequestDto;
+import br.vet.certvet.dto.requests.*;
 import br.vet.certvet.dto.responses.Metadata;
 import br.vet.certvet.dto.responses.PaginatedResponse;
 import br.vet.certvet.dto.responses.UsuarioResponseDto;
@@ -77,6 +75,11 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
+    public Usuario edit(Usuario usuario) {
+        return this.usuarioRepository.saveAndFlush(usuario);
+    }
+
+    @Override
     public Usuario edit(UsuarioRequestDto dto, Usuario usuario) {
         usuario.fill(dto);
 
@@ -84,7 +87,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public Usuario edit(FuncionarioRequestDto dto, Usuario usuario) {
+    public Usuario edit(FuncionarioEditRequestDto dto, Usuario usuario) {
         Optional<Authority> usuarioAuthority = UsuarioServiceImpl.getUsuarioAuthority(usuario, "FUNCIONARIO");
 
         if (usuarioAuthority.isEmpty())
@@ -96,7 +99,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public Usuario edit(VeterinarioRequestDto dto, Usuario usuario) {
+    public Usuario edit(VeterinarioEditRequestDto dto, Usuario usuario) {
         Optional<Authority> usuarioAuthority = UsuarioServiceImpl.getUsuarioAuthority(usuario, "VETERINARIO");
 
         if (usuarioAuthority.isEmpty())
@@ -128,20 +131,34 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public PaginatedResponse<UsuarioResponseDto> findAll(int page, String url, Clinica clinica) {
+    public Usuario findOne(String passwordResetToken) {
+        Optional<Usuario> response = this.usuarioRepository.findByResetPasswordToken(passwordResetToken);
+
+        if (response.isEmpty())
+            throw new NotFoundException("Usuário não encontrado");
+
+        return response.get();
+    }
+
+    @Override
+    public PaginatedResponse<UsuarioResponseDto> findAll(int page, String search, String url, Clinica clinica) {
         page = Math.max(page, 1);
 
         String[] pathnames = url.split("/");
         String path = pathnames[pathnames.length - 1].toUpperCase();
         Authority authority = this.authorityRepository.findByAuthority(path);
-        Long total = this.usuarioRepository.countByAuthoritiesAndClinica(authority, clinica);
+        Long total = search.trim().isEmpty() ?
+                this.usuarioRepository.countByAuthoritiesAndClinica(authority, clinica) :
+                this.usuarioRepository.countByNomeContainingAndAuthoritiesAndClinica(search, authority, clinica);
 
         Pageable pageable = PageRequest.of(page - 1, UsuarioServiceImpl.RESPONSE_LIMIT);
         Metadata meta = new Metadata(url, page, UsuarioServiceImpl.RESPONSE_LIMIT, total);
 
-        List<UsuarioResponseDto> usuariosResponseDtos = this.usuarioRepository
-                .findAllByAuthoritiesAndClinica(pageable, authority, clinica)
-                .stream()
+        List<Usuario> usuarios = search.trim().isEmpty() ?
+                this.usuarioRepository.findAllByAuthoritiesAndClinica(pageable, authority, clinica) :
+                this.usuarioRepository.findAllByNomeContainingAndAuthoritiesAndClinica(pageable, search, authority, clinica);
+
+        List<UsuarioResponseDto> usuariosResponseDtos = usuarios.stream()
                 .map((usuario) -> new UsuarioResponseDto(usuario))
                 .toList();
 

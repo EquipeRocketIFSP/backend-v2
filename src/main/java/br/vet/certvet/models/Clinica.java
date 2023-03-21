@@ -4,6 +4,7 @@ import br.vet.certvet.dto.requests.ClinicaInicialRequestDto;
 import br.vet.certvet.dto.requests.ClinicaRequestDto;
 import br.vet.certvet.models.contracts.Fillable;
 import lombok.*;
+import net.bytebuddy.utility.RandomString;
 import org.hibernate.Hibernate;
 import org.hibernate.validator.constraints.br.CNPJ;
 
@@ -77,6 +78,9 @@ public class Clinica implements Fillable<ClinicaRequestDto> {
     @Column(nullable = false)
     public String email;
 
+    @Column(nullable = false)
+    public String code;
+
     @OneToMany
     @JoinTable(
             name = "clinica_usuarios",
@@ -85,6 +89,10 @@ public class Clinica implements Fillable<ClinicaRequestDto> {
     )
     @ToString.Exclude
     private List<Usuario> usuarios;
+
+    @Setter
+    @OneToOne
+    private Usuario responsavelTecnico;
 
     @OneToMany
     @ToString.Exclude
@@ -112,6 +120,8 @@ public class Clinica implements Fillable<ClinicaRequestDto> {
         this.email = dto.clinica_email;
         this.celular = dto.clinica_celular;
         this.telefone = dto.clinica_telefone;
+
+        this.code = RandomString.hashOf(this.cnpj);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package br.vet.certvet.service;
+package br.vet.certvet.services.implementation;
 
 import br.vet.certvet.enums.SexoAnimal;
 import br.vet.certvet.models.*;
@@ -84,7 +84,7 @@ public class PdfFromHtmlPdfServiceImplTest {
                 .username("diogo.rodrigo.novaes@diebold.com")
                 .password("m4y4KxmMTf")
                 .clinica(clinica)
-                .registroCRMV("123456")
+                .crmv("123456")
                 .build();
 
         return Prontuario.builder()

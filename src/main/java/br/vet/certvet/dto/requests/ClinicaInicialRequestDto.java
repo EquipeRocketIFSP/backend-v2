@@ -123,6 +123,4 @@ public class ClinicaInicialRequestDto {
 
     @Size(max = 255, message = "CRMV não pode ser maior que 255 caracteres")
     public String dono_crmv;
-
-    public boolean dono_responsavel_tecnico;
 }

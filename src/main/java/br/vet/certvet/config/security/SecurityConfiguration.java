@@ -50,6 +50,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/clinica/*").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/clinica/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/usuario/clinicas/*").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/usuario/clinicas/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/esqueci-minha-senha/*").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/esqueci-minha-senha/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/redefinir-senha/*").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/redefinir-senha/**").permitAll()
                 .anyRequest().authenticated()
                 .and().headers().frameOptions().sameOrigin()
                 //.and().authorizeRequests().anyRequest().permitAll() // TODO: Comentar essa linha ao ativar SSL
