@@ -32,15 +32,23 @@ public class AnimalServiceImpl implements AnimalService {
 
     @Override
     public Animal create(AnimalRequestDto dto, List<Usuario> tutores) {
-        tutores.forEach((tutor) -> {
-            Optional<Authority> response = this.usuarioService.findUsuarioAuthority(tutor, "TUTOR");
-
-            if (response.isEmpty())
-                throw new ForbiddenException("Um dos usuários não é um tutor");
-        });
+        AnimalServiceImpl.checkTutorAuthority(tutores, this.usuarioService);
 
         Animal animal = new Animal(dto);
         animal.getTutores().addAll(tutores);
+
+        return this.animalRepository.saveAndFlush(animal);
+    }
+
+    @Override
+    public Animal edit(AnimalRequestDto dto, Animal animal, List<Usuario> tutores) {
+        AnimalServiceImpl.checkTutorAuthority(tutores, this.usuarioService);
+
+        animal.fill(dto);
+        animal.getTutores().clear();
+        animal.getTutores().addAll(tutores);
+
+        //System.out.println(tutores.toString());
 
         return this.animalRepository.saveAndFlush(animal);
     }
@@ -76,5 +84,14 @@ public class AnimalServiceImpl implements AnimalService {
                 .toList();
 
         return new PaginatedResponse<>(metadata, animalResponseDtos);
+    }
+
+    private static void checkTutorAuthority(List<Usuario> tutores, UsuarioService usuarioService) throws ForbiddenException {
+        tutores.forEach((tutor) -> {
+            Optional<Authority> response = usuarioService.findUsuarioAuthority(tutor, "TUTOR");
+
+            if (response.isEmpty())
+                throw new ForbiddenException("Um dos usuários não é um tutor");
+        });
     }
 }

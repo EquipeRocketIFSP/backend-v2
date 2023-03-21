@@ -13,6 +13,8 @@ import java.util.List;
 public interface AnimalService {
     Animal create(AnimalRequestDto dto, List<Usuario> tutores);
 
+    Animal edit(AnimalRequestDto dto, Animal animal, List<Usuario> tutores);
+
     Animal findOne(Long id);
 
     PaginatedResponse<AnimalResponseDto> findAll(int page, String search, String url, Usuario tutor);

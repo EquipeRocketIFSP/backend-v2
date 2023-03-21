@@ -14,6 +14,10 @@ public class AnimalRequestDto {
     @Positive(message = "Idade não pode ser negativo")
     public int idade;
 
+    @NotNull(message = "Peso não pode ser vazio")
+    @Positive(message = "Peso não pode ser negativo")
+    public float peso;
+
     @NotEmpty(message = "Raça não pode ser vazio")
     public String raca;
 

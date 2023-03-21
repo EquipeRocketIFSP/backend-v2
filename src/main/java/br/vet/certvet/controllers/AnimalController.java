@@ -45,6 +45,21 @@ public class AnimalController extends BaseController {
         return new ResponseEntity<>(new AnimalResponseDto(animal), HttpStatus.CREATED);
     }
 
+    @PutMapping("/animal/{id}")
+    public ResponseEntity<AnimalResponseDto> edit(
+            @RequestHeader(AUTHORIZATION) String token,
+            @RequestBody @Valid AnimalRequestDto dto,
+            @PathVariable("id") Long id
+    ) {
+        Clinica clinica = this.tokenService.getClinica(token);
+        List<Usuario> tutores = dto.tutores.stream().map((tutorId) -> this.usuarioService.findOne(tutorId, clinica)).toList();
+
+        Animal animal = this.animalService.findOne(id);
+        animal = this.animalService.edit(dto, animal, tutores);
+
+        return new ResponseEntity<>(new AnimalResponseDto(animal), HttpStatus.CREATED);
+    }
+
     @GetMapping("/animal/{id}")
     public ResponseEntity<AnimalResponseDto> findOne(@PathVariable("id") Long id) {
         Animal animal = this.animalService.findOne(id);

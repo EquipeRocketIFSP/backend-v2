@@ -2,6 +2,7 @@ package br.vet.certvet.models;
 
 import br.vet.certvet.dto.requests.AnimalRequestDto;
 import br.vet.certvet.enums.SexoAnimal;
+import br.vet.certvet.models.contracts.Fillable;
 import lombok.*;
 import org.hibernate.Hibernate;
 
@@ -17,7 +18,7 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Animal {
+public class Animal implements Fillable<AnimalRequestDto> {
     @Transient
     private static final String MASCULINO = "MASCULINO";
 
@@ -33,6 +34,10 @@ public class Animal {
     @Setter
     @Column(nullable = false)
     private int idade;
+
+    @Setter
+    @Column(nullable = false)
+    private float peso;
 
     @Setter
     @Column(nullable = false)
@@ -99,17 +104,20 @@ public class Animal {
     }
 
     public Animal(AnimalRequestDto dto) {
+        this.tutores = new ArrayList<>();
+        this.parentescos = new ArrayList<>();
 
-        System.out.println(dto.sexo);
+        this.fill(dto);
+    }
 
+    @Override
+    public void fill(AnimalRequestDto dto) {
         this.nome = dto.nome;
         this.especie = dto.especie;
         this.sexo = SexoAnimal.valueOf(dto.sexo);
         this.idade = dto.idade;
+        this.peso = dto.peso;
         this.pelagem = dto.pelagem;
         this.raca = dto.raca;
-
-        this.tutores = new ArrayList<>();
-        this.parentescos = new ArrayList<>();
     }
 }
