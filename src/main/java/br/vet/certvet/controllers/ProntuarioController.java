@@ -64,10 +64,14 @@ public class ProntuarioController extends BaseController {
 
         return saved.map(
                 prontuario -> ResponseEntity.created(
-                        URI.create(prontuario.getCodigo())
-                        ).body(prontuario))
+                        URI.create(
+                                prontuario.getCodigo()
+                        )
+                ).body(prontuario))
                 .orElseGet(
-                        () -> ResponseEntity.internalServerError().build()
+                        () -> ResponseEntity.badRequest()
+                                .header("reason", "Erro ao criar o Prontuário")
+                                .build()
                 );
     }
 
