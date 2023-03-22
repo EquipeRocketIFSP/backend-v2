@@ -52,7 +52,7 @@ public class AuthController {
         } catch (AuthenticationException e){
             return ResponseEntity.badRequest().header("reason","Usuário ou senha inválidos").build();
         }
-        Clinica clinica = this.clinicaService.findByCnpj(dto.clinica);
+        Clinica clinica = this.clinicaService.findOne(dto.clinica);
         String token = tokenService.create(auth, clinica);
         Usuario usuario = usuarioService.findOne(dto.email, clinica);
 
