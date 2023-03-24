@@ -31,6 +31,7 @@ public class AgendamentoServiceImpl implements AgendamentoService {
     public Agendamento create(AgendamentoRequestDto dto, Clinica clinica) {
         Animal animal = this.animalService.findOne(dto.animal);
         Usuario tutor = this.usuarioService.findOne(dto.tutor, clinica);
+        Usuario veterinario = this.usuarioService.findOne(dto.veterinario, clinica);
 
         LocalDateTime dataInicial = dto.dataConsulta.withMinute(0), dataFinal = dataInicial.plusHours(1);
 
@@ -39,7 +40,7 @@ public class AgendamentoServiceImpl implements AgendamentoService {
         if (response.isPresent())
             throw new ConflictException("Já existe um agendamento para esse animal nesse horário");
 
-        Agendamento agendamento = new Agendamento(dto, animal, tutor, clinica);
+        Agendamento agendamento = new Agendamento(dto, veterinario, animal, tutor, clinica);
 
         return this.agendamentoRepository.saveAndFlush(agendamento);
     }

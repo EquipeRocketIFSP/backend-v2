@@ -9,8 +9,11 @@ public class AgendamentoRequestDto {
     @NotNull(message = "Selecione um animal")
     public Long animal;
 
-    @NotNull(message = "Selecione um o tutor responsável no momento do atendimento")
+    @NotNull(message = "Selecione o tutor responsável no momento do atendimento")
     public Long tutor;
+
+    @NotNull(message = "Selecione o veterinário")
+    public Long veterinario;
 
     @Size(max = 1000, message = "Tamanho máximo do campo de observações é de 1000 caracteres")
     public String observacoes;
