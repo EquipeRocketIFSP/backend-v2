@@ -33,7 +33,7 @@ public class AgendamentoServiceImpl implements AgendamentoService {
         Usuario tutor = this.usuarioService.findOne(dto.tutor, clinica);
         Usuario veterinario = this.usuarioService.findOne(dto.veterinario, clinica);
 
-        LocalDateTime dataInicial = dto.dataConsulta.withMinute(0), dataFinal = dataInicial.plusHours(1);
+        LocalDateTime dataInicial = dto.data_consulta.withMinute(0), dataFinal = dataInicial.plusHours(1);
 
         Optional<Agendamento> response = this.agendamentoRepository.findByAnimalAndDataConsultaBetween(animal, dataInicial, dataFinal);
 

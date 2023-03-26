@@ -20,5 +20,5 @@ public class AgendamentoRequestDto {
 
     @NotNull(message = "Informe uma data da consulta")
     @Future(message = "Informe uma data futura")
-    public LocalDateTime dataConsulta;
+    public LocalDateTime data_consulta;
 }

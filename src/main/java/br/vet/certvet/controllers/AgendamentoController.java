@@ -15,6 +15,7 @@ import javax.validation.Valid;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api")
 public class AgendamentoController extends BaseController {
     @Autowired
