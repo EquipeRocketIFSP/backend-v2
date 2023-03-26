@@ -40,6 +40,11 @@ public class AgendamentoServiceImpl implements AgendamentoService {
         if (response.isPresent())
             throw new ConflictException("Já existe um agendamento para esse animal nesse horário");
 
+        response = this.agendamentoRepository.findByVeterinarioAndDataConsultaBetween(veterinario, dataInicial, dataFinal);
+
+        if (response.isPresent())
+            throw new ConflictException("Já existe um agendamento para esse veterinário nesse horário");
+
         Agendamento agendamento = new Agendamento(dto, veterinario, animal, tutor, clinica);
 
         return this.agendamentoRepository.saveAndFlush(agendamento);
