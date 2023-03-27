@@ -4,14 +4,26 @@ import br.vet.certvet.models.Agendamento;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class AgendamentoResponseDto {
-    public Long id;
+    @JsonProperty("id")
+    protected Long id;
 
     @JsonProperty("data_consulta")
-    public String dataConsulta;
-    public String observacoes;
-    public String animal;
-    public String tutor;
-    public UsuarioResponseDto veterinario;
+    protected String dataConsulta;
+
+    @JsonProperty("observacoes")
+    protected String observacoes;
+
+
+    @JsonProperty("animal")
+    protected String animal;
+
+
+    @JsonProperty("tutor")
+    protected String tutor;
+
+
+    @JsonProperty("veterinario")
+    protected UsuarioResponseDto veterinario;
 
     public AgendamentoResponseDto(Agendamento agendamento) {
         this.id = agendamento.getId();
