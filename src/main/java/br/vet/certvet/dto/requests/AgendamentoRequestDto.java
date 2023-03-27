@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 public class AgendamentoRequestDto {
     @NotNull(message = "Selecione um animal")
-    public Long animal;
+    protected Long animal;
 
     @NotNull(message = "Selecione o tutor responsável no momento do atendimento")
     protected Long tutor;
