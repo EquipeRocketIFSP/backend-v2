@@ -1,24 +1,28 @@
 package br.vet.certvet.dto.responses;
 
-import br.vet.certvet.dto.requests.AgendamentoRequestDto;
 import br.vet.certvet.models.Agendamento;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+public class AgendamentoResponseDto {
+    public Long id;
 
-public class AgendamentoResponseDto extends AgendamentoRequestDto {
-    private Long id;
     @JsonProperty("data_consulta")
-    private String dataConsulta;
-    private AnimalResponseDto animal;
-    private UsuarioResponseDto tutor;
-    private UsuarioResponseDto veterinario;
+    public String dataConsulta;
+    public String observacoes;
+    public String animal;
+    public String tutor;
+    public UsuarioResponseDto veterinario;
 
     public AgendamentoResponseDto(Agendamento agendamento) {
         this.id = agendamento.getId();
         this.observacoes = agendamento.getObservacoes();
         this.dataConsulta = agendamento.getDataConsulta().toString();
-        this.animal = new AnimalResponseDto(agendamento.getAnimal());
-        this.tutor = new UsuarioResponseDto(agendamento.getTutor());
+        this.animal = agendamento.getAnimal().getNome();
+        this.tutor = agendamento.getTutor().getNome();
         this.veterinario = new UsuarioResponseDto(agendamento.getVeterinario());
+    }
+
+    public static AgendamentoResponseDto factory(Agendamento agendamento) {
+        return new AgendamentoResponseDto(agendamento);
     }
 }

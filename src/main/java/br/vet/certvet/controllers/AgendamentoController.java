@@ -6,11 +6,15 @@ import br.vet.certvet.models.Agendamento;
 import br.vet.certvet.models.Clinica;
 import br.vet.certvet.services.AgendamentoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+
+import java.time.LocalDate;
+import java.util.List;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
@@ -30,5 +34,16 @@ public class AgendamentoController extends BaseController {
         Agendamento agendamento = this.agendamentoService.create(dto, clinica);
 
         return new ResponseEntity<>(new AgendamentoResponseDto(agendamento), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/agendamento")
+    public ResponseEntity<List<AgendamentoResponseDto>> findAll(
+            @RequestHeader(AUTHORIZATION) String token,
+            @RequestParam(name = "data", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
+    ) {
+        Clinica clinica = this.tokenService.getClinica(token);
+        List<Agendamento> agendamentos = this.agendamentoService.findAll(date, clinica);
+
+        return ResponseEntity.ok(agendamentos.stream().map(AgendamentoResponseDto::factory).toList());
     }
 }

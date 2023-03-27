@@ -13,7 +13,10 @@ import br.vet.certvet.services.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -48,5 +51,17 @@ public class AgendamentoServiceImpl implements AgendamentoService {
         Agendamento agendamento = new Agendamento(dto, veterinario, animal, tutor, clinica);
 
         return this.agendamentoRepository.saveAndFlush(agendamento);
+    }
+
+    @Override
+    public List<Agendamento> findAll(LocalDate date, Clinica clinica) {
+        date = date != null ? date : LocalDate.now();
+
+        LocalTime defaultTime = LocalTime.parse("00:00:00");
+
+        LocalDateTime start = LocalDateTime.of(date.withDayOfMonth(1), defaultTime);
+        LocalDateTime end = LocalDateTime.of(date.withDayOfMonth(date.lengthOfMonth()), defaultTime);
+
+        return this.agendamentoRepository.findAllByClinicaAndDataConsultaBetween(clinica, start, end);
     }
 }
