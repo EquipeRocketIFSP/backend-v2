@@ -29,11 +29,11 @@ public class AgendamentoServiceImpl implements AgendamentoService {
 
     @Override
     public Agendamento create(AgendamentoRequestDto dto, Clinica clinica) {
-        Animal animal = this.animalService.findOne(dto.animal);
-        Usuario tutor = this.usuarioService.findOne(dto.tutor, clinica);
-        Usuario veterinario = this.usuarioService.findOne(dto.veterinario, clinica);
+        Animal animal = this.animalService.findOne(dto.getAnimal());
+        Usuario tutor = this.usuarioService.findOne(dto.getTutor(), clinica);
+        Usuario veterinario = this.usuarioService.findOne(dto.getVeterinario(), clinica);
 
-        LocalDateTime dataInicial = dto.data_consulta.withMinute(0), dataFinal = dataInicial.plusHours(1);
+        LocalDateTime dataInicial = dto.getDataConsulta().withMinute(0), dataFinal = dataInicial.plusHours(1);
 
         Optional<Agendamento> response = this.agendamentoRepository.findByAnimalAndDataConsultaBetween(animal, dataInicial, dataFinal);
 
