@@ -125,11 +125,20 @@ public class PdfFromHtmlPdfServiceImplTest {
     }
 
     @Test
-    @DisplayName("Devolve um PDF gerado a partir de HTML")
+    @DisplayName("Devolve um PDF de prontuario gerado a partir de HTML")
     void whenRequestProntuarioPdf_ThenReturnPdfFile() throws Exception {
 
         Prontuario parametro = getProntuarioInstance();
         File outputFile = new File("src/test/resources/prontuario/htmlToPdf/test.pdf");
         Files.write(outputFile.toPath(), service.writeProntuario(getProntuarioInstance()));
+    }
+
+    @Test
+    @DisplayName("Devolve um PDF de documento gerado a partir de HTML")
+    void whenRequestDocumentoPdf_ThenReturnPdfFile() throws Exception {
+
+        Prontuario parametro = getProntuarioInstance();
+        File outputFile = new File("src/test/resources/prontuario/htmlToPdf/test_documento.pdf");
+        Files.write(outputFile.toPath(), service.writeDocumento(getProntuarioInstance(), "sanitario"));
     }
 }

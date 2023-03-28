@@ -3,6 +3,7 @@ package br.vet.certvet.models;
 import br.vet.certvet.dto.requests.*;
 import br.vet.certvet.models.contracts.Fillable;
 import lombok.*;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Hibernate;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -33,52 +34,52 @@ public class Usuario implements UserDetails, Fillable<UsuarioRequestDto> {
     @Column(nullable = false)
     private String username;
 
-    @Column(nullable = false)
+    @Column
     private String password;
 
     @Setter
     @Column(nullable = false)
-    public String nome;
+    private String nome;
 
     @Setter
     @Column(nullable = false, length = 14)
-    public String cpf;
+    private String cpf;
 
     @Setter
     @Column(nullable = false)
-    public String rg;
+    private String rg;
 
     @Setter
     @Column(nullable = false, length = 9)
-    public String cep;
+    private String cep;
 
     @Setter
     @Column(nullable = false)
-    public String logradouro;
+    private String logradouro;
 
     @Setter
     @Column(nullable = false, length = 6)
-    public String numero;
+    private String numero;
 
     @Setter
     @Column(nullable = false)
-    public String bairro;
+    private String bairro;
 
     @Setter
     @Column(nullable = false)
-    public String cidade;
+    private String cidade;
 
     @Setter
     @Column(nullable = false, length = 2)
-    public String estado;
+    private String estado;
 
     @Setter
     @Column(nullable = false, length = 15)
-    public String celular;
+    private String celular;
 
     @Setter
     @Column(length = 15)
-    public String telefone;
+    private String telefone;
 
     @Setter
     private String crmv;
@@ -183,5 +184,9 @@ public class Usuario implements UserDetails, Fillable<UsuarioRequestDto> {
 
     public String getEmail() {
         return this.email;
+    }
+
+    public String getEnderecoCompleto(){
+        return String.format("%s, %s - CEP: %s - %s - %s/%s", logradouro, numero, cep, bairro, cidade, estado);
     }
 }

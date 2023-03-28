@@ -16,14 +16,21 @@
 
     #cabecalho {
         display: flex;
+        padding-bottom: 10px;
     }
 
     #cabecalho_logo {
         padding: 10px 20px 10px 20px;
+        display:inline-block;
+    }
+
+    #logo {
+        height: 100px;
     }
 
     #cabecalho_texto {
         padding-top: 10px;
+        display:inline-block;
     }
 
     #cabecalho_texto>* {
@@ -56,8 +63,9 @@
 <body>
 
     <div id="cabecalho">
-        <div id="cabecalho_logo">
-            <img alt="logo" height="100px" src="certvet_logo.png">
+        <div id="cabecalho_logo" >
+<!--            <img alt="logo" height="100px" src="certvet_logo.jpg"></img>-->
+            <div id="logo" class="media" data-src="certvet_logo.jpg" ></div>
         </div>
         <div id="cabecalho_texto">
             <h2>Clínica: ${clinica.razaoSocial}</h2>

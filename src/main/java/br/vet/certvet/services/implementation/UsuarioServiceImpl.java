@@ -13,6 +13,7 @@ import br.vet.certvet.models.Usuario;
 import br.vet.certvet.repositories.AuthorityRepository;
 import br.vet.certvet.repositories.UsuarioRepository;
 import br.vet.certvet.services.UsuarioService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class UsuarioServiceImpl implements UsuarioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -36,7 +38,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     public Usuario create(UsuarioRequestDto dto, Clinica clinica) {
         Usuario usuario = new Usuario(dto, clinica);
         Authority authority = this.authorityRepository.findByAuthority("TUTOR");
-
+        log.info("create: " + usuario.toString());
         usuario.getAuthorities().add(authority);
 
         return this.save(usuario, clinica);
@@ -186,9 +188,11 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     private Usuario save(Usuario usuario, Clinica clinica) {
         Optional<Usuario> response = this.usuarioRepository.findByUsernameAndClinica(usuario.getUsername(), clinica);
-
-        if (response.isPresent())
+        if (response.isPresent()) {
+            log.info("usuario já existente");
             throw new ConflictException("Usuário já existe.");
+        }
+        log.info("nenhum registro anterior. cadastrando novo usuário");
 
         return this.usuarioRepository.saveAndFlush(usuario);
     }

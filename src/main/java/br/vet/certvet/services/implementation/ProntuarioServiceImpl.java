@@ -1,5 +1,6 @@
 package br.vet.certvet.services.implementation;
 
+import br.vet.certvet.models.Documento;
 import br.vet.certvet.models.Prontuario;
 import br.vet.certvet.repositories.PdfRepository;
 import br.vet.certvet.repositories.ProntuarioRepository;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -63,5 +65,10 @@ public class ProntuarioServiceImpl implements ProntuarioService {
     @Override
     public byte[] getProntuarioPdfBy(Prontuario prontuario) {
         return new byte[0];
+    }
+
+    @Override
+    public List<Documento> getDocumentosTipo(Long prontuarioId, String tipo) {
+        return prontuarioRepository.findByIdAndDocumentos_tipo(prontuarioId, tipo);
     }
 }

@@ -32,7 +32,6 @@ public class ClinicaController extends BaseController {
             @RequestBody @Valid ClinicaInicialRequestDto dto
     ) {
         Clinica clinica = this.clinicaService.create(dto);
-
         return new ResponseEntity<>(new ClinicaResponseDto(clinica), HttpStatus.CREATED);
     }
 

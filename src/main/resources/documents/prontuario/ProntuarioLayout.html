@@ -2,13 +2,68 @@
 <html lang="en">
 <meta charset="UTF-8">
 <title>Prontuário Clínico veterinário - ${animal.nome}</title>
-<body>
-    <div>
-        <h1>Prontuario clínico veterinário: ${prontuario.codigo}</h1>
-        <h2>Nome veterinário: ${veterinario.nome}</h2>
-        <h2>Crmv: ${veterinario.crmv}</h2>
-        <h3>Clínica: ${clinica.razaoSocial}</h3>
+
+<style>
+    body {
+        border: 1px solid black;
+        width: 650px;
+    }
+
+    body > div {
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+
+    #cabecalho {
+        display: flex;
+    }
+
+    #cabecalho_logo {
+        padding: 10px 20px 10px 20px;
+    }
+
+    #cabecalho_texto {
+        padding-top: 10px;
+    }
+
+    #cabecalho_texto>* {
+        margin: 0;
+    }
+
+    #titulo {
+        text-align: center;
+    }
+
+    #local_data {
+        display: flex;
+        justify-content: end;
+    }
+
+    #assinatura_responsavel {
+        padding-top: 35px;
+    }
+
+    #assinatura_responsavel>hr {
+        text-align: center;
+        width: 50%;
+    }
+
+    #assinatura_responsavel>p {
+        text-align: center;
+    }
+</style>
+<body border="1px solid black" width="650px" margin-left="10px" margin-right="10px">
+
+<div id="cabecalho">
+    <div id="cabecalho_logo">
+        <img alt="logo" height="100px" src="certvet_logo.png">
+    </div>
+    <div id="cabecalho_texto">
+        <h2>Clínica: ${clinica.razaoSocial}</h2>
+        <h3>Nome veterinário: ${veterinario.nome}</h3>
+        <h3>Crmv: ${veterinario.crmv}</h3>
         <p>Telefone: ${clinica.telefone}</p>
     </div>
+</div>
 </body>
 </html>
