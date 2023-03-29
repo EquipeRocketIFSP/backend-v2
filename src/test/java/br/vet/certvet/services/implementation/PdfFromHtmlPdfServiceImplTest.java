@@ -48,6 +48,7 @@ public class PdfFromHtmlPdfServiceImplTest {
 
     private Prontuario getProntuarioInstance(){
         Clinica clinica = Clinica.builder()
+                .cidade("Cidade das Abelhas")
                 .razaoSocial("Clinica vet")
                 .telefone("(12) 3456-7890")
                 .build();

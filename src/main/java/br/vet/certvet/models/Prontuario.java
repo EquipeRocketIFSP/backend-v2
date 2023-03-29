@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.text.DateFormatSymbols;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -135,6 +136,17 @@ public class Prontuario {
 
     public String getCodigo() {
         return this.codigo;
+    }
+
+    public String getMonthAtendimento(){
+        var month = new DateFormatSymbols().getMonths()[
+                dataAtendimento.getMonth()
+                        .getValue()-1
+                ]
+                .toLowerCase();
+        return month.substring(0,1)
+                .toUpperCase()
+                + month.substring(1);
     }
 
 }

@@ -92,10 +92,10 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
                 "tutor.cpf", prontuario.getTutor().getCpf(),
                 "tutor.endereco", prontuario.getTutor().getEnderecoCompleto(),
                 "documento.outrasObservacoes", "outrasObservacoes", //TODO: Substituir pela observacao do documento
-                "prontuario.cidade", prontuario.getClinica().getCidade(),
-                "prontuario.dia", String.valueOf(prontuario.getDataAtendimento().getDayOfMonth()),
-                "prontuario.mes", prontuario.getDataAtendimento().getMonth().name(),
-                "prontuario.ano", String.valueOf(prontuario.getDataAtendimento().getYear())
+                "cidade", prontuario.getClinica().getCidade(),
+                "data.dia", String.valueOf(prontuario.getDataAtendimento().getDayOfMonth()),
+                "data.mes", prontuario.getMonthAtendimento(),
+                "data.ano", String.valueOf(prontuario.getDataAtendimento().getYear())
         };
 
         Map<String, String> parameters = new HashMap<>();
