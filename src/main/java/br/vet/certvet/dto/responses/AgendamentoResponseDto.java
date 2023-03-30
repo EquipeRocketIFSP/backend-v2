@@ -23,7 +23,7 @@ public class AgendamentoResponseDto {
 
 
     @JsonProperty("veterinario")
-    protected UsuarioResponseDto veterinario;
+    protected String veterinario;
 
     public AgendamentoResponseDto(Agendamento agendamento) {
         this.id = agendamento.getId();
@@ -31,7 +31,7 @@ public class AgendamentoResponseDto {
         this.dataConsulta = agendamento.getDataConsulta().toString();
         this.animal = agendamento.getAnimal().getNome();
         this.tutor = agendamento.getTutor().getNome();
-        this.veterinario = new UsuarioResponseDto(agendamento.getVeterinario());
+        this.veterinario = agendamento.getVeterinario().getNome();
     }
 
     public static AgendamentoResponseDto factory(Agendamento agendamento) {
