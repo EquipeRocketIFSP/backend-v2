@@ -12,5 +12,7 @@ import java.util.List;
 public interface AgendamentoService {
     Agendamento create(AgendamentoRequestDto dto, Clinica clinica);
 
+    Agendamento findOne(Long id);
+
     List<Agendamento> findAll(LocalDate date, Clinica clinica);
 }

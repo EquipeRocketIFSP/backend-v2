@@ -1,6 +1,7 @@
 package br.vet.certvet.controllers;
 
 import br.vet.certvet.dto.requests.AgendamentoRequestDto;
+import br.vet.certvet.dto.responses.AgendamentoCompleteResponseDto;
 import br.vet.certvet.dto.responses.AgendamentoResponseDto;
 import br.vet.certvet.models.Agendamento;
 import br.vet.certvet.models.Clinica;
@@ -45,5 +46,12 @@ public class AgendamentoController extends BaseController {
         List<Agendamento> agendamentos = this.agendamentoService.findAll(date, clinica);
 
         return ResponseEntity.ok(agendamentos.stream().map(AgendamentoResponseDto::factory).toList());
+    }
+
+    @GetMapping("/agendamento/{id}")
+    public ResponseEntity<AgendamentoCompleteResponseDto> findOne(@PathVariable("id") Long id) {
+        Agendamento agendamento = this.agendamentoService.findOne(id);
+
+        return ResponseEntity.ok(new AgendamentoCompleteResponseDto(agendamento));
     }
 }

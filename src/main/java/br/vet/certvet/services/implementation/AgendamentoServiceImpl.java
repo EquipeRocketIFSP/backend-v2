@@ -2,6 +2,7 @@ package br.vet.certvet.services.implementation;
 
 import br.vet.certvet.dto.requests.AgendamentoRequestDto;
 import br.vet.certvet.exceptions.ConflictException;
+import br.vet.certvet.exceptions.NotFoundException;
 import br.vet.certvet.models.Agendamento;
 import br.vet.certvet.models.Animal;
 import br.vet.certvet.models.Clinica;
@@ -51,6 +52,16 @@ public class AgendamentoServiceImpl implements AgendamentoService {
         Agendamento agendamento = new Agendamento(dto, veterinario, animal, tutor, clinica);
 
         return this.agendamentoRepository.saveAndFlush(agendamento);
+    }
+
+    @Override
+    public Agendamento findOne(Long id) {
+        Optional<Agendamento> response = this.agendamentoRepository.findById(id);
+
+        if (response.isEmpty())
+            throw new NotFoundException("Agendamento não encontrado");
+
+        return response.get();
     }
 
     @Override
