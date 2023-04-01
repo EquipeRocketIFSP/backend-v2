@@ -3,6 +3,7 @@ package br.vet.certvet.controllers;
 import br.vet.certvet.config.security.service.TokenService;
 import br.vet.certvet.dto.requests.AnimalRequestDto;
 import br.vet.certvet.dto.responses.AnimalResponseDto;
+import br.vet.certvet.dto.responses.PaginatedResponse;
 import br.vet.certvet.models.Animal;
 import br.vet.certvet.models.Clinica;
 import br.vet.certvet.models.Usuario;
@@ -13,13 +14,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @RestController
-@RequestMapping("/api/animal")
+@RequestMapping("/api/")
+@CrossOrigin
 public class AnimalController extends BaseController {
     @Autowired
     private TokenService tokenService;
@@ -30,7 +33,7 @@ public class AnimalController extends BaseController {
     @Autowired
     private UsuarioService usuarioService;
 
-    @PostMapping
+    @PostMapping("animal")
     public ResponseEntity<AnimalResponseDto> create(
             @RequestHeader(AUTHORIZATION) String token,
             @RequestBody @Valid AnimalRequestDto dto
@@ -40,5 +43,43 @@ public class AnimalController extends BaseController {
         Animal animal = this.animalService.create(dto, tutores);
 
         return new ResponseEntity<>(new AnimalResponseDto(animal), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/animal/{id}")
+    public ResponseEntity<AnimalResponseDto> edit(
+            @RequestHeader(AUTHORIZATION) String token,
+            @RequestBody @Valid AnimalRequestDto dto,
+            @PathVariable("id") Long id
+    ) {
+        Clinica clinica = this.tokenService.getClinica(token);
+        List<Usuario> tutores = dto.tutores.stream().map((tutorId) -> this.usuarioService.findOne(tutorId, clinica)).toList();
+
+        Animal animal = this.animalService.findOne(id);
+        animal = this.animalService.edit(dto, animal, tutores);
+
+        return new ResponseEntity<>(new AnimalResponseDto(animal), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/animal/{id}")
+    public ResponseEntity<AnimalResponseDto> findOne(@PathVariable("id") Long id) {
+        Animal animal = this.animalService.findOne(id);
+
+        return ResponseEntity.ok(new AnimalResponseDto(animal));
+    }
+
+    @GetMapping("tutor/{tutor_id}/animal")
+    public ResponseEntity<PaginatedResponse> findAll(
+            @RequestHeader(AUTHORIZATION) String token,
+            @PathVariable("tutor_id") Long tutorId,
+            @RequestParam(name = "pagina", defaultValue = "1") int page,
+            @RequestParam(name = "buscar", defaultValue = "") String search,
+            HttpServletRequest request
+    ) {
+        Clinica clinica = this.tokenService.getClinica(token);
+        Usuario tutor = this.usuarioService.findOne(tutorId, clinica);
+
+        PaginatedResponse<AnimalResponseDto> response = this.animalService.findAll(page, search, request.getRequestURL().toString(), tutor);
+
+        return ResponseEntity.ok(response);
     }
 }
