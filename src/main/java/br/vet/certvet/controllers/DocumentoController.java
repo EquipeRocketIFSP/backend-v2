@@ -25,10 +25,10 @@ public class DocumentoController extends BaseController {
             @PathVariable String tipo,
             @PathVariable Long prontuarioId
     ){
-        List<Documento> documentosSanitarios = prontuarioService.getDocumentosTipo(prontuarioId, tipo);
-        return documentosSanitarios.isEmpty()
+        List<Documento> documentosProntuario = prontuarioService.getDocumentosTipo(prontuarioId, tipo);
+        return documentosProntuario.isEmpty()
                 ? ResponseEntity.noContent().build()
-                : ResponseEntity.ok(documentosSanitarios);
+                : ResponseEntity.ok(documentosProntuario);
     }
 
 }
