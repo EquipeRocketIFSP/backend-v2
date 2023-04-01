@@ -76,14 +76,12 @@
     </div>
 
     <div id="titulo">
-        <b>TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO PARA REALIZAÇÃO DE EXAMES</b>
+        <b>${documento.titulo}</b>
     </div>
 
     <div id="declara_consentimento">
         <p>
-            Declaro o livre consentimento para a realização do(s) exame(s) ${prontuario.exames} no animal
-            abaixo identificado, a ser realizado pelo(a) Médico(a) Veterinário(a) ${veterinario.nome}
-            CRMV-${veterinario.crmv}:
+            ${documento.declara_consentimento}
         </p>
     </div>
 
@@ -108,41 +106,15 @@
         </div>
     </div>
 
-    <div id="declara_ciencia_riscos">
-        <p>
-            Declaro, ainda, ter sido esclarecido(a) acerca dos possíveis riscos inerentes ao procedimento,
-            durante ou após a realização do(s) citado(s) exame(s), estando o(a) referido(a) profissional
-            isento(a) de quaisquer responsabilidades decorrentes de tais riscos.
-        </p>
-    </div>
+    ${documento.declara_ciencia_riscos}
 
-    <div id="observacoes_veterinario">
-        <p>
-            Observações de interesse a serem fornecidas pelo(a) Médico(a) Veterinário(a):
-        </p>
-        <span>${documento.observacaoVet}</span>
-    </div>
+    ${documento.observacoes_veterinario}
 
-    <div id="observacoes_responsavel">
-        <p>
-            Observações de interesse a serem fornecidas pelo(a) tutor(a)/proprietário(a)/responsável:
-        </p>
-        <span>${documento.observacaoTutor}</span>
-    </div>
+    ${documento.observacoes_responsavel}
 
-    <div id="causaMortis">
-        <p>
-            Outras informações complementares à provável causa mortis e informação de ter sido feita a notificação obrigatória quando for o caso:
-        </p>
-        <span>${documento.causaMortis}</span>
-    </div>
+    ${documento.causaMortis}
 
-    <div id="orientaDestinoCorpo">
-        <p>
-            Orientações para destinação do corpo animal (aspectos sanitários e ambientais):
-        </p>
-        <span>${documento.orientaDestinoCorpo}</span>
-    </div>
+    ${documento.orientaDestinoCorpo}
 
     <div id="identifica_responsavel">
         <p>Identificação do(a) responsável pelo animal:</p>
@@ -151,32 +123,18 @@
         <p>Endereço completo: ${tutor.endereco}</p>
     </div>
 
-    <div id="outrasObservacoes">
-        <p>
-            Outras observações:
-        </p>
-        <span>${documento.outrasObservacoes}</span>
-    </div>
+    ${documento.outrasObservacoes}
 
     <div id="local_data">
         ${cidade}, ${data.dia} de ${data.mes} de ${data.ano}.
     </div>
 
-    <div id="assinatura_responsavel">
-        <hr>
-        <p>Assinatura do(a) responsável pelo animal</p>
-    </div>
+    ${documento.assinatura_responsavel}
 
-    <div id="assinatura_vet">
-        <hr>
-        <p>Assinatura do(a) responsável pelo animal</p>
-    </div>
+    ${documento.assinatura_vet}
 
-    <div id="explica_duas_vias">
-        <span>
-            (documento a ser emitido em 2 vias: 1ª via: médico-veterinário; 2ª via: proprietário, tutor)
-        </span>
-    </div>
+    ${documento.explica_duas_vias}
+
 </body>
 
 </html>

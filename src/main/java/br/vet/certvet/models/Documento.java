@@ -1,5 +1,6 @@
 package br.vet.certvet.models;
 
+import br.vet.certvet.models.especializacoes.AnestesiaDocumento;
 import lombok.*;
 
 import javax.persistence.*;
@@ -19,7 +20,6 @@ public class Documento {
     private String tipo;
     private String caminho;
 
-    protected String cabecalho = null;
     protected String titulo = null;
     protected String declaraConsentimento = null;
     protected String identificaAnimal = null;
@@ -30,7 +30,6 @@ public class Documento {
     protected String orientaDestinoCorpo = null;
     protected String identificaResponsavel = null;
     protected String outrasObservacoes = null;
-    protected String localData = null;
     protected String assinaturaResponsavel = null;
     protected String assinaturaVet = null;
     protected String explicaDuasVias = null;
@@ -38,4 +37,8 @@ public class Documento {
     @OneToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
     private Prontuario prontuario;
+
+    public Documento find(String documentoTipo) {
+        return new AnestesiaDocumento().find(documentoTipo);
+    }
 }

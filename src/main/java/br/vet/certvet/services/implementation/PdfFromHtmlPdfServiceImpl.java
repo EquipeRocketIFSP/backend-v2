@@ -1,11 +1,13 @@
 package br.vet.certvet.services.implementation;
 
 import br.vet.certvet.models.Animal;
+import br.vet.certvet.models.Documento;
 import br.vet.certvet.models.Prontuario;
 import br.vet.certvet.models.Usuario;
 import br.vet.certvet.repositories.ClinicaRepository;
 import br.vet.certvet.repositories.PdfRepository;
 import br.vet.certvet.services.PdfService;
+import com.google.common.collect.ImmutableMap;
 import org.apache.commons.text.StringSubstitutor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -20,9 +22,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -53,7 +52,25 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
                 "clinica.telefone", prontuario.getClinica().getTelefone(),
                 "prontuario.codigo", prontuario.getCodigo()
         );
-        String result = new StringSubstitutor(parameters).replace(layout);
+        return transformTxtToXmlToPdf(fileName, parameters, layout);
+    }
+
+    @Override
+    public byte[] writeDocumento(Prontuario prontuario, String documentoTipo) throws Exception {
+        final Documento termo = new Documento().find(documentoTipo);
+        final String fileName = "res/" + prontuario.getCodigo() + ".pdf";
+        final String from = "src/main/resources/documents/consentimento/ConsentimentoLayoutV2.html";
+        final String layout = Files.readString(Path.of(from));
+
+        Map<String, String> parameters = getDivsToBeLoaded(termo);
+        final String htmlBase = new StringSubstitutor(parameters).replace(layout);
+
+        parameters = getFieldsToBeLoaded(prontuario);
+        return transformTxtToXmlToPdf(fileName, parameters, htmlBase);
+    }
+
+    private byte[] transformTxtToXmlToPdf(String fileName, Map<String, String> parameters, String htmlBase) throws IOException {
+        String result = new StringSubstitutor(parameters).replace(htmlBase);
         Document document = Jsoup.parse(result, "UTF-8");
         document.outputSettings().syntax(Document.OutputSettings.Syntax.xml);
         generatePdfFromHtml(document, new File(fileName));
@@ -65,53 +82,74 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
         }
     }
 
-    @Override
-    public byte[] writeDocumento(Prontuario prontuario, String documentoTipo) throws Exception {
+    private static ImmutableMap<String, String> getFieldsToBeLoaded(Prontuario prontuario) {
+        return ImmutableMap.<String, String>builder()
+                .put("animal.nome", prontuario.getAnimal().getNome())
+                .put("veterinario.nome", prontuario.getVeterinario().getNome())
+                .put("veterinario.crmv", prontuario.getVeterinario().getRegistroCRMV())
+                .put("clinica.razaoSocial", prontuario.getClinica().getRazaoSocial())
+                .put("clinica.telefone", prontuario.getClinica().getTelefone())
+                .put("prontuario.codigo", prontuario.getCodigo())
+                .put("animal.especie", prontuario.getAnimal().getEspecie())
+                .put("animal.raca", prontuario.getAnimal().getRaca())
+                .put("animal.sexo", prontuario.getAnimal().getSexo().name().toLowerCase())
+                .put("animal.idade", String.valueOf(prontuario.getAnimal().getIdade()))
+                .put("animal.pelagem", prontuario.getAnimal().getPelagem())
+                .put("documento.observacaoVet", "observacaoVet") //TODO: Substituir pela observacao do documento
+                .put("documento.observacaoTutor", "observacaoTutor") //TODO: Substituir pela observacao do documento
+                .put("documento.causaMortis", "causaMortis") //TODO: Substituir pela observacao do documento
+                .put("documento.orientaDestinoCorpo", "orientaDestinoCorpo") //TODO: Substituir pela observacao do documento
+                .put("tutor.nome", prontuario.getTutor().getNome())
+                .put("tutor.cpf", prontuario.getTutor().getCpf())
+                .put("tutor.endereco", prontuario.getTutor().getEnderecoCompleto())
+                .put("documento.outrasObservacoes", "outrasObservacoes") //TODO: Substituir pela observacao do documento
+                .put("cidade", prontuario.getClinica().getCidade())
+                .put("data.dia", String.valueOf(prontuario.getDataAtendimento().getDayOfMonth()))
+                .put("data.mes", prontuario.getMonthAtendimento())
+                .put("data.ano", String.valueOf(prontuario.getDataAtendimento().getYear()))
+                .put("prontuario.obito.local", "prontuario.obito.local") //TODO: Substituir pela observacao do documento
+                .put("prontuario.obito.horas", "prontuario.obito.horas") //TODO: Substituir pela observacao do documento
+                .put("prontuario.obito.data", "prontuario.obito.data") //TODO: Substituir pela observacao do documento
+                .put("prontuario.obito.causa", "prontuario.obito.causa")  //TODO: Substituir pela observacao do documento
+                .put("prontuario.exames", String.valueOf(prontuario.getExames()))
+                .put("prontuario.terapias", "prontuario.terapia") //TODO: Identificar como ficarão registradas as terapias
+                .put("prontuario.cirurgia", String.valueOf(prontuario.getCirurgia()))
+                .put("prontuario.anestesia", "prontuario.anestesia") //TODO: Identificar como ficarão registradas as anestesias
+                .build();
+    }
 
-        String from = "src/main/resources/documents/consentimento/ConsentimentoLayout.html";
-        String fileName = "res/" + prontuario.getCodigo() + ".pdf";
-        String layout = Files.readString(Path.of(from));
-
-        String[] keyValue = {
-                "animal.nome", prontuario.getAnimal().getNome(),
-                "veterinario.nome", prontuario.getVeterinario().getNome(),
-                "veterinario.crmv", prontuario.getVeterinario().getRegistroCRMV(),
-                "clinica.razaoSocial", prontuario.getClinica().getRazaoSocial(),
-                "clinica.telefone", prontuario.getClinica().getTelefone(),
-                "prontuario.codigo", prontuario.getCodigo(),
-                "animal.especie", prontuario.getAnimal().getEspecie(),
-                "animal.raca", prontuario.getAnimal().getRaca(),
-                "animal.sexo", prontuario.getAnimal().getSexo().name().toLowerCase(),
-                "animal.idade", String.valueOf(prontuario.getAnimal().getIdade()),
-                "animal.pelagem", prontuario.getAnimal().getPelagem(),
-                "documento.observacaoVet", "observacaoVet", //TODO: Substituir pela observacao do documento
-                "documento.observacaoTutor", "observacaoTutor", //TODO: Substituir pela observacao do documento
-                "documento.causaMortis", "causaMortis", //TODO: Substituir pela observacao do documento
-                "documento.orientaDestinoCorpo", "orientaDestinoCorpo", //TODO: Substituir pela observacao do documento
-                "tutor.nome", prontuario.getTutor().getNome(),
-                "tutor.cpf", prontuario.getTutor().getCpf(),
-                "tutor.endereco", prontuario.getTutor().getEnderecoCompleto(),
-                "documento.outrasObservacoes", "outrasObservacoes", //TODO: Substituir pela observacao do documento
-                "cidade", prontuario.getClinica().getCidade(),
-                "data.dia", String.valueOf(prontuario.getDataAtendimento().getDayOfMonth()),
-                "data.mes", prontuario.getMonthAtendimento(),
-                "data.ano", String.valueOf(prontuario.getDataAtendimento().getYear())
-        };
-
-        Map<String, String> parameters = new HashMap<>();
-        for(int i = 0; i < keyValue.length; i = i+2){
-            parameters.put(keyValue[i], keyValue[i+1]);
-        }
-        String result = new StringSubstitutor(parameters).replace(layout);
-        Document document = Jsoup.parse(result, "UTF-8");
-        document.outputSettings().syntax(Document.OutputSettings.Syntax.xml);
-        generatePdfFromHtml(document, new File(fileName));
-        Path of = Path.of(fileName);
-        try {
-            return Files.readAllBytes(of);
-        } finally {
-            Files.deleteIfExists(of);
-        }
+    private static ImmutableMap<String, String> getDivsToBeLoaded(Documento documento) {
+        return ImmutableMap.<String, String>builder()
+                .put("documento.titulo", documento.getTitulo())
+                .put("documento.declara_consentimento", documento.getDeclaraConsentimento())
+                .put("documento.declara_ciencia_riscos", documento.getDeclaraCienciaRiscos() == null
+                        ? ""
+                        : documento.getDeclaraCienciaRiscos())
+                .put("documento.observacoes_veterinario", documento.getObservacoesVeterinario() == null
+                        ? ""
+                        : documento.getObservacoesVeterinario())
+                .put("documento.observacoes_responsavel", documento.getObservacoesResponsavel() == null
+                        ? ""
+                        : documento.getObservacoesResponsavel())
+                .put("documento.causaMortis", documento.getCausaMortis() == null
+                        ? ""
+                        : documento.getCausaMortis())
+                .put("documento.orientaDestinoCorpo", documento.getOrientaDestinoCorpo() == null
+                        ? ""
+                        : documento.getOrientaDestinoCorpo())
+                .put("documento.outrasObservacoes", documento.getOutrasObservacoes() == null
+                        ? ""
+                        : documento.getOutrasObservacoes())
+                .put("documento.assinatura_responsavel", documento.getAssinaturaResponsavel() == null
+                        ? ""
+                        : documento.getAssinaturaResponsavel())
+                .put("documento.assinatura_vet", documento.getAssinaturaVet() == null
+                        ? ""
+                        : documento.getAssinaturaVet())
+                .put("documento.explica_duas_vias", documento.getExplicaDuasVias() == null
+                        ? ""
+                        : documento.getExplicaDuasVias())
+                .build();
     }
 
     private static void generatePdfFromHtml(Document document, File outputPdf) throws IOException {
