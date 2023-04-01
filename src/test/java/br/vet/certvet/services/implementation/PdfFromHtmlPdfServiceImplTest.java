@@ -159,7 +159,7 @@ public class PdfFromHtmlPdfServiceImplTest {
     /*
      * https://www.baeldung.com/parameterized-tests-junit-5
      */
-    void readPDF(String documentoTipo) throws Exception {
+    void readPDF(final String documentoTipo) throws Exception {
         final String path = "src/test/resources/prontuario/htmlToPdf/";
         final File parameterFile = new File(path + "doc_" + documentoTipo + ".txt");
         final File outputFile = new File(path + "test_documento_" + documentoTipo+ ".pdf");
