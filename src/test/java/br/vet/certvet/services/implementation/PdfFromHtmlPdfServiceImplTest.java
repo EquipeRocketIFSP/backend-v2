@@ -6,22 +6,29 @@ import br.vet.certvet.repositories.ClinicaRepository;
 import br.vet.certvet.repositories.PdfRepository;
 import br.vet.certvet.repositories.ProntuarioRepository;
 import br.vet.certvet.services.implementation.PdfFromHtmlPdfServiceImpl;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
+import org.junit.jupiter.api.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 @SpringBootTest
@@ -94,7 +101,7 @@ public class PdfFromHtmlPdfServiceImplTest {
                 .animal(Animal.builder()
                         .especie("gato")
                         .nome("miau")
-                        .idade(2)
+                        .anoNascimento(2020)
                         .raca("Siames")
                         .pelagem("curta")
                         .sexo(SexoAnimal.FEMEA)
@@ -141,5 +148,20 @@ public class PdfFromHtmlPdfServiceImplTest {
         Prontuario parametro = getProntuarioInstance();
         File outputFile = new File("src/test/resources/prontuario/htmlToPdf/test_documento.pdf");
         Files.write(outputFile.toPath(), service.writeDocumento(getProntuarioInstance(), "sanitario"));
+    }
+
+    @Test
+    void readPDF() throws Exception {
+        final File parameterFile = new File("src/test/resources/prontuario/htmlToPdf/docStrings.txt");
+        final Set<String> txts = new BufferedReader(new FileReader(parameterFile)).lines()
+                .collect(Collectors.toSet());
+
+        final File outputFile = new File("src/test/resources/prontuario/htmlToPdf/test_documento.pdf");
+        final String txtFromPdf = new PDFTextStripper().getText(
+                PDDocument.load(outputFile));
+
+        txts.stream()
+                .map(txtFromPdf::contains)
+                .forEach(Assertions::assertTrue);
     }
 }
