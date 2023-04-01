@@ -9,6 +9,8 @@ import br.vet.certvet.services.implementation.PdfFromHtmlPdfServiceImpl;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -150,17 +152,21 @@ public class PdfFromHtmlPdfServiceImplTest {
         Files.write(outputFile.toPath(), service.writeDocumento(getProntuarioInstance(), "sanitario"));
     }
 
-    @Test
-    void readPDF() throws Exception {
-        final File parameterFile = new File("src/test/resources/prontuario/htmlToPdf/docStrings.txt");
-        final Set<String> txts = new BufferedReader(new FileReader(parameterFile)).lines()
-                .collect(Collectors.toSet());
-
-        final File outputFile = new File("src/test/resources/prontuario/htmlToPdf/test_documento.pdf");
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "sanitario"
+    })
+    void readPDF(String documentoTipo) throws Exception {
+        final String path = "src/test/resources/prontuario/htmlToPdf/";
+        final File parameterFile = new File(path + "doc_" + documentoTipo + ".txt");
+        final File outputFile = new File(path + "test_documento_" + documentoTipo+ ".pdf");
+        Files.write(
+                outputFile.toPath(),
+                service.writeDocumento(getProntuarioInstance(), documentoTipo));
         final String txtFromPdf = new PDFTextStripper().getText(
                 PDDocument.load(outputFile));
 
-        txts.stream()
+        new BufferedReader(new FileReader(parameterFile)).lines()
                 .map(txtFromPdf::contains)
                 .forEach(Assertions::assertTrue);
     }
