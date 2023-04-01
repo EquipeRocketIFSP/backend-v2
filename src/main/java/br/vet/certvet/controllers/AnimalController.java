@@ -21,7 +21,7 @@ import java.util.List;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @RestController
-@RequestMapping("/api/")
+@RequestMapping("/api")
 @CrossOrigin
 public class AnimalController extends BaseController {
     @Autowired
@@ -33,7 +33,7 @@ public class AnimalController extends BaseController {
     @Autowired
     private UsuarioService usuarioService;
 
-    @PostMapping("animal")
+    @PostMapping("/animal")
     public ResponseEntity<AnimalResponseDto> create(
             @RequestHeader(AUTHORIZATION) String token,
             @RequestBody @Valid AnimalRequestDto dto

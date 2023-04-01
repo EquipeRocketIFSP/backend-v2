@@ -7,6 +7,7 @@ import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -123,4 +124,10 @@ public class Animal implements Fillable<AnimalRequestDto> {
         this.raca = dto.raca;
     }
 
+    public int getIdade() {
+        return Period.between(
+                LocalDate.of(anoNascimento, Month.of(1), 1),
+                LocalDate.now()
+        ).getYears();
+    }
 }
