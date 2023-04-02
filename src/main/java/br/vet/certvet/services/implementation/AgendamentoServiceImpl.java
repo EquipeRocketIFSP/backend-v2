@@ -35,21 +35,26 @@ public class AgendamentoServiceImpl implements AgendamentoService {
     public Agendamento create(AgendamentoRequestDto dto, Clinica clinica) {
         Animal animal = this.animalService.findOne(dto.getAnimal());
         Usuario tutor = this.usuarioService.findOne(dto.getTutor(), clinica);
-        Usuario veterinario = this.usuarioService.findOne(dto.getVeterinario(), clinica);
+        Usuario veterinario = this.usuarioService.findOneVeterinario(dto.getVeterinario(), clinica);
 
-        LocalDateTime dataInicial = dto.getDataConsulta().withMinute(0), dataFinal = dataInicial.plusHours(1);
-
-        Optional<Agendamento> response = this.agendamentoRepository.findByAnimalAndDataConsultaBetween(animal, dataInicial, dataFinal);
-
-        if (response.isPresent())
-            throw new ConflictException("Já existe um agendamento para esse animal nesse horário");
-
-        response = this.agendamentoRepository.findByVeterinarioAndDataConsultaBetween(veterinario, dataInicial, dataFinal);
-
-        if (response.isPresent())
-            throw new ConflictException("Já existe um agendamento para esse veterinário nesse horário");
+        this.checkForScheduledAgendamento(dto, animal, veterinario);
 
         Agendamento agendamento = new Agendamento(dto, veterinario, animal, tutor, clinica);
+
+        return this.agendamentoRepository.saveAndFlush(agendamento);
+    }
+
+    @Override
+    public Agendamento edit(AgendamentoRequestDto dto, Agendamento agendamento, Clinica clinica) {
+        Animal animal = this.animalService.findOne(dto.getAnimal());
+        Usuario tutor = this.usuarioService.findOne(dto.getTutor(), clinica);
+        Usuario veterinario = this.usuarioService.findOneVeterinario(dto.getVeterinario(), clinica);
+
+        agendamento.fill(dto);
+
+        agendamento.setAnimal(animal);
+        agendamento.setTutor(tutor);
+        agendamento.setVeterinario(veterinario);
 
         return this.agendamentoRepository.saveAndFlush(agendamento);
     }
@@ -74,5 +79,19 @@ public class AgendamentoServiceImpl implements AgendamentoService {
         LocalDateTime end = LocalDateTime.of(date.withDayOfMonth(date.lengthOfMonth()), defaultTime);
 
         return this.agendamentoRepository.findAllByClinicaAndDataConsultaBetween(clinica, start, end);
+    }
+
+    private void checkForScheduledAgendamento(AgendamentoRequestDto dto, Animal animal, Usuario veterinario) throws ConflictException {
+        LocalDateTime dataInicial = dto.getDataConsulta().withMinute(0), dataFinal = dataInicial.plusHours(1);
+
+        Optional<Agendamento> response = this.agendamentoRepository.findByAnimalAndDataConsultaBetween(animal, dataInicial, dataFinal);
+
+        if (response.isPresent())
+            throw new ConflictException("Já existe um agendamento para esse animal nesse horário");
+
+        response = this.agendamentoRepository.findByVeterinarioAndDataConsultaBetween(veterinario, dataInicial, dataFinal);
+
+        if (response.isPresent())
+            throw new ConflictException("Já existe um agendamento para esse veterinário nesse horário");
     }
 }

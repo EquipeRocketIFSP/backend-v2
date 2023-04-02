@@ -37,6 +37,19 @@ public class AgendamentoController extends BaseController {
         return new ResponseEntity<>(new AgendamentoResponseDto(agendamento), HttpStatus.CREATED);
     }
 
+    @PutMapping("/agendamento/{id}")
+    public ResponseEntity<AgendamentoResponseDto> edit(
+            @RequestHeader(AUTHORIZATION) String token,
+            @RequestBody @Valid AgendamentoRequestDto dto,
+            @PathVariable("id") Long id
+    ) {
+        Clinica clinica = this.tokenService.getClinica(token);
+        Agendamento agendamento = this.agendamentoService.findOne(id);
+        agendamento = this.agendamentoService.edit(dto, agendamento, clinica);
+
+        return ResponseEntity.ok(new AgendamentoResponseDto(agendamento));
+    }
+
     @GetMapping("/agendamento")
     public ResponseEntity<List<AgendamentoResponseDto>> findAll(
             @RequestHeader(AUTHORIZATION) String token,

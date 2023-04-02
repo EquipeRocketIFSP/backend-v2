@@ -141,6 +141,23 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
+    public Usuario findOneVeterinario(Long id, Clinica clinica) {
+        final String NOT_FOUND_VETERINARIO = "Veterinário não encontrado", AUTHORITY_NAME = "VETERINARIO";
+
+        Optional<Usuario> response = usuarioRepository.findByIdAndClinica(id, clinica);
+
+        if (response.isEmpty())
+            throw new NotFoundException(NOT_FOUND_VETERINARIO);
+
+        Usuario usuario = response.get();
+
+        if (this.findUsuarioAuthority(usuario, AUTHORITY_NAME).isEmpty())
+            throw new NotFoundException(NOT_FOUND_VETERINARIO);
+
+        return response.get();
+    }
+
+    @Override
     public PaginatedResponse<UsuarioResponseDto> findAll(int page, String search, String url, Clinica clinica) {
         page = Math.max(page, 1);
 
