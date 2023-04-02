@@ -13,6 +13,7 @@ import br.vet.certvet.services.AnimalService;
 import br.vet.certvet.services.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -45,18 +46,10 @@ public class AgendamentoServiceImpl implements AgendamentoService {
     }
 
     @Override
+    @Transactional
     public Agendamento edit(AgendamentoRequestDto dto, Agendamento agendamento, Clinica clinica) {
-        Animal animal = this.animalService.findOne(dto.getAnimal());
-        Usuario tutor = this.usuarioService.findOne(dto.getTutor(), clinica);
-        Usuario veterinario = this.usuarioService.findOneVeterinario(dto.getVeterinario(), clinica);
-
-        agendamento.fill(dto);
-
-        agendamento.setAnimal(animal);
-        agendamento.setTutor(tutor);
-        agendamento.setVeterinario(veterinario);
-
-        return this.agendamentoRepository.saveAndFlush(agendamento);
+        this.delete(agendamento);
+        return this.create(dto, clinica);
     }
 
     @Override
