@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> {
+    Optional<Agendamento> findOneByIdAndClinica(Long id, Clinica clinica);
+
     Optional<Agendamento> findByAnimalAndDataConsultaBetween(Animal animal, LocalDateTime dataInicial, LocalDateTime dataFinal);
 
     Optional<Agendamento> findByVeterinarioAndDataConsultaBetween(Usuario veterinario, LocalDateTime dataInicial, LocalDateTime dataFinal);

@@ -53,8 +53,8 @@ public class AgendamentoServiceImpl implements AgendamentoService {
     }
 
     @Override
-    public Agendamento findOne(Long id) {
-        Optional<Agendamento> response = this.agendamentoRepository.findById(id);
+    public Agendamento findOne(Long id, Clinica clinica) {
+        Optional<Agendamento> response = this.agendamentoRepository.findOneByIdAndClinica(id, clinica);
 
         if (response.isEmpty())
             throw new NotFoundException("Agendamento não encontrado");

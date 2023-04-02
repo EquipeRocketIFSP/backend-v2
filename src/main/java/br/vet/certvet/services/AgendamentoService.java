@@ -14,7 +14,7 @@ public interface AgendamentoService {
 
     Agendamento edit(AgendamentoRequestDto dto, Agendamento agendamento, Clinica clinica);
 
-    Agendamento findOne(Long id);
+    Agendamento findOne(Long id, Clinica clinica);
 
     List<Agendamento> findAll(LocalDate date, Clinica clinica);
 

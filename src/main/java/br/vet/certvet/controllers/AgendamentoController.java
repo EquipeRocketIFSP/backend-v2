@@ -44,7 +44,7 @@ public class AgendamentoController extends BaseController {
             @PathVariable("id") Long id
     ) {
         Clinica clinica = this.tokenService.getClinica(token);
-        Agendamento agendamento = this.agendamentoService.findOne(id);
+        Agendamento agendamento = this.agendamentoService.findOne(id, clinica);
         agendamento = this.agendamentoService.edit(dto, agendamento, clinica);
 
         return ResponseEntity.ok(new AgendamentoResponseDto(agendamento));
@@ -62,15 +62,23 @@ public class AgendamentoController extends BaseController {
     }
 
     @GetMapping("/agendamento/{id}")
-    public ResponseEntity<AgendamentoCompleteResponseDto> findOne(@PathVariable("id") Long id) {
-        Agendamento agendamento = this.agendamentoService.findOne(id);
+    public ResponseEntity<AgendamentoCompleteResponseDto> findOne(
+            @RequestHeader(AUTHORIZATION) String token,
+            @PathVariable("id") Long id
+    ) {
+        Clinica clinica = this.tokenService.getClinica(token);
+        Agendamento agendamento = this.agendamentoService.findOne(id, clinica);
 
         return ResponseEntity.ok(new AgendamentoCompleteResponseDto(agendamento));
     }
 
     @DeleteMapping("/agendamento/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
-        Agendamento agendamento = this.agendamentoService.findOne(id);
+    public ResponseEntity<Void> delete(
+            @RequestHeader(AUTHORIZATION) String token,
+            @PathVariable("id") Long id
+    ) {
+        Clinica clinica = this.tokenService.getClinica(token);
+        Agendamento agendamento = this.agendamentoService.findOne(id, clinica);
         this.agendamentoService.delete(agendamento);
 
         return ResponseEntity.accepted().build();
