@@ -81,6 +81,11 @@ public class AgendamentoServiceImpl implements AgendamentoService {
         return this.agendamentoRepository.findAllByClinicaAndDataConsultaBetween(clinica, start, end);
     }
 
+    @Override
+    public void delete(Agendamento agendamento) {
+        this.agendamentoRepository.delete(agendamento);
+    }
+
     private void checkForScheduledAgendamento(AgendamentoRequestDto dto, Animal animal, Usuario veterinario) throws ConflictException {
         LocalDateTime dataInicial = dto.getDataConsulta().withMinute(0), dataFinal = dataInicial.plusHours(1);
 

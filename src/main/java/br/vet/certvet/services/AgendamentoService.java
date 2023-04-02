@@ -17,4 +17,6 @@ public interface AgendamentoService {
     Agendamento findOne(Long id);
 
     List<Agendamento> findAll(LocalDate date, Clinica clinica);
+
+    void delete(Agendamento agendamento);
 }

@@ -67,4 +67,12 @@ public class AgendamentoController extends BaseController {
 
         return ResponseEntity.ok(new AgendamentoCompleteResponseDto(agendamento));
     }
+
+    @DeleteMapping("/agendamento/{id}")
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
+        Agendamento agendamento = this.agendamentoService.findOne(id);
+        this.agendamentoService.delete(agendamento);
+
+        return ResponseEntity.accepted().build();
+    }
 }
