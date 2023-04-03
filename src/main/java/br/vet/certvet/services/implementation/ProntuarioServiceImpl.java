@@ -1,9 +1,12 @@
 package br.vet.certvet.services.implementation;
 
+import br.vet.certvet.exceptions.DocumentoNotFoundException;
+import br.vet.certvet.exceptions.ProntuarioNotFoundException;
 import br.vet.certvet.models.Documento;
 import br.vet.certvet.models.Prontuario;
 import br.vet.certvet.repositories.PdfRepository;
 import br.vet.certvet.repositories.ProntuarioRepository;
+import br.vet.certvet.services.DocumentoService;
 import br.vet.certvet.services.ProntuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +22,9 @@ public class ProntuarioServiceImpl implements ProntuarioService {
 
     @Autowired
     private PdfRepository pdfRepository;
+
+    @Autowired
+    private DocumentoService documentoService;
 
     private String getProntuarioName(Prontuario prontuario){
         return prontuario.getCodigo() + ".pdf";
@@ -68,7 +74,23 @@ public class ProntuarioServiceImpl implements ProntuarioService {
     }
 
     @Override
-    public List<Documento> getDocumentosTipo(Long prontuarioId, String tipo) {
+    public List<Documento> getDocumentosByTipo(Long prontuarioId, String tipo) {
         return prontuarioRepository.findByIdAndDocumentos_tipo(prontuarioId, tipo);
+    }
+
+    @Override
+    public Documento addDocumento(Long prontuarioId, Long documentoId, byte[] documento, String tipo) {
+        var prontuario = prontuarioRepository.findById(prontuarioId)
+                .orElseThrow(ProntuarioNotFoundException::new);
+        var d = prontuario
+                .getDocumentos()
+                .stream()
+                .filter(
+                        doc -> doc.getId()
+                                .equals(documentoId))
+                .findFirst()
+                .orElseThrow(DocumentoNotFoundException::new);
+        prontuarioRepository.save(prontuario);
+        return d;
     }
 }

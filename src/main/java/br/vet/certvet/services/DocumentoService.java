@@ -6,7 +6,7 @@ import br.vet.certvet.models.especializacoes.*;
 import org.springframework.stereotype.Service;
 
 @Service
-public abstract class DocumentoService {
+public class DocumentoService {
 
     public Documento provideLayout(String layout) throws DocumentLayoutNotFound {
 

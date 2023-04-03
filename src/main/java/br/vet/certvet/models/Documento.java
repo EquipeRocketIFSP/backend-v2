@@ -34,6 +34,9 @@ public class Documento {
     protected String assinaturaVet = null;
     protected String explicaDuasVias = null;
 
+    @Setter
+    protected byte[] pdf = null;
+
     @OneToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
     private Prontuario prontuario;

@@ -56,13 +56,12 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
     }
 
     @Override
-    public byte[] writeDocumento(Prontuario prontuario, String documentoTipo) throws Exception {
-        final Documento termo = new Documento().find(documentoTipo);
+    public byte[] writeDocumento(Prontuario prontuario, Documento documentoTipo) throws Exception {
         final String fileName = "res/" + prontuario.getCodigo() + ".pdf";
         final String from = "src/main/resources/documents/consentimento/ConsentimentoLayoutV2.html";
         final String layout = Files.readString(Path.of(from));
 
-        Map<String, String> parameters = getDivsToBeLoaded(termo);
+        Map<String, String> parameters = getDivsToBeLoaded(documentoTipo);
         final String htmlBase = new StringSubstitutor(parameters).replace(layout);
 
         parameters = getFieldsToBeLoaded(prontuario);

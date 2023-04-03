@@ -25,5 +25,7 @@ public interface ProntuarioService {
     byte[] getProntuarioPdfBy(Long id);
     byte[] getProntuarioPdfBy(Prontuario prontuario);
 
-    List<Documento> getDocumentosTipo(Long prontuarioId, String tipo);
+    List<Documento> getDocumentosByTipo(Long prontuarioId, String tipo);
+
+    Documento addDocumento(Long prontuarioId, Long documentoId, byte[] documento, String tipo);
 }

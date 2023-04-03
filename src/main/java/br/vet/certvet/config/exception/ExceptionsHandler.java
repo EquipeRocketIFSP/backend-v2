@@ -1,9 +1,6 @@
 package br.vet.certvet.config.exception;
 
-import br.vet.certvet.exceptions.BadGatewayException;
-import br.vet.certvet.exceptions.ConflictException;
-import br.vet.certvet.exceptions.ForbiddenException;
-import br.vet.certvet.exceptions.NotFoundException;
+import br.vet.certvet.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -30,7 +27,11 @@ public class ExceptionsHandler {
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler({NotFoundException.class, EntityNotFoundException.class})
+    @ExceptionHandler({
+            NotFoundException.class,
+            EntityNotFoundException.class,
+            ProntuarioNotFoundException.class
+    })
     public ResponseEntity<String> handleNotFound(RuntimeException exception) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getLocalizedMessage());
     }

@@ -1,6 +1,7 @@
 package br.vet.certvet.services;
 
 import br.vet.certvet.models.Animal;
+import br.vet.certvet.models.Documento;
 import br.vet.certvet.models.Prontuario;
 import br.vet.certvet.models.Usuario;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
@@ -21,7 +22,7 @@ public interface PdfService {
 
     byte[] writeProntuario(Prontuario prontuario) throws Exception;
 
-    byte[] writeDocumento(Prontuario prontuario, String documento) throws Exception;
+    byte[] writeDocumento(Prontuario prontuario, Documento documento) throws Exception;
 
     byte[] retrieveFromRepository(Prontuario prontuario) throws IOException;
 

@@ -5,6 +5,7 @@ import br.vet.certvet.models.*;
 import br.vet.certvet.repositories.ClinicaRepository;
 import br.vet.certvet.repositories.PdfRepository;
 import br.vet.certvet.repositories.ProntuarioRepository;
+import br.vet.certvet.services.DocumentoService;
 import br.vet.certvet.services.implementation.PdfFromHtmlPdfServiceImpl;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -143,19 +144,11 @@ public class PdfFromHtmlPdfServiceImplTest {
         Files.write(outputFile.toPath(), service.writeProntuario(getProntuarioInstance()));
     }
 
-    @Test
-    @DisplayName("Devolve um PDF de documento gerado a partir de HTML")
-    void whenRequestDocumentoPdf_ThenReturnPdfFile() throws Exception {
-
-        Prontuario parametro = getProntuarioInstance();
-        File outputFile = new File("src/test/resources/prontuario/htmlToPdf/test_documento.pdf");
-        Files.write(outputFile.toPath(), service.writeDocumento(getProntuarioInstance(), "sanitario"));
-    }
-
     @ParameterizedTest
     @ValueSource(strings = {
             "sanitario"
     })
+    @DisplayName("Devolve um PDF de documento gerado a partir de HTML de acordo com o parametro solicitado")
     /*
      * https://www.baeldung.com/parameterized-tests-junit-5
      */
@@ -165,7 +158,7 @@ public class PdfFromHtmlPdfServiceImplTest {
         final File outputFile = new File(path + "test_documento_" + documentoTipo+ ".pdf");
         Files.write(
                 outputFile.toPath(),
-                service.writeDocumento(getProntuarioInstance(), documentoTipo));
+                service.writeDocumento(getProntuarioInstance(), new DocumentoService().provideLayout(documentoTipo)));
         final String txtFromPdf = new PDFTextStripper().getText(
                 PDDocument.load(outputFile));
 
