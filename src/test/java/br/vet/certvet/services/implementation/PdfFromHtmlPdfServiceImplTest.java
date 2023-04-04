@@ -24,8 +24,12 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.math.BigDecimal;
 import java.nio.file.Files;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -37,6 +41,9 @@ import static org.mockito.Mockito.mock;
 @SpringBootTest
 @ActiveProfiles("test")
 public class PdfFromHtmlPdfServiceImplTest {
+
+    public static final Date DATE = new Date();
+    public static final Locale L = new Locale("pt", "BR");
 
     @Mock private ProntuarioRepository prontuarioRepository;// = mock(ProntuarioRepository.class);
 
@@ -100,39 +107,47 @@ public class PdfFromHtmlPdfServiceImplTest {
 
         return Prontuario.builder()
                 .codigo("code")
-                .dataAtendimento(LocalDateTime.now())
-                .animal(Animal.builder()
-                        .especie("gato")
-                        .nome("miau")
-                        .anoNascimento(2020)
-                        .raca("Siames")
-                        .pelagem("curta")
-                        .sexo(SexoAnimal.FEMEA)
-                        .tutores(List.of(tutor))
-                        .build())
+                .dataAtendimento(
+                        LocalDateTime.now()
+                )
+                .animal(
+                        Animal.builder()
+                                .especie("gato")
+                                .nome("miau")
+                                .anoNascimento(2020)
+                                .raca("Siames")
+                                .pelagem("curta")
+                                .sexo(SexoAnimal.FEMEA)
+                                .tutores(
+                                        List.of(tutor)
+                                )
+                                .build())
                 .clinica(clinica)
                 .tutor(tutor)
                 .veterinario(veterinario)
-                .procedimentos(List.of(
-                        Procedimento.builder()
-                                .descricao("Vacinação")
-                                .medicamentosConsumidos(List.of(
-                                        Estoque.builder()
-                                                .medida("ml")
-                                                .quantidade(new BigDecimal("50.5"))
-                                                .clinica(clinica)
-                                                .medicamento(Medicamento.builder()
-                                                        .codigoRegistro("12345689")
-                                                        .concentracao("500mg")
-                                                        .nome("Vacina")
-                                                        .viaUso("Intravenoso")
-                                                        .principioAtivo("Virus Inativado")
-                                                        .build())
-                                                .build()
-                                ))
-                                .build()
-                ))
-                .build();
+                .procedimentos(
+                        List.of(
+                                Procedimento.builder()
+                                    .descricao("Vacinação")
+                                    .medicamentosConsumidos(
+                                            List.of(
+                                                    Estoque.builder()
+                                                        .medida("ml")
+                                                        .quantidade(new BigDecimal("50.5"))
+                                                        .clinica(clinica)
+                                                        .medicamento(
+                                                                Medicamento.builder()
+                                                                        .codigoRegistro("12345689")
+                                                                        .concentracao("500mg")
+                                                                        .nome("Vacina")
+                                                                        .viaUso("Intravenoso")
+                                                                        .principioAtivo("Virus Inativado")
+                                                                        .build()
+                                                        ).build()
+                                            )
+                                    ).build()
+                        )
+                ).build();
     }
 
     @Test
@@ -158,11 +173,23 @@ public class PdfFromHtmlPdfServiceImplTest {
         final File outputFile = new File(path + "test_documento_" + documentoTipo+ ".pdf");
         Files.write(
                 outputFile.toPath(),
-                service.writeDocumento(getProntuarioInstance(), new DocumentoService().provideLayout(documentoTipo)));
+                service.writeDocumento(
+                        getProntuarioInstance(),
+                        new DocumentoService().provideLayout(documentoTipo)));
         final String txtFromPdf = new PDFTextStripper().getText(
                 PDDocument.load(outputFile));
 
+        final var mes = new SimpleDateFormat("MMMMM", L).format(DATE);
         new BufferedReader(new FileReader(parameterFile)).lines()
+                .map(t -> t.replace(
+                        "Cidade das Abelhas, 1 de Abril de 2023.",
+                        "Cidade das Abelhas, "
+                                + new SimpleDateFormat("d 'de' ", L).format(DATE)
+                                + mes.substring(0,1)
+                                .toUpperCase()
+                                + mes.substring(1)
+                                + new SimpleDateFormat(" 'de' yyyy", L).format(DATE)
+                                + "."))
                 .map(txtFromPdf::contains)
                 .forEach(Assertions::assertTrue);
     }
