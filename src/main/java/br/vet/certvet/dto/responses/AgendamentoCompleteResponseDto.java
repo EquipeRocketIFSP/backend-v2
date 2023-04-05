@@ -5,25 +5,25 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class AgendamentoCompleteResponseDto {
     @JsonProperty("id")
-    protected Long id;
+    private Long id;
 
     @JsonProperty("data_consulta")
-    protected String dataConsulta;
+    private String dataConsulta;
 
     @JsonProperty("observacoes")
-    protected String observacoes;
+    private String observacoes;
 
 
     @JsonProperty("animal")
-    protected AnimalResponseDto animal;
+    private AnimalResponseDto animal;
 
 
     @JsonProperty("tutor")
-    protected UsuarioResponseDto tutor;
+    private UsuarioResponseDto tutor;
 
 
     @JsonProperty("veterinario")
-    protected VeterinarioResponseDto veterinario;
+    private VeterinarioResponseDto veterinario;
 
     public AgendamentoCompleteResponseDto(Agendamento agendamento) {
         this.id = agendamento.getId();
