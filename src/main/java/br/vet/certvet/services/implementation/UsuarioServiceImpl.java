@@ -154,7 +154,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         if (this.findUsuarioAuthority(usuario, AUTHORITY_NAME).isEmpty())
             throw new NotFoundException(NOT_FOUND_VETERINARIO);
 
-        return response.get();
+        return usuario;
     }
 
     @Override
