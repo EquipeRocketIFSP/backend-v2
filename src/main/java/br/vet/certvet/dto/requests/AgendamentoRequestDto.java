@@ -1,29 +1,28 @@
 package br.vet.certvet.dto.requests;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
 
 import javax.validation.constraints.Future;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
-@Getter
-public class AgendamentoRequestDto {
-    @NotNull(message = "Selecione um animal")
-    protected Long animal;
+public record AgendamentoRequestDto(
+        @NotNull(message = "Selecione um animal")
+        Long animal,
 
-    @NotNull(message = "Selecione o tutor responsável no momento do atendimento")
-    protected Long tutor;
+        @NotNull(message = "Selecione o tutor responsável no momento do atendimento")
+        Long tutor,
 
-    @NotNull(message = "Selecione o veterinário")
-    protected Long veterinario;
+        @NotNull(message = "Selecione o veterinário")
+        Long veterinario,
 
-    @Size(max = 1000, message = "Tamanho máximo do campo de observações é de 1000 caracteres")
-    protected String observacoes;
+        @Size(max = 1000, message = "Tamanho máximo do campo de observações é de 1000 caracteres")
+        String observacoes,
 
-    @NotNull(message = "Informe uma data da consulta")
-    @Future(message = "Informe uma data futura")
-    @JsonProperty("data_consulta")
-    protected LocalDateTime dataConsulta;
+        @NotNull(message = "Informe uma data da consulta")
+        @Future(message = "Informe uma data futura")
+        @JsonProperty("data_consulta")
+        LocalDateTime dataConsulta
+) {
 }

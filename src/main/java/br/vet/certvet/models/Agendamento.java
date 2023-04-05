@@ -65,8 +65,8 @@ public class Agendamento implements Fillable<AgendamentoRequestDto> {
 
     @Override
     public void fill(AgendamentoRequestDto dto) {
-        this.observacoes = dto.getObservacoes();
-        this.dataConsulta = dto.getDataConsulta();
+        this.observacoes = dto.observacoes();
+        this.dataConsulta = dto.dataConsulta();
     }
 
     @Override
