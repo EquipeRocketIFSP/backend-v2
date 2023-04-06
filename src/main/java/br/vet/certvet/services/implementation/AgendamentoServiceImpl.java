@@ -38,7 +38,7 @@ public class AgendamentoServiceImpl implements AgendamentoService {
         Usuario tutor = this.usuarioService.findOne(dto.tutor(), clinica);
         Usuario veterinario = this.usuarioService.findOneVeterinario(dto.veterinario(), clinica);
 
-        this.checkForScheduledAgendamento(dto, animal, veterinario);
+        this.checkForScheduledAgendamento(dto, animal, veterinario, Optional.empty());
 
         Agendamento agendamento = new Agendamento(dto, veterinario, animal, tutor, clinica);
 
@@ -48,8 +48,18 @@ public class AgendamentoServiceImpl implements AgendamentoService {
     @Override
     @Transactional
     public Agendamento edit(AgendamentoRequestDto dto, Agendamento agendamento, Clinica clinica) {
-        this.delete(agendamento);
-        return this.create(dto, clinica);
+        Animal animal = this.animalService.findOne(dto.animal());
+        Usuario tutor = this.usuarioService.findOne(dto.tutor(), clinica);
+        Usuario veterinario = this.usuarioService.findOneVeterinario(dto.veterinario(), clinica);
+
+        this.checkForScheduledAgendamento(dto, animal, veterinario, Optional.of(agendamento));
+
+        agendamento.fill(dto);
+        agendamento.setAnimal(animal);
+        agendamento.setTutor(tutor);
+        agendamento.setVeterinario(veterinario);
+
+        return this.agendamentoRepository.saveAndFlush(agendamento);
     }
 
     @Override
@@ -79,17 +89,29 @@ public class AgendamentoServiceImpl implements AgendamentoService {
         this.agendamentoRepository.delete(agendamento);
     }
 
-    private void checkForScheduledAgendamento(AgendamentoRequestDto dto, Animal animal, Usuario veterinario) throws ConflictException {
+    private void checkForScheduledAgendamento(
+            AgendamentoRequestDto dto,
+            Animal animal,
+            Usuario veterinario,
+            Optional<Agendamento> agendamentoToBeRescheduled
+    ) throws ConflictException {
         LocalDateTime dataInicial = dto.dataConsulta().withMinute(0), dataFinal = dataInicial.plusHours(1);
 
         Optional<Agendamento> response = this.agendamentoRepository.findByAnimalAndDataConsultaBetween(animal, dataInicial, dataFinal);
 
-        if (response.isPresent())
+        if (!this.shouldBeScheduled(response, agendamentoToBeRescheduled))
             throw new ConflictException("Já existe um agendamento para esse animal nesse horário");
 
         response = this.agendamentoRepository.findByVeterinarioAndDataConsultaBetween(veterinario, dataInicial, dataFinal);
 
-        if (response.isPresent())
+        if (!this.shouldBeScheduled(response, agendamentoToBeRescheduled))
             throw new ConflictException("Já existe um agendamento para esse veterinário nesse horário");
+    }
+
+    private boolean shouldBeScheduled(Optional<Agendamento> scheduled, Optional<Agendamento> toBeReschedule) {
+        if (scheduled.isEmpty())
+            return true;
+
+        return toBeReschedule.isPresent() && scheduled.get().getId().equals(toBeReschedule.get().getId());
     }
 }
