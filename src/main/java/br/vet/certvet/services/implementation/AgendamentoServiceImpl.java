@@ -3,6 +3,8 @@ package br.vet.certvet.services.implementation;
 import br.vet.certvet.dto.requests.AgendamentoRequestDto;
 import br.vet.certvet.exceptions.ConflictException;
 import br.vet.certvet.exceptions.NotFoundException;
+import br.vet.certvet.exceptions.specializations.agendamento.AgendamentoConflictException;
+import br.vet.certvet.exceptions.specializations.agendamento.AgendamentoNotFoundException;
 import br.vet.certvet.models.Agendamento;
 import br.vet.certvet.models.Animal;
 import br.vet.certvet.models.Clinica;
@@ -67,7 +69,7 @@ public class AgendamentoServiceImpl implements AgendamentoService {
         Optional<Agendamento> response = this.agendamentoRepository.findOneByIdAndClinica(id, clinica);
 
         if (response.isEmpty())
-            throw new NotFoundException("Agendamento não encontrado");
+            throw new AgendamentoNotFoundException();
 
         return response.get();
     }
@@ -100,12 +102,12 @@ public class AgendamentoServiceImpl implements AgendamentoService {
         Optional<Agendamento> response = this.agendamentoRepository.findByAnimalAndDataConsultaBetween(animal, dataInicial, dataFinal);
 
         if (!this.shouldBeScheduled(response, agendamentoToBeRescheduled))
-            throw new ConflictException("Já existe um agendamento para esse animal nesse horário");
+            throw new AgendamentoConflictException("Já existe um agendamento para esse animal nesse horário");
 
         response = this.agendamentoRepository.findByVeterinarioAndDataConsultaBetween(veterinario, dataInicial, dataFinal);
 
         if (!this.shouldBeScheduled(response, agendamentoToBeRescheduled))
-            throw new ConflictException("Já existe um agendamento para esse veterinário nesse horário");
+            throw new AgendamentoConflictException("Já existe um agendamento para esse veterinário nesse horário");
     }
 
     private boolean shouldBeScheduled(Optional<Agendamento> scheduled, Optional<Agendamento> toBeReschedule) {
