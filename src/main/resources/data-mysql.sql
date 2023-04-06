@@ -7,9 +7,9 @@ values
     ('TUTOR');
 
 INSERT INTO Clinicas
-    (bairro, celular, cep, cidade, cnae, cnpj, email, estado, logradouro, nome_fantasia, numero, razao_social, telefone)
+    (bairro, celular, cep, cidade, cnae, cnpj, email, estado, logradouro, nome_fantasia, numero, razao_social, telefone, code)
 VALUES
-    ('Vila Paranaguá', '(11) 99999-9999', '03808-130','São Paulo', '46546', '65.622.164/0001-04', 'contato@clinica.com', 'AM', 'Rua Miguel Rachid', 'Nome fantasia clinica', '546', 'Razão social Clinica', '(11) 1234-5678');
+    ('Vila Paranaguá', '(11) 99999-9999', '03808-130','São Paulo', '46546', '65.622.164/0001-04', 'contato@clinica.com', 'AM', 'Rua Miguel Rachid', 'Nome fantasia clinica', '546', 'Razão social Clinica', '(11) 1234-5678', 1);
 
 INSERT INTO usuarios
     (id, bairro, celular, cep, cidade, cpf, crmv, deleted_at, email, estado, logradouro, nome, numero, password, rg, telefone, username, clinica_id)
