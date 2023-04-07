@@ -2,7 +2,6 @@ package br.vet.certvet.services.implementation;
 
 import br.vet.certvet.dto.requests.AgendamentoRequestDto;
 import br.vet.certvet.exceptions.ConflictException;
-import br.vet.certvet.exceptions.NotFoundException;
 import br.vet.certvet.exceptions.specializations.agendamento.AgendamentoConflictException;
 import br.vet.certvet.exceptions.specializations.agendamento.AgendamentoNotFoundException;
 import br.vet.certvet.models.Agendamento;
@@ -40,7 +39,7 @@ public class AgendamentoServiceImpl implements AgendamentoService {
         Usuario tutor = this.usuarioService.findOne(dto.tutor(), clinica);
         Usuario veterinario = this.usuarioService.findOneVeterinario(dto.veterinario(), clinica);
 
-        this.checkForScheduledAgendamento(dto, animal, veterinario, Optional.empty());
+        this.checkForScheduledAgendamento(dto, animal, veterinario);
 
         Agendamento agendamento = new Agendamento(dto, veterinario, animal, tutor, clinica);
 
@@ -89,6 +88,10 @@ public class AgendamentoServiceImpl implements AgendamentoService {
     @Override
     public void delete(Agendamento agendamento) {
         this.agendamentoRepository.delete(agendamento);
+    }
+
+    private void checkForScheduledAgendamento(AgendamentoRequestDto dto, Animal animal, Usuario veterinario) {
+        this.checkForScheduledAgendamento(dto, animal, veterinario, Optional.empty());
     }
 
     private void checkForScheduledAgendamento(
