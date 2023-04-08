@@ -32,6 +32,8 @@ public interface UsuarioService {
 
     Usuario findOne(String passwordResetToken);
 
+    Usuario findOneVeterinario(Long id, Clinica clinica);
+
     PaginatedResponse<UsuarioResponseDto> findAll(int page, String search, String url, Clinica clinica);
 
     void delete(Usuario usuario);
