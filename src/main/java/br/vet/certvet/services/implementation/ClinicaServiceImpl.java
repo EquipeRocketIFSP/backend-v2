@@ -13,7 +13,9 @@ import br.vet.certvet.services.ClinicaService;
 import br.vet.certvet.services.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLException;
 import java.util.Optional;
 
 @Service
@@ -26,6 +28,7 @@ public class ClinicaServiceImpl implements ClinicaService {
     private UsuarioService usuarioService;
 
     @Override
+    @Transactional(rollbackFor = {SQLException.class, RuntimeException.class})
     public Clinica create(ClinicaInicialRequestDto dto) {
         Optional<Clinica> response = this.clinicaRepository.findByCnpj(dto.clinica_cnpj);
 
