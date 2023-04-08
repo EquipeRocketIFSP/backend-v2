@@ -9,7 +9,7 @@
         width: 650px;
     }
 
-    body > div {
+    body>div {
         margin-left: 10px;
         margin-right: 10px;
     }
@@ -52,18 +52,21 @@
         text-align: center;
     }
 </style>
-<body border="1px solid black" width="650px" margin-left="10px" margin-right="10px">
 
-<div id="cabecalho">
-    <div id="cabecalho_logo">
-        <img alt="logo" height="100px" src="certvet_logo.png">
+<body>
+
+    <div id="cabecalho">
+        <div id="cabecalho_logo">
+            <img alt="logo" height="100px" src="../certvet_logo.jpg"></img>
+            <div id="logo" class="media" data-src="../certvet_logo.jpg"></div>
+        </div>
+        <div id="cabecalho_texto">
+            <h2>Clínica: ${clinica.razaoSocial}</h2>
+            <h3>Nome veterinário: ${veterinario.nome}</h3>
+            <h3>Crmv: ${veterinario.crmv}</h3>
+            <p>Telefone: ${clinica.telefone}</p>
+        </div>
     </div>
-    <div id="cabecalho_texto">
-        <h2>Clínica: ${clinica.razaoSocial}</h2>
-        <h3>Nome veterinário: ${veterinario.nome}</h3>
-        <h3>Crmv: ${veterinario.crmv}</h3>
-        <p>Telefone: ${clinica.telefone}</p>
-    </div>
-</div>
 </body>
+
 </html>
