@@ -35,8 +35,8 @@ public class AgendamentoServiceImpl implements AgendamentoService {
 
     @Override
     public Agendamento create(AgendamentoRequestDto dto, Clinica clinica) {
-        Animal animal = this.animalService.findOne(dto.animal());
         Usuario tutor = this.usuarioService.findOne(dto.tutor(), clinica);
+        Animal animal = this.animalService.findOne(dto.animal(), tutor);
         Usuario veterinario = this.usuarioService.findOneVeterinario(dto.veterinario(), clinica);
 
         this.checkForScheduledAgendamento(dto, animal, veterinario);
@@ -49,8 +49,8 @@ public class AgendamentoServiceImpl implements AgendamentoService {
     @Override
     @Transactional
     public Agendamento edit(AgendamentoRequestDto dto, Agendamento agendamento, Clinica clinica) {
-        Animal animal = this.animalService.findOne(dto.animal());
         Usuario tutor = this.usuarioService.findOne(dto.tutor(), clinica);
+        Animal animal = this.animalService.findOne(dto.animal(), tutor);
         Usuario veterinario = this.usuarioService.findOneVeterinario(dto.veterinario(), clinica);
 
         this.checkForScheduledAgendamento(dto, animal, veterinario, Optional.of(agendamento));
