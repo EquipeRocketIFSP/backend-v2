@@ -33,7 +33,6 @@ public class Usuario implements UserDetails, Fillable<UsuarioRequestDto> {
     @Column(nullable = false)
     private String username;
 
-    @Column(nullable = false)
     private String password;
 
     @Setter
