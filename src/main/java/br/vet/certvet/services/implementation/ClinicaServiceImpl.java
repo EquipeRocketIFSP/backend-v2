@@ -37,7 +37,7 @@ public class ClinicaServiceImpl implements ClinicaService {
     @Override
     @Transactional(rollbackFor = {SQLException.class, RuntimeException.class})
     public Clinica create(ClinicaInicialRequestDto dto) {
-        Optional<Clinica> response = this.clinicaRepository.findByCnpj(dto.clinica_cnpj);
+        Optional<Clinica> response = this.clinicaRepository.findByCnpj(dto.clinicaCnpj());
 
         if (response.isPresent())
             throw new ConflictException("Clínica já existe.");
@@ -45,7 +45,7 @@ public class ClinicaServiceImpl implements ClinicaService {
         Usuario usuario;
         Clinica clinica = this.clinicaRepository.saveAndFlush(new Clinica(dto));
 
-        if (dto.dono_crmv != null && !dto.dono_crmv.isEmpty()) {
+        if (dto.donoCrmv() != null && !dto.donoCrmv().isEmpty()) {
             usuario = this.usuarioService.create(ClinicaServiceImpl.getDonoResponsavelTecnicoDto(dto), clinica);
 
             clinica.setResponsavelTecnico(usuario);
@@ -117,20 +117,20 @@ public class ClinicaServiceImpl implements ClinicaService {
     private static VeterinarioRequestDto getDonoResponsavelTecnicoDto(ClinicaInicialRequestDto dto) {
         VeterinarioRequestDto usuarioDto = new VeterinarioRequestDto();
 
-        usuarioDto.nome = dto.dono_nome;
-        usuarioDto.email = dto.dono_email;
-        usuarioDto.cpf = dto.dono_cpf;
-        usuarioDto.rg = dto.dono_rg;
-        usuarioDto.celular = dto.dono_celular;
-        usuarioDto.telefone = dto.dono_telefone;
-        usuarioDto.logradouro = dto.dono_logradouro;
-        usuarioDto.numero = dto.dono_numero;
-        usuarioDto.cep = dto.dono_cep;
-        usuarioDto.bairro = dto.dono_bairro;
-        usuarioDto.cidade = dto.dono_cidade;
-        usuarioDto.estado = dto.dono_estado;
-        usuarioDto.senha = dto.dono_senha;
-        usuarioDto.crmv = dto.dono_crmv;
+        usuarioDto.nome = dto.donoNome();
+        usuarioDto.email = dto.donoEmail();
+        usuarioDto.cpf = dto.donoCpf();
+        usuarioDto.rg = dto.donoRg();
+        usuarioDto.celular = dto.donoCelular();
+        usuarioDto.telefone = dto.donoTelefone();
+        usuarioDto.logradouro = dto.donoLogradouro();
+        usuarioDto.numero = dto.donoNumero();
+        usuarioDto.cep = dto.donoCep();
+        usuarioDto.bairro = dto.donoBairro();
+        usuarioDto.cidade = dto.donoCidade();
+        usuarioDto.estado = dto.donoEstado();
+        usuarioDto.senha = dto.donoSenha();
+        usuarioDto.crmv = dto.donoCrmv();
         usuarioDto.is_admin = true;
 
         return usuarioDto;
