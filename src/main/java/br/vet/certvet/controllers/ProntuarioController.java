@@ -44,9 +44,11 @@ public class ProntuarioController extends BaseController {
                     .header("reason", "Media type not allowed")
                     .build();
         Optional<Prontuario> prontuario = prontuarioService.findById(id);
-        return prontuario.isPresent()
-                ? ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF).body(pdfService.retrieveFromRepository(prontuario.get()))
-                : ResponseEntity.notFound().build();
+        if(prontuario.isEmpty())
+            return ResponseEntity.notFound().build();
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdfService.retrieveFromRepository(prontuario.get()));
     }
 
     @PostMapping

@@ -7,6 +7,9 @@ import org.hibernate.Hibernate;
 import javax.persistence.*;
 import java.text.DateFormatSymbols;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,6 +25,9 @@ public class Prontuario {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    private Integer versao;
+
+    @Setter
     @ManyToOne
     private Clinica clinica;
 
@@ -89,10 +95,12 @@ public class Prontuario {
 
     private LocalDateTime dataAtendimento;
 
+    @Setter
     @ManyToOne(optional = false)
     @JoinColumn(name = "animal_id", nullable = false)
     private Animal animal;
 
+    @Setter
     @ManyToOne
     @JoinColumn(name = "usuario_id")
     private Usuario veterinario;
@@ -116,6 +124,12 @@ public class Prontuario {
     @OneToMany // removido atributo mappedBy por não se tratar de uma relação bidirecional
     @ToString.Exclude
     private List<Documento> documentos;
+    private Date criadoEm;
+
+    public static String createCodigo(LocalDateTime now) {
+        // exemplo: VT-P-2022_12_03_02_19_20.pdf
+        return "VT-P-"+now.format(DateTimeFormatter.ofPattern("yyyy_MM_dd_hh_mm_ss"));
+    }
 
     public void setTutor(Usuario tutor) {
         this.tutor = tutor;
@@ -149,4 +163,42 @@ public class Prontuario {
                 + month.substring(1);
     }
 
+    public Prontuario addDocumentoPdf(Documento documento) {
+        documentos = Arrays.asList(documento);
+        return this;
+    }
+    public Prontuario setDocumentoDetails(Documento documento){
+        return addDocumentoPdf(documento)
+                .setCodigo(documento.getName())
+                .setVersao(documento.getVersao())
+                .setCriadoEm(documento.getCriadoEm());
+    }
+    
+    private Prontuario setCriadoEm(Date criadoEm) {
+        this.criadoEm = criadoEm;
+        return this;
+    }
+    public Prontuario setVersao(int versao) {
+        this.versao = versao;
+        return this;
+    }
+
+    public Prontuario setCodigo(String codigo) {
+        this.codigo = codigo;
+        return this;
+    }
+    public Prontuario setClinica(Clinica clinica) {
+        this.clinica = clinica;
+        return this;
+    }
+
+    public Prontuario setVeterinario(Usuario veterinario) {
+        this.veterinario = veterinario;
+        return this;
+    }
+
+    public Prontuario setAnimal(Animal animal) {
+        this.animal = animal;
+        return this;
+    }
 }

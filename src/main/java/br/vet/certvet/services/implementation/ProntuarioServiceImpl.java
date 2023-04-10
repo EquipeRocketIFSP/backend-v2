@@ -12,16 +12,43 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import br.vet.certvet.models.*;
+import br.vet.certvet.repositories.*;
+import br.vet.certvet.services.PdfService;
+import lombok.extern.slf4j.Slf4j;
+
+import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class ProntuarioServiceImpl implements ProntuarioService {
     @Autowired
     private ProntuarioRepository prontuarioRepository;
 
     @Autowired
     private PdfRepository pdfRepository;
+
+    @Autowired
+    private CirurgiaRepository cirurgiaRepository;
+
+    @Autowired
+    private TutorRepository tutorRepository;
+
+    @Autowired
+    private DocumentoRepository documentoRepository;
+
+    @Autowired
+    private PdfService pdfService;
+
+    @Autowired
+    private ClinicaRepository clinicaRepository;
+
+    @Autowired
+    private AnimalRepository animalRepository;
 
     @Autowired
     private DocumentoService documentoService;
@@ -43,6 +70,65 @@ public class ProntuarioServiceImpl implements ProntuarioService {
         );
     }
 
+    @Override
+    public Prontuario save(Prontuario prontuario) {
+        log.info("prontuario: " + prontuario);
+        Date now = new Date();
+        String codigo = Prontuario.createCodigo(LocalDateTime.now());
+//        return prontuarioRepository.save(prontuario);
+        prontuario.setCodigo(codigo);
+        Optional<Clinica> clinica = clinicaRepository.findById(prontuario.getClinica().getId());
+        prontuario.setClinica(clinica.get());
+
+        Optional<Usuario> tutor = tutorRepository.findById(prontuario.getTutor().getId());
+        prontuario.setTutor(tutor.get());
+
+        Optional<Animal> animal = animalRepository.findByTutores_idAndNome(tutor.get().getId(), prontuario.getAnimal().getNome());
+        prontuario.setAnimal(animal.get());
+
+        log.debug("Iniciando persistência do prontuário");
+        Documento doc = Documento.builder()
+                .name(codigo)
+                .versao(1)
+                .criadoEm(now)
+                .veterinario(prontuario.getVeterinario())
+                .clinica(clinica.get())
+                .caminhoArquivo("/" + S3BucketServiceRepository.getConventionedBucketName(prontuario.getClinica().getCnpj()) + "/" + prontuario.getCodigo()+".pdf")
+                .build();
+//        log.debug("doc a ser persistido: " + doc);
+        Documento tempDoc = documentoRepository.save(doc);
+        log.debug("doc persistido");
+        Prontuario p = prontuario.setDocumentoDetails(tempDoc);
+        log.debug("Prontuario atualizado");
+        p = prontuarioRepository.save(p);
+        log.debug("prontuario persistido");
+        documentoRepository.save(tempDoc.setProntuario(p));
+        log.debug("documento persistido");
+        try {
+            pdfService.writeProntuario(p);
+            log.debug("Processo de gravação de PDF finalizado");
+        } catch (SQLException e){
+            log.error("\"Erro de validação SQL do ID da Clínica\": " + e.getMessage());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return p;
+    }
+
+    @Override
+    public boolean exists(LocalDateTime dataAtendimento) {
+        return prontuarioRepository.existsByDataAtendimento(dataAtendimento);
+    }
+
+    @Override
+    public Optional<String> findByCertvetProntuario(String certvetCode) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<List<Prontuario>> getByCodigo(String codigo) {
+        return prontuarioRepository.findAllByCodigo(codigo);
+    }
     @Override
     public Optional<Prontuario> createProntuario(Prontuario prontuario) {
         return Optional.empty();

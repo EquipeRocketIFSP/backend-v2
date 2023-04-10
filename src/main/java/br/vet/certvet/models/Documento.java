@@ -4,6 +4,7 @@ import br.vet.certvet.models.especializacoes.AnestesiaDocumento;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @NoArgsConstructor
@@ -19,6 +20,16 @@ public class Documento {
 
     private String tipo;
     private String caminho;
+    private String name;
+    private Integer versao;
+    private Date criadoEm;
+    @ManyToOne
+    @JoinColumn(name = "veterinario_id")
+    private Usuario veterinario;
+    @ManyToOne
+    @JoinColumn(name = "clinica_id")
+    private Clinica clinica;
+    private String caminhoArquivo;
 
     protected String titulo = null;
     protected String declaraConsentimento = null;
@@ -43,5 +54,17 @@ public class Documento {
 
     public Documento find(String documentoTipo) {
         return new AnestesiaDocumento().find(documentoTipo);
+    }
+
+    public Documento setProntuario(Prontuario p) {
+        this.prontuario = p;
+        return this;
+    }
+    public void setClinica(Clinica clinica) {
+        this.clinica = clinica;
+    }
+
+    public void setVeterinario(Usuario veterinario) {
+        this.veterinario = veterinario;
     }
 }

@@ -25,7 +25,6 @@ public class S3BucketServiceRepository implements PdfRepository {
     @Override
     public byte[] retrieveObject(String cnpj, String keyName) throws IOException {
         String bucketName = getConventionedBucketName(cnpj);
-//        log.info("data for fileName search: " + keyName);
         byte[] arr = null;
         if(!s3.doesBucketExistV2(bucketName)){
             s3.createBucket(bucketName);
@@ -35,9 +34,6 @@ public class S3BucketServiceRepository implements PdfRepository {
                     .getObjectContent()
                     .readAllBytes();
         } catch (AmazonS3Exception e) {
-//            if(e.getLocalizedMessage().contains("NoSuchBucket")){
-//                s3.createBucket(bucketName);
-//            }
             log.error(e.getLocalizedMessage());
         }
         if (arr == null) {
