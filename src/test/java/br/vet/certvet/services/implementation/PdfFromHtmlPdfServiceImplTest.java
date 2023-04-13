@@ -161,7 +161,17 @@ public class PdfFromHtmlPdfServiceImplTest {
 
     @ParameterizedTest
     @ValueSource(strings = {
-            "sanitario"
+            "sanitario",
+            "anestesia",
+            "cirurgia",
+            "doacaoPesquisa",
+            "eutanasia",
+            "exames",
+            "retiraCorpo",
+            "retiradaSemAlta",
+            "terapeutico",
+            "tratamentoClinico",
+            "vacinacao"
     })
     @DisplayName("Devolve um PDF de documento gerado a partir de HTML de acordo com o parametro solicitado")
     /*

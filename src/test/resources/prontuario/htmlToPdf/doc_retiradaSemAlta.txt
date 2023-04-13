@@ -1,0 +1,28 @@
+Clínica: Clinica vet
+Nome veterinário: Diogo Rodrigo Theo Novaes
+Crmv: 123456
+Telefone: (12) 3456-7890
+Telefone: code
+TERMO DE ESCLARECIMENTO PARA RETIRADA DE ANIMAL DO SERVIÇO
+VETERINÁRIO SEM ALTA MÉDICA
+Declaro que foi esclarecido ao ora subscritor que o animal abaixo identificado não obteve alta
+médica e que há recomendação para manter o animal em internação em estabelecimento médico
+veterinário apropriado.
+Identificação do animal (nome, sexo, raça, idade real ou presumida, cor de pelagem ou
+plumagem, sinais particulares, tatuagem, brinco, microchip, registro genealógico e, conforme o
+caso, resenha detalhada):
+Nome: miau  Espécie: gato Raça: Siames
+Sexo: femea  Idade: 3 Cor de pelagem/plumagem: curta
+Declaro ainda que estou ciente de que há riscos de agravamento da doença, inclusive morte, e
+que assumo inteira responsabilidade por esse ato.
+Observações de interesse a serem fornecidas pelo(a) Médico(a) Veterinário(a):
+observacaoVet
+Observações de interesse a serem fornecidas pelo(a) tutor(a)/proprietário(a)/responsável:
+observacaoTutor
+Identificação do(a) responsável pelo animal:
+Nome: Caio Felipe Pires
+CPF: 175.578.151-22
+Endereço completo: Praça Magalhães, 242 - CEP: 66053-140 - Reduto - Belém/PA
+Cidade das Abelhas, 12 de Abril de 2023.
+Assinatura do(a) responsável pelo animal
+(documento a ser emitido em 2 vias: 1ª via: médico-veterinário; 2ª via: proprietário/tutor)
