@@ -14,20 +14,26 @@
         margin-right: 10px;
     }
 
-    #cabecalho {
-        display: flex;
-    }
-
     #cabecalho_logo {
-        padding: 10px 20px 10px 20px;
+        padding-top: 15px;
+        padding-left: 10px;
     }
 
     #cabecalho_texto {
         padding-top: 10px;
+        /* width: 90%; */
+        margin-left: auto;
+        margin-right: auto;
     }
 
     #cabecalho_texto>* {
         margin: 0;
+    }
+
+    #dadosTutor {
+        width: 80%;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     #titulo {
@@ -57,14 +63,31 @@
 
     <div id="cabecalho">
         <div id="cabecalho_logo">
-            <img alt="logo" height="100px" src="../certvet_logo.jpg"></img>
-            <div id="logo" class="media" data-src="../certvet_logo.jpg"></div>
+            <!-- <img alt="logo" width="100px" src="../CertVet.png"></img> -->
+            <div id="logo" class="media" data-src="../CertVet.png"></div>
+
+            <span>Nº controle</span>
         </div>
         <div id="cabecalho_texto">
-            <h2>Clínica: ${clinica.razaoSocial}</h2>
-            <h3>Nome veterinário: ${veterinario.nome}</h3>
-            <h3>Crmv: ${veterinario.crmv}</h3>
-            <p>Telefone: ${clinica.telefone}</p>
+            <h3>Clínica: Clinica da Irina</h3>
+        </div>
+    </div>
+
+    <!-- <hr style="width: 80%;"/> -->
+
+    <div id="dadosTutor">
+        <div id="cabecalho_texto">
+            <div style="display: flex; gap: 3%;">
+                <p><b>Tutor: </b> ${tutor.nome}</p>
+                <p><b>Contato: </b> ${tutor.telefone}</p>
+                <p><b>CPF: </b> ${tutor.cpf}</p>
+            </div>
+            <h3>Nome do animal: ${animal.nome}</h3>
+            <div style="display: flex; gap: 10px;">
+                <p>Esp: ${animal.especie}</p>
+                <p>Sexo: ${animal.sexo}</p>
+                <p>Idade: ${animal.idade}</p>
+            </div>
         </div>
     </div>
 </body>
