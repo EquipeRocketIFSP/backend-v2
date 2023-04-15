@@ -16,10 +16,7 @@ import org.springframework.stereotype.Service;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
@@ -72,13 +69,7 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
         String result = new StringSubstitutor(parameters).replace(htmlBase);
         Document document = Jsoup.parse(result, "UTF-8");
         document.outputSettings().syntax(Document.OutputSettings.Syntax.xml);
-        generatePdfFromHtml(document, new File(fileName));
-        Path of = Path.of(fileName);
-        try {
-            return Files.readAllBytes(of);
-        } finally {
-            Files.deleteIfExists(of);
-        }
+        return generatePdfFromHtml(document);
     }
 
     private static ImmutableMap<String, String> getFieldsToBeLoaded(Prontuario prontuario) {
@@ -151,8 +142,8 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
                 .build();
     }
 
-    private static void generatePdfFromHtml(Document document, File outputPdf) throws IOException {
-        try (OutputStream outputStream = new FileOutputStream(outputPdf)) {
+    private static byte[] generatePdfFromHtml(Document document) throws IOException {
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             ITextRenderer renderer = new ITextRenderer();
             SharedContext sharedContext = renderer.getSharedContext();
             sharedContext.setPrint(true);
@@ -161,6 +152,7 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
             renderer.setDocumentFromString(document.html());
             renderer.layout();
             renderer.createPDF(outputStream);
+            return outputStream.toByteArray();
         }
     }
 

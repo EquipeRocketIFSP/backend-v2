@@ -152,15 +152,15 @@ public class Prontuario {
         return this.codigo;
     }
 
-    public String getMonthAtendimento(){
-        var month = new DateFormatSymbols().getMonths()[
+    final public String getMonthAtendimento(){
+        final var month = new DateFormatSymbols().getMonths()[
                 dataAtendimento.getMonth()
                         .getValue()-1
                 ]
                 .toLowerCase();
-        return month.substring(0,1)
-                .toUpperCase()
-                + month.substring(1);
+        return month.substring(0, 1)
+                .toUpperCase() +
+                month.substring(1);
     }
 
     public Prontuario addDocumentoPdf(Documento documento) {
