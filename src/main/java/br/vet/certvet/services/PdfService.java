@@ -11,14 +11,6 @@ import java.io.IOException;
 
 @Service
 public interface PdfService {
-    byte[] termoAutorizacaoProcedimentoCirurgico(
-            String estabelecimento,
-            String procedimento,
-            String cidade,
-            Animal animal,
-            Usuario veterinario,
-            Usuario tutor
-    ) throws Exception;
 
     byte[] writeProntuario(Prontuario prontuario) throws Exception;
 

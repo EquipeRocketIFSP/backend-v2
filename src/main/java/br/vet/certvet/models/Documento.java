@@ -46,7 +46,13 @@ public class Documento {
     protected String explicaDuasVias = null;
 
     @Setter
-    protected byte[] pdf = null;
+    protected String md5 = null;
+
+    @Setter
+    protected String etag = null;
+
+    @Setter
+    protected String algorithm = null;
 
     @OneToOne(fetch = FetchType.LAZY)
     @ToString.Exclude

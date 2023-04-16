@@ -1,13 +1,15 @@
 package br.vet.certvet.services.implementation;
 
-import br.vet.certvet.models.Animal;
+import br.vet.certvet.exceptions.DocumentoNotPersistedException;
 import br.vet.certvet.models.Documento;
 import br.vet.certvet.models.Prontuario;
-import br.vet.certvet.models.Usuario;
 import br.vet.certvet.repositories.ClinicaRepository;
+import br.vet.certvet.repositories.DocumentoRepository;
 import br.vet.certvet.repositories.PdfRepository;
 import br.vet.certvet.services.PdfService;
+import com.amazonaws.services.s3.model.PutObjectResult;
 import com.google.common.collect.ImmutableMap;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.StringSubstitutor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -19,21 +21,20 @@ import org.xhtmlrenderer.pdf.ITextRenderer;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.sql.SQLException;
 import java.util.Map;
 
 @Service
+@Slf4j
 public class PdfFromHtmlPdfServiceImpl implements PdfService {
+    @Autowired
+    private DocumentoRepository documentoRepository;
 
     @Autowired
     private PdfRepository pdfRepository;
 
     @Autowired
     private ClinicaRepository clinicaRepository;
-
-    @Override
-    public byte[] termoAutorizacaoProcedimentoCirurgico(String estabelecimento, String procedimento, String cidade, Animal animal, Usuario veterinario, Usuario tutor) throws Exception {
-        return new byte[0];
-    }
 
     @Override
     public byte[] writeProntuario(Prontuario prontuario) throws Exception {
@@ -49,12 +50,12 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
                 "clinica.telefone", prontuario.getClinica().getTelefone(),
                 "prontuario.codigo", prontuario.getCodigo()
         );
-        return transformTxtToXmlToPdf(fileName, parameters, layout);
+        return transformTxtToXmlToPdf(parameters, layout);
     }
 
     @Override
-    public byte[] writeDocumento(Prontuario prontuario, Documento documentoTipo) throws Exception {
-        final String fileName = "res/" + prontuario.getCodigo() + ".pdf";
+    public byte[] writeDocumento(Prontuario prontuario, Documento documentoTipo) throws DocumentoNotPersistedException, IOException, SQLException {
+        final String fileName = prontuario.getCodigo() + ".pdf";
         final String from = "src/main/resources/documents/consentimento/ConsentimentoLayoutV2.html";
         final String layout = Files.readString(Path.of(from));
 
@@ -62,10 +63,37 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
         final String htmlBase = new StringSubstitutor(parameters).replace(layout);
 
         parameters = getFieldsToBeLoaded(prontuario);
-        return transformTxtToXmlToPdf(fileName, parameters, htmlBase);
+        byte[] pdf = transformTxtToXmlToPdf(parameters, htmlBase);
+        log.info("Iniciando persistência no serviço AWS S3");
+        var res = persistObjectInAws(prontuario, fileName, pdf);
+        if(null != res) {
+            documentoTipo.setMd5(res.getContentMd5());
+            documentoTipo.setEtag(res.getETag());
+            documentoTipo.setAlgorithm(res.getSSEAlgorithm());
+            documentoTipo.setProntuario(prontuario);
+            documentoRepository.save(documentoTipo);
+            log.info("Prontuário Salvo");
+            return pdf;
+        }
+        throw new DocumentoNotPersistedException("Não foi possível gerar o documento com sucesso.");
     }
 
-    private byte[] transformTxtToXmlToPdf(String fileName, Map<String, String> parameters, String htmlBase) throws IOException {
+    private PutObjectResult persistObjectInAws(Prontuario prontuario, String fileName, byte[] pdf) throws SQLException {
+        return pdfRepository.putObject(
+                clinicaRepository.findById(
+                        prontuario.getClinica()
+                                .getId()
+                        )
+                        .stream()
+                        .findFirst()
+                        .orElseThrow(SQLException::new)
+                        .getCnpj(),
+                fileName.substring(fileName.indexOf("/")+1),
+                pdf
+        );
+    }
+
+    private byte[] transformTxtToXmlToPdf(Map<String, String> parameters, String htmlBase) throws IOException {
         String result = new StringSubstitutor(parameters).replace(htmlBase);
         Document document = Jsoup.parse(result, "UTF-8");
         document.outputSettings().syntax(Document.OutputSettings.Syntax.xml);

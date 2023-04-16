@@ -1,10 +1,11 @@
 package br.vet.certvet.repositories;
 
-import java.io.File;
+import com.amazonaws.services.s3.model.PutObjectResult;
+
 import java.io.IOException;
 
 public interface PdfRepository {
-    void putObject(String cnpj, String keyName, File filePath);
+    PutObjectResult putObject(String cnpj, String keyName, byte[] bynaryArrayInputStream);
 
     byte[] retrieveObject(String cnpj, String keyName) throws IOException;
 }
