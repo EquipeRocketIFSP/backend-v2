@@ -96,7 +96,7 @@ public class ClinicaServiceImpl implements ClinicaService {
 
     private void sendCodigoClinicaThoughEmail(Clinica clinica, Usuario to) {
         final String subject = "Código da Clínica - CertVet";
-        final String message = "<h1>Redefinir senha - CertVet</h1>" +
+        final String message = "<h1>Código da Clínica - CertVet</h1>" +
                 "<br/>" +
                 "<p>Clínica cadastrada com sucesso.</p>" +
                 "<p>O código de acesso da Clínica é: " + clinica.getCode() + "</p>";
