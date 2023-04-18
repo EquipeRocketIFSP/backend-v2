@@ -12,5 +12,5 @@ public interface MedicamentoService {
 
     Medicamento findOne(Long id);
 
-    PaginatedResponse<MedicamentoResponseDto> findAll(int page, String url);
+    PaginatedResponse<MedicamentoResponseDto> findAll(int page, String search, String url);
 }

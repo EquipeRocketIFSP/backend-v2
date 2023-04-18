@@ -42,4 +42,8 @@ public class MedicamentoResponseDto {
         this.nomeReferencia = medicamento.getNomeReferencia();
         this.vencimentoRegistro = medicamento.getVencimentoRegistro().toString();
     }
+
+    public static MedicamentoResponseDto factory(Medicamento medicamento) {
+        return new MedicamentoResponseDto(medicamento);
+    }
 }
