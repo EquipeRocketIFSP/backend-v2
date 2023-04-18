@@ -25,14 +25,11 @@ public class MedicamentoServiceImpl implements MedicamentoService {
     private MedicamentoRespository medicamentoRespository;
 
     @Override
-    public Medicamento create(MedicamentoRequestDto dto) {
+    public void create(MedicamentoRequestDto dto) {
         Optional<Medicamento> response = this.medicamentoRespository.findByCodigoRegistro(dto.codigoRegistro);
 
         if (response.isPresent())
             throw new ConflictException("Medicamento já existe");
-
-        Medicamento medicamento = new Medicamento(dto);
-        return this.medicamentoRespository.saveAndFlush(medicamento);
     }
 
     @Override

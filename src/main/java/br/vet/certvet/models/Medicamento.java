@@ -1,11 +1,10 @@
 package br.vet.certvet.models;
 
-import br.vet.certvet.dto.requests.MedicamentoRequestDto;
-import br.vet.certvet.models.contracts.Fillable;
 import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
@@ -14,7 +13,7 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Medicamento implements Fillable<MedicamentoRequestDto> {
+public class Medicamento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,28 +33,16 @@ public class Medicamento implements Fillable<MedicamentoRequestDto> {
     private String viaUso;
 
     @Column(nullable = false)
-    private String dose;
-
-    @Column(nullable = false)
     private String concentracao;
 
     @Column(nullable = false)
-    private String intervaloDose;
+    private String fabricante;
 
-    public Medicamento(MedicamentoRequestDto dto) {
-        this.fill(dto);
-    }
+    @Column(nullable = false)
+    private String nomeReferencia;
 
-    @Override
-    public void fill(MedicamentoRequestDto dto) {
-        this.nome = dto.nome;
-        this.codigoRegistro = dto.codigoRegistro;
-        this.principioAtivo = dto.principioAtivo;
-        this.concentracao = dto.concentracao;
-        this.dose = dto.dose;
-        this.viaUso = dto.viaUso;
-        this.intervaloDose = dto.intervaloDose;
-    }
+    @Column(nullable = false)
+    private LocalDateTime vencimentoRegistro;
 
     @Override
     public boolean equals(Object o) {

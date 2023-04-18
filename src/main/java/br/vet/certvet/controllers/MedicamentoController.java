@@ -6,7 +6,6 @@ import br.vet.certvet.dto.responses.PaginatedResponse;
 import br.vet.certvet.models.Medicamento;
 import br.vet.certvet.services.MedicamentoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,16 +13,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api/medicamento")
 public class MedicamentoController extends BaseController {
     @Autowired
     private MedicamentoService medicamentoService;
 
     @PostMapping
-    public ResponseEntity<MedicamentoResponseDto> create(@RequestBody @Valid MedicamentoRequestDto dto) {
-        Medicamento medicamento = this.medicamentoService.create(dto);
+    public ResponseEntity<Void> create(@RequestBody @Valid MedicamentoRequestDto dto) {
+        this.medicamentoService.create(dto);
 
-        return new ResponseEntity<>(new MedicamentoResponseDto(medicamento), HttpStatus.CREATED);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping
