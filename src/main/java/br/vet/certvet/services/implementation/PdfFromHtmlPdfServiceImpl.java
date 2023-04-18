@@ -14,6 +14,7 @@ import org.apache.commons.text.StringSubstitutor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.pdf.ITextRenderer;
@@ -40,7 +41,7 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
     public byte[] writeProntuario(Prontuario prontuario) throws Exception {
 
         String from = "src/main/resources/documents/prontuario/ProntuarioLayout.html";
-        String fileName = "res/" + prontuario.getCodigo() + ".pdf";
+        String fileName = prontuario.getCodigo() + ".pdf";
         String layout = Files.readString(Path.of(from));
         Map<String, String> parameters = Map.of(
                 "animal.nome", prontuario.getAnimal().getNome(),
@@ -54,8 +55,7 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
     }
 
     @Override
-    public byte[] writeDocumento(Prontuario prontuario, Documento documentoTipo) throws DocumentoNotPersistedException, IOException, SQLException {
-        final String fileName = prontuario.getCodigo() + ".pdf";
+    public byte[] writeDocumento(Prontuario prontuario, Documento documentoTipo) throws DocumentoNotPersistedException, OptimisticLockingFailureException, IOException {
         final String from = "src/main/resources/documents/consentimento/ConsentimentoLayoutV2.html";
         final String layout = Files.readString(Path.of(from));
 
@@ -63,34 +63,7 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
         final String htmlBase = new StringSubstitutor(parameters).replace(layout);
 
         parameters = getFieldsToBeLoaded(prontuario);
-        byte[] pdf = transformTxtToXmlToPdf(parameters, htmlBase);
-        log.info("Iniciando persistência no serviço AWS S3");
-        var res = persistObjectInAws(prontuario, fileName, pdf);
-        if(null != res) {
-            documentoTipo.setMd5(res.getContentMd5());
-            documentoTipo.setEtag(res.getETag());
-            documentoTipo.setAlgorithm(res.getSSEAlgorithm());
-            documentoTipo.setProntuario(prontuario);
-            documentoRepository.save(documentoTipo);
-            log.info("Prontuário Salvo");
-            return pdf;
-        }
-        throw new DocumentoNotPersistedException("Não foi possível gerar o documento com sucesso.");
-    }
-
-    private PutObjectResult persistObjectInAws(Prontuario prontuario, String fileName, byte[] pdf) throws SQLException {
-        return pdfRepository.putObject(
-                clinicaRepository.findById(
-                        prontuario.getClinica()
-                                .getId()
-                        )
-                        .stream()
-                        .findFirst()
-                        .orElseThrow(SQLException::new)
-                        .getCnpj(),
-                fileName.substring(fileName.indexOf("/")+1),
-                pdf
-        );
+        return transformTxtToXmlToPdf(parameters, htmlBase);
     }
 
     private byte[] transformTxtToXmlToPdf(Map<String, String> parameters, String htmlBase) throws IOException {

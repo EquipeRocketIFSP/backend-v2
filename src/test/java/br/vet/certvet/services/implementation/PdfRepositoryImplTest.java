@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 @SpringBootTest
 @ActiveProfiles("test")
 public class PdfRepositoryImplTest {
@@ -32,8 +34,8 @@ public class PdfRepositoryImplTest {
         final String cnpj = "81.718.422/0001-07";
         final String file = "test_documento_sanitario_assinado.pdf";
         final byte[] pdf = Files.readAllBytes(Path.of("src/test/resources/prontuario/htmlToPdf/" + file));
-        pdfRepository.putObject(cnpj, file, pdf);
-
+        var res = pdfRepository.putObject(cnpj, file, pdf);
+        assertNotNull(res);
 
     }
 

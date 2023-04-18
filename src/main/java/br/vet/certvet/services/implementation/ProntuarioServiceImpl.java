@@ -1,6 +1,7 @@
 package br.vet.certvet.services.implementation;
 
 import br.vet.certvet.exceptions.DocumentoNotFoundException;
+import br.vet.certvet.exceptions.DocumentoNotPersistedException;
 import br.vet.certvet.exceptions.ProntuarioNotFoundException;
 import br.vet.certvet.models.Documento;
 import br.vet.certvet.models.Prontuario;
@@ -8,7 +9,9 @@ import br.vet.certvet.repositories.PdfRepository;
 import br.vet.certvet.repositories.ProntuarioRepository;
 import br.vet.certvet.services.DocumentoService;
 import br.vet.certvet.services.ProntuarioService;
+import com.amazonaws.services.s3.model.PutObjectResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -165,10 +168,19 @@ public class ProntuarioServiceImpl implements ProntuarioService {
     }
 
     @Override
-    public Documento addDocumento(Long prontuarioId, Long documentoId, byte[] documento, String tipo) {
-        var prontuario = prontuarioRepository.findById(prontuarioId)
+    public Documento addDocumento(
+            Long prontuarioId,
+            Long documentoId,
+            byte[] documentoBinary,
+            String tipo
+    ) throws ProntuarioNotFoundException,
+            DocumentoNotFoundException,
+            SQLException,
+            OptimisticLockingFailureException {
+        final Prontuario prontuario = prontuarioRepository.findById(prontuarioId)
                 .orElseThrow(ProntuarioNotFoundException::new);
-        var d = prontuario
+        final String fileName = prontuario.getCodigo() + ".pdf";
+        final Documento documento = prontuario
                 .getDocumentos()
                 .stream()
                 .filter(
@@ -176,7 +188,42 @@ public class ProntuarioServiceImpl implements ProntuarioService {
                                 .equals(documentoId))
                 .findFirst()
                 .orElseThrow(DocumentoNotFoundException::new);
+
+        log.info("Iniciando persistência no serviço AWS S3");
+        var res = persistObjectInAws(prontuario, fileName, documentoBinary);
+        if(null == res)
+            throw new DocumentoNotPersistedException("Não foi possível gerar o documento com sucesso.");
+        try{
+            documentoRepository.save(setDocumentoMetadata(prontuario, documento, res));
+        } catch (OptimisticLockingFailureException e){
+            log.error("Documento não salvo");
+            throw e;
+        }
+        log.info("Prontuário Salvo");
         prontuarioRepository.save(prontuario);
-        return d;
+        return documento;
+    }
+
+    private PutObjectResult persistObjectInAws(Prontuario prontuario, String fileName, byte[] pdf) throws SQLException {
+        return pdfRepository.putObject(
+                clinicaRepository.findById(
+                                prontuario.getClinica()
+                                        .getId()
+                        )
+                        .stream()
+                        .findFirst()
+                        .orElseThrow(SQLException::new)
+                        .getCnpj(),
+                fileName.substring(fileName.indexOf("/")+1),
+                pdf
+        );
+    }
+
+    private Documento setDocumentoMetadata(Prontuario prontuario, Documento documentoTipo, PutObjectResult res) {
+        documentoTipo.setMd5(res.getContentMd5());
+        documentoTipo.setEtag(res.getETag());
+        documentoTipo.setAlgorithm(res.getSSEAlgorithm());
+        documentoTipo.setProntuario(prontuario);
+        return documentoTipo;
     }
 }

@@ -1,10 +1,13 @@
 package br.vet.certvet.services;
 
+import br.vet.certvet.exceptions.DocumentoNotFoundException;
+import br.vet.certvet.exceptions.ProntuarioNotFoundException;
 import br.vet.certvet.models.Documento;
 import br.vet.certvet.models.Prontuario;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -35,5 +38,5 @@ public interface ProntuarioService {
 
     List<Documento> getDocumentosByTipo(Long prontuarioId, String tipo);
 
-    Documento addDocumento(Long prontuarioId, Long documentoId, byte[] documento, String tipo);
+    Documento addDocumento(Long prontuarioId, Long documentoId, byte[] documento, String tipo) throws ProntuarioNotFoundException, DocumentoNotFoundException, SQLException;
 }
