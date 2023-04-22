@@ -7,7 +7,6 @@ import br.vet.certvet.repositories.ClinicaRepository;
 import br.vet.certvet.repositories.DocumentoRepository;
 import br.vet.certvet.repositories.PdfRepository;
 import br.vet.certvet.services.PdfService;
-import com.amazonaws.services.s3.model.PutObjectResult;
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.StringSubstitutor;
@@ -23,6 +22,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Service
@@ -55,11 +55,19 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
     }
 
     @Override
-    public byte[] writeDocumento(Prontuario prontuario, Documento documentoTipo) throws DocumentoNotPersistedException, OptimisticLockingFailureException, IOException {
+    public byte[] writeDocumento(
+            Prontuario prontuario,
+            Documento documentoTipo
+    ) throws
+            DocumentoNotPersistedException,
+            OptimisticLockingFailureException,
+            IOException {
         final String from = "src/main/resources/documents/consentimento/ConsentimentoLayoutV2.html";
         final String layout = Files.readString(Path.of(from));
 
         Map<String, String> parameters = getDivsToBeLoaded(documentoTipo);
+        documentoTipo.setName(LocalDateTime.now());
+        documentoRepository.save(documentoTipo);
         final String htmlBase = new StringSubstitutor(parameters).replace(layout);
 
         parameters = getFieldsToBeLoaded(prontuario);

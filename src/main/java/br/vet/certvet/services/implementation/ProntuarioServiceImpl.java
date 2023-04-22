@@ -168,7 +168,7 @@ public class ProntuarioServiceImpl implements ProntuarioService {
     }
 
     @Override
-    public Documento addDocumento(
+    public Documento attachDocumento(
             Long prontuarioId,
             Long documentoId,
             byte[] documentoBinary,
@@ -220,10 +220,10 @@ public class ProntuarioServiceImpl implements ProntuarioService {
     }
 
     private Documento setDocumentoMetadata(Prontuario prontuario, Documento documentoTipo, PutObjectResult res) {
-        documentoTipo.setMd5(res.getContentMd5());
-        documentoTipo.setEtag(res.getETag());
-        documentoTipo.setAlgorithm(res.getSSEAlgorithm());
-        documentoTipo.setProntuario(prontuario);
-        return documentoTipo;
+        return documentoTipo
+                .setMd5(res.getContentMd5())
+                .setEtag(res.getETag())
+                .setAlgorithm(res.getSSEAlgorithm())
+                .setProntuario(prontuario);
     }
 }

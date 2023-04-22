@@ -38,7 +38,7 @@ spring:
       platform: mysql
       continue-on-error: true
       mode: always
-# Gmail SMTP
+  # Gmail SMTP
   mail:
     host: "smtp.gmail.com"
     port: 587

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/")
 public class HelloController {
-    @GetMapping(value = {"hello", "ping"})
+    @GetMapping
     public ResponseEntity<String> get(){
         return ResponseEntity.ok("success!");
     }

@@ -38,5 +38,5 @@ public interface ProntuarioService {
 
     List<Documento> getDocumentosByTipo(Long prontuarioId, String tipo);
 
-    Documento addDocumento(Long prontuarioId, Long documentoId, byte[] documento, String tipo) throws ProntuarioNotFoundException, DocumentoNotFoundException, SQLException;
+    Documento attachDocumento(Long prontuarioId, Long documentoId, byte[] documento, String tipo) throws ProntuarioNotFoundException, DocumentoNotFoundException, SQLException;
 }

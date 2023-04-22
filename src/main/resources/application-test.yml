@@ -7,30 +7,30 @@ logging:
           core.JdbcTemplate: DEBUG
 spring:
   datasource:
-#    driver-class-name: com.mysql.cj.jdbc.Driver
+    #    driver-class-name: com.mysql.cj.jdbc.Driver
     driver-class-name: org.h2.Driver
-#    hikari:
-#      connection-test-query: SELECT NOW();
-#      connection-timeout: 20000 # 20s
-#      idle-timeout: 10000 # 10s
-#      maximum-pool-size: 5
-#      minimum-idle: 2
-#      pool-name: certvetPool
+    #    hikari:
+    #      connection-test-query: SELECT NOW();
+    #      connection-timeout: 20000 # 20s
+    #      idle-timeout: 10000 # 10s
+    #      maximum-pool-size: 5
+    #      minimum-idle: 2
+    #      pool-name: certvetPool
     init:
       platform: h2
     name: certvetDB
-#    type: com.zaxxer.hikari.HikariDataSource
+    #    type: com.zaxxer.hikari.HikariDataSource
     type: org.h2.jdbcx.JdbcDataSource
     url: "jdbc:h2:mem:test"
-#    url: ${SPRING_DATASOURCE_URL}
-#    username: ${DB_USER}
-#    password: ${DB_PASSWORD}
+  #    url: ${SPRING_DATASOURCE_URL}
+  #    username: ${DB_USER}
+  #    password: ${DB_PASSWORD}
   jpa:
     database: h2
     generate-ddl: true
     properties:
       hibernate:
-#        dialect: org.hibernate.dialect.MySQL8Dialect
+        #        dialect: org.hibernate.dialect.MySQL8Dialect
         dialect: org.hibernate.dialect.H2Dialect
         format_sql: true
         globally_quoted_identifiers: true
