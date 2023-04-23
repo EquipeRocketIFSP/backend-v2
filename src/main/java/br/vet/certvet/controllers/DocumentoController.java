@@ -1,11 +1,15 @@
 package br.vet.certvet.controllers;
 
+import br.vet.certvet.dto.responses.*;
 import br.vet.certvet.exceptions.DocumentoNotPersistedException;
 import br.vet.certvet.exceptions.ProntuarioNotFoundException;
 import br.vet.certvet.models.Documento;
 import br.vet.certvet.services.DocumentoService;
 import br.vet.certvet.services.PdfService;
 import br.vet.certvet.services.ProntuarioService;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -16,8 +20,11 @@ import org.springframework.web.bind.annotation.*;
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
 import java.net.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -83,18 +90,71 @@ public class DocumentoController extends BaseController {
     }
 
     @GetMapping
-    public ResponseEntity<String> run(){
+    public ResponseEntity<IpcResponse> run() throws IOException {
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .body(executeGet());
     }
-    private String executeGet() {
+//
+//    private IpcResponse test() throws IOException {
+//        IpcResponse r = IpcResponse.builder()
+//                .healthInfo(IpcHealthInfo.builder()
+//                        .dispensationReceipt(IpcHealthInfoDispensationReceipt.builder().build())
+//                        .dispensed(Boolean.FALSE)
+//                        .documentHash("documentHash")
+//                        .documentStatus("documentStatus")
+//                        .documentType("documentType")
+//                        .errorCodes(List.of(
+//                                        IpcHealthInfoErrorCodes.builder().build()
+//                                ))
+//                        .form(IpcHealthInfoForm.builder().build())
+//                        .pharmacist(IpcHealthInfoPharmacist.builder().build())
+//                        .prescriber(IpcHealthInfoPrescriber.builder().build())
+//                        .software(IpcHealthInfoSoftware.builder().build())
+//                        .validDocument(Boolean.FALSE)
+//                        .build())
+//                .receipt("receipt")
+//                .report(IpcReport.builder()
+//                        .date(IpcReportDate.builder().build())
+//                        .extendedReport(Boolean.FALSE)
+//                        .generalStatus("generalStatus")
+//                        .initialReport(IcpReportInitialReport.builder().build())
+//                        .number(0)
+//                        .onlyVerifyAnchored(Boolean.FALSE)
+//                        .signatures(IcpReportSignatures.builder()
+//                                .signature(List.of(
+//                                        IpcReportSignature.builder()
+//                                                .signaturePolicy("signaturePolicy")
+//                                                .attributes(IpcAttributes.builder().build())
+//                                                .attributeValid(Boolean.FALSE)
+//                                                .certification(IpcCertification.builder().build())
+//                                                .paRules(IpcPaRules.builder().build())
+//                                                .errorMessages("errorMessages")
+//                                                .containsMandatedCertificates(Boolean.FALSE)
+//                                                .hasInvalidUpdates(Boolean.FALSE)
+//                                                .integrity(IpcIntegrity.builder().build())
+//                                                .signatureType("signatureType")
+//                                                .signingTime("SigningTime")
+//                                                .warningMessages("warningMessages")
+//                                                .build()
+//                                ))
+//                                .build())
+//                        .software(IcpReportSoftware.builder().build())
+//                        .build())
+//                .build();
+//        ObjectMapper mapper = new ObjectMapper();
+//
+//        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+//        File f = new File("res/user.json");
+//        mapper.writeValue(f, r);
+//        return (IpcResponse) mapper.readValue(Files.readString(Path.of(new File("res/user.json").toURI())), IpcResponse.class);
+//    }
+    private IpcResponse executeGet() {
 //    private String executeGet(final String https_url, final String proxyName, final int port) {
         String ret = "https://validar.iti.gov.br/validar?signature_files=https://certvet-signed.s3.us-east-1.amazonaws.com/test_documento_sanitario_assinado_assinado.pdf";
-        Map<String, String> parameters = new HashMap<>();
-        parameters.put("param1", "val");
         URL url;
         String response = null;
+        IpcResponse ir = null;
         try {
             url = new URL(ret);
             HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
@@ -117,37 +177,17 @@ public class DocumentoController extends BaseController {
                     content.append(inputLine);
             }
             response = content.toString();
-//            try(DataOutputStream out = new DataOutputStream(con.getOutputStream())) {
-//                out.writeBytes(ParameterStringBuilder.getParamsString(parameters));
-//                out.flush();
-//            }
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+            mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
+            ir = (IpcResponse)mapper.readValue(response, IpcResponse.class);
             con.disconnect();
 
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return response;
-    }
-    private static class ParameterStringBuilder {
-        public static String getParamsString(Map<String, String> params)
-                throws UnsupportedEncodingException {
-            StringBuilder result = new StringBuilder();
-
-            for (Map.Entry<String, String> entry : params.entrySet()) {
-                result.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
-                result.append("=");
-                result.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
-                result.append("&");
-            }
-
-            String resultString = result.toString();
-            return resultString.length() > 0
-                    ? resultString.substring(0, resultString.length() - 1)
-                    : resultString;
-        }
+        return ir;
     }
 
 }
