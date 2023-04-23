@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface MedicamentoService {
-    void create(MedicamentoRequestDto dto);
+    Medicamento create(MedicamentoRequestDto dto);
 
     Medicamento findOne(Long id);
 

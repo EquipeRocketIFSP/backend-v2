@@ -1,5 +1,6 @@
 package br.vet.certvet.services.implementation;
 
+import br.vet.certvet.contracts.apis.anvisa.MedicationAPIResponse;
 import br.vet.certvet.dto.requests.MedicamentoRequestDto;
 import br.vet.certvet.dto.responses.MedicamentoResponseDto;
 import br.vet.certvet.dto.responses.Metadata;
@@ -8,6 +9,7 @@ import br.vet.certvet.exceptions.ConflictException;
 import br.vet.certvet.exceptions.NotFoundException;
 import br.vet.certvet.models.Medicamento;
 import br.vet.certvet.repositories.MedicamentoRespository;
+import br.vet.certvet.services.AnvisaAPIService;
 import br.vet.certvet.services.MedicamentoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -24,12 +26,21 @@ public class MedicamentoServiceImpl implements MedicamentoService {
     @Autowired
     private MedicamentoRespository medicamentoRespository;
 
+    @Autowired
+    private AnvisaAPIService anvisaAPIService;
+
     @Override
-    public void create(MedicamentoRequestDto dto) {
-        Optional<Medicamento> response = this.medicamentoRespository.findByCodigoRegistro(dto.codigoRegistro);
+    public Medicamento create(MedicamentoRequestDto dto) {
+        Optional<Medicamento> response = this.medicamentoRespository.findByCodigoRegistro(dto.codigoRegistro());
 
         if (response.isPresent())
             throw new ConflictException("Medicamento já existe");
+
+        String processNumber = this.anvisaAPIService.getProcessNumberByRegisterNumber(dto.codigoRegistro());
+        MedicationAPIResponse apiResponse = this.anvisaAPIService.getMedicationsByProcessNumber(processNumber);
+        Medicamento medicamento = Medicamento.factory(apiResponse);
+
+        return this.medicamentoRespository.saveAndFlush(medicamento);
     }
 
     @Override

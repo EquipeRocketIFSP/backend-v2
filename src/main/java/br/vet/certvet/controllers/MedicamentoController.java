@@ -6,6 +6,7 @@ import br.vet.certvet.dto.responses.PaginatedResponse;
 import br.vet.certvet.models.Medicamento;
 import br.vet.certvet.services.MedicamentoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,10 +21,10 @@ public class MedicamentoController extends BaseController {
     private MedicamentoService medicamentoService;
 
     @PostMapping
-    public ResponseEntity<Void> create(@RequestBody @Valid MedicamentoRequestDto dto) {
-        this.medicamentoService.create(dto);
+    public ResponseEntity<MedicamentoResponseDto> create(@RequestBody @Valid MedicamentoRequestDto dto) {
+        Medicamento medicamento = this.medicamentoService.create(dto);
 
-        return ResponseEntity.ok().build();
+        return new ResponseEntity<>(new MedicamentoResponseDto(medicamento), HttpStatus.CREATED);
     }
 
     @GetMapping
