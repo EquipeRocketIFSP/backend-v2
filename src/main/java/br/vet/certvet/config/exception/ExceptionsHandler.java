@@ -23,7 +23,10 @@ public class ExceptionsHandler {
         return exception.getBindingResult()
                 .getFieldErrors()
                 .stream()
-                .collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage));
+                .collect(Collectors.toMap(
+                        (fieldError) -> fieldError.getField().replaceAll("([a-z])([A-Z]+)", "$1_$2").toLowerCase(),
+                        FieldError::getDefaultMessage
+                ));
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)

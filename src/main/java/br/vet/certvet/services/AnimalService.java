@@ -15,7 +15,7 @@ public interface AnimalService {
 
     Animal edit(AnimalRequestDto dto, Animal animal, List<Usuario> tutores);
 
-    Animal findOne(Long id);
+    Animal findOne(Long id, Usuario tutor);
 
     PaginatedResponse<AnimalResponseDto> findAll(int page, String search, String url, Usuario tutor);
 }

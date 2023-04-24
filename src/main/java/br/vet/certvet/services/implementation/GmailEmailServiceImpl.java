@@ -25,9 +25,11 @@ public class GmailEmailServiceImpl implements EmailService {
 
     @Override
     public void sendTextMessage(String to, String subject, String text) throws MessagingException {
+        boolean isMultipart = true;
+        String encoding = "UTF-8";
         MimeMessage message = emailSender.createMimeMessage();
 
-        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+        MimeMessageHelper helper = new MimeMessageHelper(message, isMultipart, encoding);
         helper.setFrom(sender);
         helper.setTo(to);
         helper.setSubject(subject);

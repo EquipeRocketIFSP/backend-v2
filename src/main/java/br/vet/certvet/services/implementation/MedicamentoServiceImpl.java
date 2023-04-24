@@ -1,5 +1,6 @@
 package br.vet.certvet.services.implementation;
 
+import br.vet.certvet.contracts.apis.anvisa.MedicationAPIResponse;
 import br.vet.certvet.dto.requests.MedicamentoRequestDto;
 import br.vet.certvet.dto.responses.MedicamentoResponseDto;
 import br.vet.certvet.dto.responses.Metadata;
@@ -8,6 +9,7 @@ import br.vet.certvet.exceptions.ConflictException;
 import br.vet.certvet.exceptions.NotFoundException;
 import br.vet.certvet.models.Medicamento;
 import br.vet.certvet.repositories.MedicamentoRespository;
+import br.vet.certvet.services.AnvisaAPIService;
 import br.vet.certvet.services.MedicamentoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -24,14 +26,20 @@ public class MedicamentoServiceImpl implements MedicamentoService {
     @Autowired
     private MedicamentoRespository medicamentoRespository;
 
+    @Autowired
+    private AnvisaAPIService anvisaAPIService;
+
     @Override
     public Medicamento create(MedicamentoRequestDto dto) {
-        Optional<Medicamento> response = this.medicamentoRespository.findByCodigoRegistro(dto.codigoRegistro);
+        Optional<Medicamento> response = this.medicamentoRespository.findByCodigoRegistro(dto.codigoRegistro());
 
         if (response.isPresent())
             throw new ConflictException("Medicamento já existe");
 
-        Medicamento medicamento = new Medicamento(dto);
+        String processNumber = this.anvisaAPIService.getProcessNumberByRegisterNumber(dto.codigoRegistro());
+        MedicationAPIResponse apiResponse = this.anvisaAPIService.getMedicationsByProcessNumber(processNumber);
+        Medicamento medicamento = Medicamento.factory(apiResponse);
+
         return this.medicamentoRespository.saveAndFlush(medicamento);
     }
 
@@ -46,14 +54,23 @@ public class MedicamentoServiceImpl implements MedicamentoService {
     }
 
     @Override
-    public PaginatedResponse<MedicamentoResponseDto> findAll(int page, String url) {
-        Long total = this.medicamentoRespository.count();
-        Metadata metadata = new Metadata(url, page, MedicamentoServiceImpl.RESPONSE_LIMIT, total);
+    public PaginatedResponse<MedicamentoResponseDto> findAll(int page, String search, String url) {
+        page = Math.max(page, 1);
+
         Pageable pageable = PageRequest.of(page - 1, MedicamentoServiceImpl.RESPONSE_LIMIT);
 
-        List<MedicamentoResponseDto> medicamentoResponseDtos = this.medicamentoRespository.findAll(pageable)
-                .stream()
-                .map((medicamento) -> new MedicamentoResponseDto(medicamento))
+        Long total = search.trim().isEmpty() ?
+                this.medicamentoRespository.count() :
+                this.medicamentoRespository.countBySearchedParams(search);
+
+        Metadata metadata = new Metadata(url, page, MedicamentoServiceImpl.RESPONSE_LIMIT, total);
+
+        List<Medicamento> medicamentos = search.trim().isEmpty() ?
+                this.medicamentoRespository.findAll(pageable).toList() :
+                this.medicamentoRespository.searchByNomeAndNomeReferencia(pageable, search);
+
+        List<MedicamentoResponseDto> medicamentoResponseDtos = medicamentos.stream()
+                .map(MedicamentoResponseDto::factory)
                 .toList();
 
         return new PaginatedResponse<>(metadata, medicamentoResponseDtos);

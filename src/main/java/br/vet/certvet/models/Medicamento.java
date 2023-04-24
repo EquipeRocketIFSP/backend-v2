@@ -1,11 +1,14 @@
 package br.vet.certvet.models;
 
-import br.vet.certvet.dto.requests.MedicamentoRequestDto;
-import br.vet.certvet.models.contracts.Fillable;
+import br.vet.certvet.contracts.apis.anvisa.MedicationAPIResponse;
+import br.vet.certvet.exceptions.specializations.medicamento.MedicamentoUnprocessableEntityException;
 import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Objects;
 
 @Entity
@@ -14,7 +17,7 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Medicamento implements Fillable<MedicamentoRequestDto> {
+public class Medicamento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,28 +37,16 @@ public class Medicamento implements Fillable<MedicamentoRequestDto> {
     private String viaUso;
 
     @Column(nullable = false)
-    private String dose;
-
-    @Column(nullable = false)
     private String concentracao;
 
     @Column(nullable = false)
-    private String intervaloDose;
+    private String fabricante;
 
-    public Medicamento(MedicamentoRequestDto dto) {
-        this.fill(dto);
-    }
+    @Column(nullable = false)
+    private String nomeReferencia;
 
-    @Override
-    public void fill(MedicamentoRequestDto dto) {
-        this.nome = dto.nome;
-        this.codigoRegistro = dto.codigoRegistro;
-        this.principioAtivo = dto.principioAtivo;
-        this.concentracao = dto.concentracao;
-        this.dose = dto.dose;
-        this.viaUso = dto.viaUso;
-        this.intervaloDose = dto.intervaloDose;
-    }
+    @Column(nullable = false)
+    private LocalDateTime vencimentoRegistro;
 
     @Override
     public boolean equals(Object o) {
@@ -68,5 +59,26 @@ public class Medicamento implements Fillable<MedicamentoRequestDto> {
     @Override
     public int hashCode() {
         return getClass().hashCode();
+    }
+
+    public static Medicamento factory(MedicationAPIResponse response) {
+        Medicamento medicamento = new Medicamento();
+
+        medicamento.nome = response.nomeComercial();
+        medicamento.codigoRegistro = response.numeroRegistro();
+        medicamento.principioAtivo = response.principioAtivo();
+        medicamento.viaUso = (String) ((ArrayList<?>) response.apresentacoes().get(0).get("viasAdministracao")).get(0);
+        medicamento.concentracao = (String) response.apresentacoes().get(0).get("apresentacao");
+        medicamento.fabricante = response.empresa().get("razaoSocial");
+        medicamento.nomeReferencia = response.medicamentoReferencia();
+        medicamento.vencimentoRegistro = LocalDateTime.parse(response.dataVencimentoRegistro().replace("-0300", ""));
+
+        long expireAt = medicamento.vencimentoRegistro.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+        long now = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+
+        if (expireAt <= now)
+            throw new MedicamentoUnprocessableEntityException("O registro desse medicamento está vencido");
+
+        return medicamento;
     }
 }
