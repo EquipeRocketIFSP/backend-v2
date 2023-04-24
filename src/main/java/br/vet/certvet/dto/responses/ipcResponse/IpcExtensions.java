@@ -1,6 +1,5 @@
-package br.vet.certvet.dto.responses.IpcResponse;
+package br.vet.certvet.dto.responses.ipcResponse;
 
-import IpcSubjectAlternativeNames;
 import lombok.Builder;
 
 @Builder

@@ -1,9 +1,9 @@
-package br.vet.certvet.dto.responses.IpcResponse;
+package br.vet.certvet.dto.responses.ipcResponse;
 
 import lombok.Builder;
 
 @Builder
-public record OptionalAttribute(
+public record RequiredAttribute(
         String name,
         String status
 ) {

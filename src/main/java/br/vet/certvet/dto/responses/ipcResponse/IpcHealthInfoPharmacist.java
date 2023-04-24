@@ -1,9 +1,9 @@
-package br.vet.certvet.dto.responses.IpcResponse;
+package br.vet.certvet.dto.responses.ipcResponse;
 
 import lombok.Builder;
 
 @Builder
-public record IpcHealthInfoPrescriber(
+public record IpcHealthInfoPharmacist(
         String profession,
         String UF,
         String signatureHash,
