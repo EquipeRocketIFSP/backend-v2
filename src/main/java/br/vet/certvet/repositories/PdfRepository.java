@@ -8,4 +8,6 @@ public interface PdfRepository {
     PutObjectResult putObject(String cnpj, String keyName, byte[] bynaryArrayInputStream);
 
     byte[] retrieveObject(String cnpj, String keyName) throws IOException;
+
+    Boolean setPublicFileReadingPermission(final String bucket, final String file, Boolean allow);
 }

@@ -1,6 +1,6 @@
 package br.vet.certvet.controllers;
 
-import br.vet.certvet.dto.responses.*;
+import br.vet.certvet.contracts.apis.ipcBr.IpcResponse;
 import br.vet.certvet.exceptions.DocumentoNotPersistedException;
 import br.vet.certvet.exceptions.ProntuarioNotFoundException;
 import br.vet.certvet.models.Documento;
@@ -9,7 +9,6 @@ import br.vet.certvet.services.PdfService;
 import br.vet.certvet.services.ProntuarioService;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -20,13 +19,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
 import java.net.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @Slf4j

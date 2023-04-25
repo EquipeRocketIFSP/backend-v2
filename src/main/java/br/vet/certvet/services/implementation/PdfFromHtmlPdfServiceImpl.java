@@ -1,12 +1,17 @@
 package br.vet.certvet.services.implementation;
 
+import br.vet.certvet.contracts.apis.ipcBr.IpcResponse;
 import br.vet.certvet.exceptions.DocumentoNotPersistedException;
+import br.vet.certvet.helpers.Https;
 import br.vet.certvet.models.Documento;
 import br.vet.certvet.models.Prontuario;
 import br.vet.certvet.repositories.ClinicaRepository;
 import br.vet.certvet.repositories.DocumentoRepository;
 import br.vet.certvet.repositories.PdfRepository;
 import br.vet.certvet.services.PdfService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.StringSubstitutor;
@@ -21,7 +26,6 @@ import org.xhtmlrenderer.pdf.ITextRenderer;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Map;
 
@@ -168,5 +172,28 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
     @Override
     public byte[] retrieveFromRepository(Prontuario prontuario) throws IOException {
         return new byte[0];
+    }
+
+    @Override
+    public IpcResponse getValidation(Documento documento) throws IOException, DocumentoNotPersistedException {
+        if(null == documento.getMd5())
+            throw new DocumentoNotPersistedException("O documento ainda não existe no repositório");
+        final String requestUrl = new StringBuilder().append("https://validar.iti.gov.br/validar?signature_files=https://")
+                .append(S3BucketServiceRepository.getConventionedBucketName(documento.getClinica().getCnpj())) // S3 folder
+                .append(".s3.us-east-1.amazonaws.com/")
+                .append(documento.getName()) // S3 fileName
+                .toString();
+        final String json = Https.get(requestUrl, Map.of("Content-Type", "*/*", "Cache-Control", "no-cache"));
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+            mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
+            return (IpcResponse) mapper.readValue(json, IpcResponse.class);
+        } catch (JsonProcessingException e){
+            e.printStackTrace();
+            throw e;
+        }
+//        throw new ErroMapeamentoRespostaException("Não foi possível processar o documento com o ICP-BR.");
     }
 }

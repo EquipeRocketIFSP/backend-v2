@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -43,6 +44,24 @@ public class S3BucketServiceRepository implements PdfRepository {
             return null;
         }
         return arr;
+    }
+
+    @Override
+    public Boolean setPublicFileReadingPermission(String bucketName, String keyName, Boolean allow) {
+
+        try {
+            AccessControlList acl = s3.getObjectAcl(bucketName, keyName);
+            if(allow) {
+                acl.grantPermission(GroupGrantee.AllUsers, Permission.Read);
+            } else{
+                acl.revokeAllPermissions(GroupGrantee.AllUsers);
+            }
+            s3.setObjectAcl(bucketName, keyName, acl);
+            return Boolean.TRUE;
+        } catch (AmazonS3Exception e) {
+            log.error(e.getLocalizedMessage());
+        }
+        return Boolean.FALSE;
     }
 
     @Override

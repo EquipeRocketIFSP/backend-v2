@@ -33,7 +33,8 @@ public class ExceptionsHandler {
     @ExceptionHandler({
             NotFoundException.class,
             EntityNotFoundException.class,
-            ProntuarioNotFoundException.class
+            ProntuarioNotFoundException.class,
+            DocumentoNotPersistedException.class
     })
     public ResponseEntity<String> handleNotFound(RuntimeException exception) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getLocalizedMessage());
@@ -46,7 +47,9 @@ public class ExceptionsHandler {
     }
 
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ExceptionHandler({
+            HttpMessageNotReadableException.class
+    })
     public ResponseEntity<String> handleUnprocessableEntity(RuntimeException exception) {
         return new ResponseEntity<String>("Não foi possivel processar o conteúdo dessa requisição", HttpStatus.UNPROCESSABLE_ENTITY);
     }
