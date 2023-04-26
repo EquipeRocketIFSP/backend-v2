@@ -13,6 +13,7 @@ import br.vet.certvet.models.Usuario;
 import br.vet.certvet.repositories.AuthorityRepository;
 import br.vet.certvet.repositories.UsuarioRepository;
 import br.vet.certvet.services.UsuarioService;
+import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -44,13 +45,15 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public Usuario create(FuncionarioRequestDto dto, Clinica clinica) {
+        dto.setSenha(RandomString.make(16));
+
         Usuario usuario = new Usuario(dto, clinica);
         Authority authority = this.authorityRepository.findByAuthority("FUNCIONARIO");
         List<Authority> authoritiesUsuario = usuario.getAuthorities();
 
         authoritiesUsuario.add(authority);
 
-        if (dto.is_admin) {
+        if (dto.isAdmin()) {
             authority = this.authorityRepository.findByAuthority("ADMIN");
             authoritiesUsuario.add(authority);
         }
@@ -66,7 +69,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         authoritiesUsuario.add(authority);
 
-        if (dto.is_admin) {
+        if (dto.isAdmin()) {
             authority = this.authorityRepository.findByAuthority("ADMIN");
             authoritiesUsuario.add(authority);
         }

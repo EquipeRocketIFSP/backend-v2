@@ -111,30 +111,30 @@ public class Usuario implements UserDetails, Fillable<UsuarioRequestDto> {
 
     @Override
     public void fill(UsuarioRequestDto dto) {
-        this.username = dto.email;
-        this.nome = dto.nome;
-        this.cpf = dto.cpf;
-        this.rg = dto.rg;
-        this.cep = dto.cep;
-        this.logradouro = dto.logradouro;
-        this.numero = dto.numero;
-        this.bairro = dto.bairro;
-        this.cidade = dto.cidade;
-        this.estado = dto.estado;
-        this.celular = dto.celular;
-        this.telefone = dto.telefone;
+        this.username = dto.getEmail();
+        this.nome = dto.getNome();
+        this.cpf = dto.getCpf();
+        this.rg = dto.getRg();
+        this.cep = dto.getCep();
+        this.logradouro = dto.getLogradouro();
+        this.numero = dto.getNumero();
+        this.bairro = dto.getBairro();
+        this.cidade = dto.getCidade();
+        this.estado = dto.getEstado();
+        this.celular = dto.getCelular();
+        this.telefone = dto.getTelefone();
         this.crmv = null;
 
         if (!(dto instanceof FuncionarioEditRequestDto))
             this.password = null;
 
         if (dto instanceof FuncionarioRequestDto)
-            this.setPassword(((FuncionarioRequestDto) dto).senha);
+            this.setPassword(((FuncionarioRequestDto) dto).getSenha());
         else if (dto instanceof FuncionarioEditRequestDto && ((FuncionarioEditRequestDto) dto).senha != null && !((FuncionarioEditRequestDto) dto).senha.isEmpty())
             this.setPassword(((FuncionarioEditRequestDto) dto).senha);
 
         if (dto instanceof VeterinarioRequestDto)
-            this.crmv = ((VeterinarioRequestDto) dto).crmv;
+            this.crmv = ((VeterinarioRequestDto) dto).getCrmv();
         else if (dto instanceof VeterinarioEditRequestDto)
             this.crmv = ((VeterinarioEditRequestDto) dto).crmv;
     }
