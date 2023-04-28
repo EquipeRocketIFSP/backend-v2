@@ -46,11 +46,11 @@ public class ClinicaServiceImpl implements ClinicaService {
         Clinica clinica = this.clinicaRepository.saveAndFlush(new Clinica(dto));
 
         if (dto.donoCrmv() != null && !dto.donoCrmv().isEmpty()) {
-            usuario = this.usuarioService.create(ClinicaServiceImpl.getDonoResponsavelTecnicoDto(dto), clinica);
+            usuario = this.usuarioService.initialResgistration(ClinicaServiceImpl.getDonoResponsavelTecnicoDto(dto), clinica);
 
             clinica.setResponsavelTecnico(usuario);
             this.clinicaRepository.saveAndFlush(clinica);
-        } else usuario = this.usuarioService.create(ClinicaServiceImpl.getDonoDto(dto), clinica);
+        } else usuario = this.usuarioService.initialResgistration(ClinicaServiceImpl.getDonoDto(dto), clinica);
 
         this.sendCodigoClinicaThoughEmail(clinica, usuario);
 
