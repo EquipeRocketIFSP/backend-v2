@@ -209,7 +209,7 @@ public class UsuarioServiceImpl implements UsuarioService {
                 this.usuarioRepository.findAllByNomeContainingAndAuthoritiesAndClinica(pageable, search, authority, clinica);
 
         List<UsuarioResponseDto> usuariosResponseDtos = usuarios.stream()
-                .map((usuario) -> new UsuarioResponseDto(usuario))
+                .map(UsuarioResponseDto::new)
                 .toList();
 
         return new PaginatedResponse<>(meta, usuariosResponseDtos);

@@ -1,7 +1,10 @@
 package br.vet.certvet.dto.responses;
 
+import br.vet.certvet.models.Authority;
 import br.vet.certvet.models.Usuario;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.List;
 
 public class UsuarioResponseDto {
     @JsonProperty("id")
@@ -43,6 +46,9 @@ public class UsuarioResponseDto {
     @JsonProperty("email")
     private String email;
 
+    @JsonProperty("authorities")
+    private List<String> authorities;
+
     public UsuarioResponseDto(Usuario usuario) {
         this.id = usuario.getId();
         this.nome = usuario.getNome();
@@ -57,5 +63,6 @@ public class UsuarioResponseDto {
         this.estado = usuario.getEstado();
         this.celular = usuario.getCelular();
         this.telefone = usuario.getTelefone();
+        this.authorities = usuario.getAuthorities().stream().map(Authority::getAuthority).toList();
     }
 }
