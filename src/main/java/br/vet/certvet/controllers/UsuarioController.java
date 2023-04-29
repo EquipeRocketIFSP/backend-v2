@@ -151,7 +151,7 @@ public class UsuarioController extends BaseController {
         return ResponseEntity.ok(authorities);
     }
 
-    @DeleteMapping({"/funcionario/{id}", "/veterinario/{id}", "/tutor/{id}"})
+    @DeleteMapping({"/funcionario/{id}", "/tutor/{id}"})
     public ResponseEntity<Void> delete(
             @RequestHeader(AUTHORIZATION) String token,
             @PathVariable("id") Long id
@@ -164,7 +164,7 @@ public class UsuarioController extends BaseController {
         return ResponseEntity.accepted().build();
     }
 
-    @PutMapping({"/funcionario/{id}/restaurar", "/veterinario/{id}/restaurar", "/tutor/{id}/restaurar"})
+    @PutMapping({"/funcionario/{id}/restaurar", "/tutor/{id}/restaurar"})
     public ResponseEntity<UsuarioResponseDto> recover(
             @RequestHeader(AUTHORIZATION) String token,
             @PathVariable("id") Long id
