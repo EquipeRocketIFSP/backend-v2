@@ -5,6 +5,7 @@ import br.vet.certvet.models.Usuario;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
+import java.util.Optional;
 
 public class UsuarioResponseDto {
     @JsonProperty("id")
@@ -49,6 +50,9 @@ public class UsuarioResponseDto {
     @JsonProperty("authorities")
     private List<String> authorities;
 
+    @JsonProperty("deleted_at")
+    private Optional<String> deletedAt;
+
     public UsuarioResponseDto(Usuario usuario) {
         this.id = usuario.getId();
         this.nome = usuario.getNome();
@@ -64,5 +68,9 @@ public class UsuarioResponseDto {
         this.celular = usuario.getCelular();
         this.telefone = usuario.getTelefone();
         this.authorities = usuario.getAuthorities().stream().map(Authority::getAuthority).toList();
+
+        if (usuario.getDeletedAt() == null)
+            this.deletedAt = Optional.empty();
+        else this.deletedAt = Optional.of(usuario.getDeletedAt().toString());
     }
 }
