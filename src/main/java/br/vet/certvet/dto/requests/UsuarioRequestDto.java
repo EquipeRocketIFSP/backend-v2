@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.hibernate.validator.constraints.br.CPF;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
@@ -20,6 +21,7 @@ public class UsuarioRequestDto {
     @JsonProperty("cpf")
     @NotEmpty(message = "CPF não pode estar vazio")
     @Size(max = 14, message = "CPF não pode ultrapassar 14 caracteres")
+    @CPF(message = "Insira um CPF válido")
     private String cpf;
 
     @JsonProperty("rg")
