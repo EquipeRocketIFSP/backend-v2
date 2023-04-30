@@ -29,7 +29,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = retrieveToken(request);
-        if(tokenService.validate(token)){
+        if (tokenService.validate(token)) {
             authenticate(token);
         }
         filterChain.doFilter(request, response);
@@ -39,8 +39,11 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         Long userId = tokenService.getUsuarioId(token);
         log.info("Usuário logado: " + userId);
         Usuario usuario;
-        try{
+        try {
             usuario = repository.findById(userId).orElseThrow();
+
+            if (usuario.getDeletedAt() != null)
+                throw new NoSuchElementException();
         } catch (NoSuchElementException e) {
             log.error(e.getLocalizedMessage());
             throw new NoSuchElementException(e);
@@ -51,7 +54,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     private String retrieveToken(HttpServletRequest request) {
         String token = request.getHeader("Authorization");
-        if(token == null || token.isEmpty() || !token.startsWith(TYPE)){
+        if (token == null || token.isEmpty() || !token.startsWith(TYPE)) {
             return null;
         }
         return token.substring(TYPE.length(), token.length());

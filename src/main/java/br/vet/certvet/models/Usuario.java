@@ -141,17 +141,17 @@ public class Usuario implements UserDetails, Fillable<UsuarioRequestDto> {
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return this.deletedAt == null;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return this.deletedAt == null;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return this.deletedAt == null;
     }
 
     @Override
