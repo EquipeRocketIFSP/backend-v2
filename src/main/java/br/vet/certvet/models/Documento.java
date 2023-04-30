@@ -2,7 +2,6 @@ package br.vet.certvet.models;
 
 import br.vet.certvet.models.especializacoes.AnestesiaDocumento;
 import lombok.*;
-import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -24,7 +23,7 @@ public class Documento {
     private String tipo;
     private String caminho;
 
-    private String name;
+    private String codigo;
     private Integer versao;
     private Date criadoEm;
 
@@ -37,20 +36,19 @@ public class Documento {
     private Clinica clinica;
     private String caminhoArquivo;
 
-    protected String titulo = null;
-    protected String declaraConsentimento = null;
-    protected String identificaAnimal = null;
-    protected String declaraCienciaRiscos = null;
-    protected String observacoesVeterinario = null;
-    protected String observacoesResponsavel = null;
-    protected String causaMortis = null;
-    protected String orientaDestinoCorpo = null;
-    protected String identificaResponsavel = null;
-    protected String outrasObservacoes = null;
-    protected String assinaturaResponsavel = null;
-    protected String assinaturaVet = null;
-    protected String explicaDuasVias = null;
-
+    @Transient protected String titulo = null;
+    @Transient protected String declaraConsentimento = null;
+    @Transient protected String identificaAnimal = null;
+    @Transient protected String declaraCienciaRiscos = null;
+    @Transient protected String observacoesVeterinario = null;
+    @Transient protected String observacoesResponsavel = null;
+    @Transient protected String causaMortis = null;
+    @Transient protected String orientaDestinoCorpo = null;
+    @Transient protected String identificaResponsavel = null;
+    @Transient protected String outrasObservacoes = null;
+    @Transient protected String assinaturaResponsavel = null;
+    @Transient protected String assinaturaVet = null;
+    @Transient protected String explicaDuasVias = null;
     protected String md5 = null;
 
     protected String etag = null;
@@ -65,10 +63,10 @@ public class Documento {
         return new AnestesiaDocumento().find(documentoTipo);
     }
 
-    public String setName(LocalDateTime now) {
+    public String setCodigo(LocalDateTime now) {
         // exemplo: VT-D-2022_12_03_02_19_20.pdf
-        this.name = "VT-D-"+now.format(DateTimeFormatter.ofPattern("yyyy_MM_dd_hh_mm_ss"));
-        return this.name;
+        this.codigo = "VT-D-"+now.format(DateTimeFormatter.ofPattern("yyyy_MM_dd_hh_mm_ss"));
+        return this.codigo;
     }
 
     public Documento setVeterinario(Usuario veterinario) {

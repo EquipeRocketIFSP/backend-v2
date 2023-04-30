@@ -66,44 +66,31 @@ public class S3BucketServiceRepository implements PdfRepository {
 
     @Override
     public PutObjectResult putObject(String cnpj, String keyName, byte[] fileBinary) {
-        String bucketName = getConventionedBucketName(cnpj);
+        final String bucketName = getConventionedBucketName(cnpj);
         log.info("bucketName: " + bucketName + ", keyName: " + keyName);
         try {
-            if (retrieveObject(bucketName, keyName) != null) {
+            if (s3.doesObjectExist(bucketName, keyName)) {
                 log.info("Arquivo identificado: " + keyName + ". Não será gravado");
                 return null;
             }
-        } catch (AmazonS3Exception | IOException e) {
+        } catch (AmazonS3Exception e) {
             log.warn("Arquivo não identificado. Gravando...");
         }
         try {
-            log.info("Persistindo o arquivo pdf");
-            var res = s3.putObject(bucketName, keyName, new ByteArrayInputStream(fileBinary), getObjectMetadata(fileBinary));
-            return res;
+            log.debug("Persistindo o arquivo pdf");
+            return s3.putObject(bucketName, keyName, new ByteArrayInputStream(fileBinary), getObjectMetadata(fileBinary));
         } catch (AmazonServiceException e) {
             log.error(e.getErrorMessage());
         } catch (IOException e) {
             log.error(e.getLocalizedMessage());
         }
         return null;
-//        log.info(SUCESSFULLY_SAVED + keyName);
     }
 
     private static ObjectMetadata getObjectMetadata(byte[] storedFile) throws IOException {
-//        MessageDigest md;
-//        try {
-//            md = MessageDigest.getInstance("MD5");
-//            md.update(storedFile);
-//        } catch (NoSuchAlgorithmException e) {
-//            throw new RuntimeException(e);
-//        }
         ObjectMetadata o = new ObjectMetadata();
         o.setContentType("application/pdf");
-
         o.setContentLength((long) storedFile.length);
-//        o.setContentMD5(DatatypeConverter
-//                .printHexBinary(md.digest())
-//                .toUpperCase());
         return o;
     }
 

@@ -14,5 +14,7 @@ public interface ProntuarioRepository extends JpaRepository<Prontuario, Long> {
 
     boolean existsByDataAtendimento(LocalDateTime dataAtendimento);
 
-    Optional<List<Prontuario>> findAllByCodigo(String codigo);
+    List<Prontuario> findAllByCodigo(String codigo);
+
+    Optional<Prontuario> findByCodigo(String prontuarioCodigo);
 }

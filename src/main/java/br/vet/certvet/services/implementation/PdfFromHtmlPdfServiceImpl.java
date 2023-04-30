@@ -2,6 +2,7 @@ package br.vet.certvet.services.implementation;
 
 import br.vet.certvet.contracts.apis.ipcBr.IpcResponse;
 import br.vet.certvet.exceptions.DocumentoNotPersistedException;
+import br.vet.certvet.exceptions.PdfNaoReconhecidoException;
 import br.vet.certvet.helpers.Https;
 import br.vet.certvet.models.Documento;
 import br.vet.certvet.models.Prontuario;
@@ -13,11 +14,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
+import com.lowagie.text.pdf.PdfReader;
+import com.lowagie.text.pdf.PdfStamper;
+import com.lowagie.text.pdf.PdfWriter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.StringSubstitutor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.xhtmlrenderer.layout.SharedContext;
@@ -32,6 +37,11 @@ import java.util.Map;
 @Service
 @Slf4j
 public class PdfFromHtmlPdfServiceImpl implements PdfService {
+
+    final static String ERRO = "{\"Error\":\"E022: Não foi possível baixar o arquivo da URL fornecida\"}";
+
+    @Value("${app.default.pdf.password}")
+    private String OWNER_PASSWORD;
     @Autowired
     private DocumentoRepository documentoRepository;
 
@@ -59,7 +69,7 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
     }
 
     @Override
-    public byte[] writeDocumento(
+    public byte[] writePdfDocumentoEmBranco(
             Prontuario prontuario,
             Documento documentoTipo
     ) throws
@@ -70,7 +80,7 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
         final String layout = Files.readString(Path.of(from));
 
         Map<String, String> parameters = getDivsToBeLoaded(documentoTipo);
-        documentoTipo.setName(LocalDateTime.now());
+        documentoTipo.setCodigo(LocalDateTime.now());
         documentoRepository.save(documentoTipo);
         final String htmlBase = new StringSubstitutor(parameters).replace(layout);
 
@@ -171,20 +181,41 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
 
     @Override
     public byte[] retrieveFromRepository(Prontuario prontuario) throws IOException {
+//        PdfReader reader = new PdfReader();
+//        PdfStamper //
         return new byte[0];
     }
 
     @Override
-    public IpcResponse getValidation(Documento documento) throws IOException, DocumentoNotPersistedException {
-        if(null == documento.getMd5())
-            throw new DocumentoNotPersistedException("O documento ainda não existe no repositório");
-        final String requestUrl = new StringBuilder().append("https://validar.iti.gov.br/validar?signature_files=https://")
-                .append(S3BucketServiceRepository.getConventionedBucketName(documento.getClinica().getCnpj())) // S3 folder
-                .append(".s3.us-east-1.amazonaws.com/")
-                .append(documento.getName()) // S3 fileName
-                .toString();
-        final String json = Https.get(requestUrl, Map.of("Content-Type", "*/*", "Cache-Control", "no-cache"));
+    public byte[] setProtection(byte[] documento, Prontuario prontuario) throws IOException {
+        try(PdfReader reader = new PdfReader(documento)){
+            try(ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+                PdfStamper stamper = new PdfStamper(reader, out);
+                try {
+                    stamper.setEncryption(
+                            getTutorPass(prontuario).getBytes(),
+                            OWNER_PASSWORD.getBytes(),
+                            PdfWriter.ALLOW_PRINTING,
+                            PdfWriter.ENCRYPTION_AES_128
+                    );
+                    return out.toByteArray();
+                } finally {
+                    stamper.close();
+                }
+            }
+        }
+    }
 
+    @Override
+    public IpcResponse getIcpBrValidation(Documento documento) throws IOException, PdfNaoReconhecidoException {
+//        final String requestUrl = new StringBuilder().append("https://validar.iti.gov.br/validar?signature_files=https://")
+//                .append(S3BucketServiceRepository.getConventionedBucketName(documento.getClinica().getCnpj())) // S3 folder
+//                .append(".s3.us-east-1.amazonaws.com/")
+//                .append(documento.getName()) // S3 fileName
+//                .toString();
+        String requestUrl = "https://validar.iti.gov.br/validar?signature_files=https://certvet-signed.s3.us-east-1.amazonaws.com/test_documento_sanitario_assinado_assinado.pdf";
+        final String json = Https.get(requestUrl, Map.of("Content-Type", "*/*", "Cache-Control", "no-cache"));
+        if(json.equals(ERRO)) throw new PdfNaoReconhecidoException("O documento pdf não foi identificado no servidor");
         try {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
@@ -195,5 +226,12 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
             throw e;
         }
 //        throw new ErroMapeamentoRespostaException("Não foi possível processar o documento com o ICP-BR.");
+    }
+
+    private static String getTutorPass(Prontuario prontuario) {
+        return prontuario.getTutor()
+                .getCpf()
+                .replace(".", "")
+                .substring(5, 9);
     }
 }

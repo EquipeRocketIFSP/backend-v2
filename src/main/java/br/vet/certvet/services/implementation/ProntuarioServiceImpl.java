@@ -91,7 +91,7 @@ public class ProntuarioServiceImpl implements ProntuarioService {
 
         log.debug("Iniciando persistência do prontuário");
         Documento doc = Documento.builder()
-                .name(codigo)
+                .codigo(codigo)
                 .versao(1)
                 .criadoEm(now)
                 .veterinario(prontuario.getVeterinario())
@@ -129,7 +129,7 @@ public class ProntuarioServiceImpl implements ProntuarioService {
     }
 
     @Override
-    public Optional<List<Prontuario>> getByCodigo(String codigo) {
+    public List<Prontuario> getByCodigo(String codigo) {
         return prontuarioRepository.findAllByCodigo(codigo);
     }
     @Override
@@ -139,11 +139,6 @@ public class ProntuarioServiceImpl implements ProntuarioService {
 
     @Override
     public Optional<Prontuario> editProntuario(Prontuario prontuario) {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<Prontuario> getProntuarioById(Long id) {
         return Optional.empty();
     }
 
@@ -168,24 +163,21 @@ public class ProntuarioServiceImpl implements ProntuarioService {
     }
 
     @Override
-    public Documento attachDocumento(
-            Long prontuarioId,
-            Long documentoId,
+    public Documento attachDocumentoAndPdfPersist(
+            String prontuarioCodigo,
+            String documentoCodigo,
             byte[] documentoBinary,
             String tipo
     ) throws ProntuarioNotFoundException,
             DocumentoNotFoundException,
             SQLException,
             OptimisticLockingFailureException {
-        final Prontuario prontuario = prontuarioRepository.findById(prontuarioId)
+        final Prontuario prontuario = prontuarioRepository.findByCodigo(prontuarioCodigo)
                 .orElseThrow(ProntuarioNotFoundException::new);
         final String fileName = prontuario.getCodigo() + ".pdf";
-        final Documento documento = prontuario
-                .getDocumentos()
+        Documento documento = prontuario.getDocumentos()
                 .stream()
-                .filter(
-                        doc -> doc.getId()
-                                .equals(documentoId))
+                .filter(doc -> documentoCodigo.equals(doc.getCodigo()))
                 .findFirst()
                 .orElseThrow(DocumentoNotFoundException::new);
 
@@ -199,18 +191,16 @@ public class ProntuarioServiceImpl implements ProntuarioService {
             log.error("Documento não salvo");
             throw e;
         }
-        log.info("Prontuário Salvo");
         prontuarioRepository.save(prontuario);
+        log.info("Prontuário Salvo");
         return documento;
     }
 
     private PutObjectResult persistObjectInAws(Prontuario prontuario, String fileName, byte[] pdf) throws SQLException {
         return pdfRepository.putObject(
                 clinicaRepository.findById(
-                                prontuario.getClinica()
-                                        .getId()
-                        )
-                        .stream()
+                                prontuario.getClinica().getId()
+                        ).stream()
                         .findFirst()
                         .orElseThrow(SQLException::new)
                         .getCnpj(),

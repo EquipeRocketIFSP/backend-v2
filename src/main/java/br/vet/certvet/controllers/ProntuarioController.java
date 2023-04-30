@@ -28,9 +28,9 @@ public class ProntuarioController extends BaseController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Prontuario> getProntuario(
-            @PathVariable Long id
+            @PathVariable String codigo
     ){
-        Optional<Prontuario> prontuario = prontuarioService.findById(id);
+        Optional<Prontuario> prontuario = prontuarioService.findByCodigo(codigo);
         return prontuario.map(value -> ResponseEntity.ok().body(value)).orElseGet(() -> ResponseEntity.notFound().build());
     }
 

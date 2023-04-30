@@ -22,14 +22,12 @@ public interface ProntuarioService {
 
     Optional<String> findByCertvetProntuario(String certvetCode);
 
-    Optional<List<Prontuario>> getByCodigo(String codigo);
+    List<Prontuario> getByCodigo(String codigo);
 
     Optional<Prontuario> findById(Long id);
     Optional<Prontuario> createProntuario(Prontuario prontuario);
 
     Optional<Prontuario> editProntuario(Prontuario prontuario);
-
-    Optional<Prontuario> getProntuarioById(Long id);
 
     Boolean deleteProntuario(Prontuario prontuario);
 
@@ -38,5 +36,7 @@ public interface ProntuarioService {
 
     List<Documento> getDocumentosByTipo(Long prontuarioId, String tipo);
 
-    Documento attachDocumento(Long prontuarioId, Long documentoId, byte[] documento, String tipo) throws ProntuarioNotFoundException, DocumentoNotFoundException, SQLException;
+    Documento attachDocumentoAndPdfPersist(String prontuarioCodigo, String documentoCodigo, byte[] documento, String tipo) throws ProntuarioNotFoundException, DocumentoNotFoundException, SQLException;
+
+    Optional<Prontuario> findByCodigo(String codigo);
 }

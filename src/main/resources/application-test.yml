@@ -61,3 +61,6 @@ app:
   jwt:
     secret: test
     expiration: "864000000"
+  default:
+    pdf:
+      password: ${DEFAULT_PDF_PASS}

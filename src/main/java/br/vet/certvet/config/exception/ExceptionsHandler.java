@@ -4,6 +4,7 @@ import br.vet.certvet.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -18,7 +19,9 @@ import java.util.stream.Collectors;
 public class ExceptionsHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ExceptionHandler({
+            MethodArgumentNotValidException.class
+    })
     public Map<String, String> handleInvalidArgument(MethodArgumentNotValidException exception) {
         return exception.getBindingResult()
                 .getFieldErrors()
@@ -28,13 +31,21 @@ public class ExceptionsHandler {
                         FieldError::getDefaultMessage
                 ));
     }
+    @ExceptionHandler({
+            HttpMediaTypeNotSupportedException.class
+    })
+    public ResponseEntity<String> handleBadRequest(Exception exception) {
+        return ResponseEntity.badRequest().body(exception.getLocalizedMessage());
+    }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler({
             NotFoundException.class,
             EntityNotFoundException.class,
             ProntuarioNotFoundException.class,
-            DocumentoNotPersistedException.class
+            DocumentoNotPersistedException.class,
+            DocumentoNotFoundException.class,
+            PdfNaoReconhecidoException.class
     })
     public ResponseEntity<String> handleNotFound(RuntimeException exception) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getLocalizedMessage());

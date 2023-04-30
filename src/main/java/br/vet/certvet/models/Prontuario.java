@@ -169,7 +169,7 @@ public class Prontuario {
     }
     public Prontuario setDocumentoDetails(Documento documento){
         return addDocumentoPdf(documento)
-                .setCodigo(documento.getName())
+                .setCodigo(documento.getCodigo())
                 .setVersao(documento.getVersao())
                 .setCriadoEm(documento.getCriadoEm());
     }
