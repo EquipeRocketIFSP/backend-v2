@@ -22,9 +22,7 @@ public interface UsuarioService {
 
     Usuario edit(UsuarioRequestDto dto, Usuario usuario);
 
-    Usuario edit(FuncionarioEditRequestDto dto, Usuario usuario);
-
-    Usuario edit(VeterinarioEditRequestDto dto, Usuario usuario);
+    Usuario edit(FuncionarioRequestDto dto, Usuario usuario);
 
     Usuario findOne(Long id, Clinica clinica);
 

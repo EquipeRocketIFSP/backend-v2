@@ -120,23 +120,22 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public Usuario edit(FuncionarioEditRequestDto dto, Usuario usuario) {
+    public Usuario edit(FuncionarioRequestDto dto, Usuario usuario) {
         Optional<Authority> usuarioAuthority = UsuarioServiceImpl.getUsuarioAuthority(usuario, "FUNCIONARIO");
 
         if (usuarioAuthority.isEmpty())
             throw new ForbiddenException("Esse usuário não é um funcionário. Verifique a documentação da API.");
 
-        usuario.fill(dto);
+        List<Authority> authoritiesUsuario = usuario.getAuthorities();
+        authoritiesUsuario.clear();
 
-        return this.usuarioRepository.saveAndFlush(usuario);
-    }
+        authoritiesUsuario.add(this.authorityRepository.findByAuthority("FUNCIONARIO"));
 
-    @Override
-    public Usuario edit(VeterinarioEditRequestDto dto, Usuario usuario) {
-        Optional<Authority> usuarioAuthority = UsuarioServiceImpl.getUsuarioAuthority(usuario, "VETERINARIO");
+        if (dto instanceof VeterinarioRequestDto)
+            authoritiesUsuario.add(this.authorityRepository.findByAuthority("VETERINARIO"));
 
-        if (usuarioAuthority.isEmpty())
-            throw new ForbiddenException("Esse usuário não é um veterinário. Verifique a documentação da API.");
+        if (dto.isAdmin())
+            authoritiesUsuario.add(this.authorityRepository.findByAuthority("ADMIN"));
 
         usuario.fill(dto);
 

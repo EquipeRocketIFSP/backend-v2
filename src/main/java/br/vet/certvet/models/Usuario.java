@@ -125,18 +125,14 @@ public class Usuario implements UserDetails, Fillable<UsuarioRequestDto> {
         this.telefone = dto.getTelefone();
         this.crmv = null;
 
-        if (!(dto instanceof FuncionarioEditRequestDto))
+        if (!(dto instanceof FuncionarioRequestDto))
             this.password = null;
 
-        if (dto instanceof FuncionarioRequestDto)
+        if (dto instanceof FuncionarioRequestDto && ((FuncionarioRequestDto) dto).getSenha() != null && !((FuncionarioRequestDto) dto).getSenha().isEmpty())
             this.setPassword(((FuncionarioRequestDto) dto).getSenha());
-        else if (dto instanceof FuncionarioEditRequestDto && ((FuncionarioEditRequestDto) dto).senha != null && !((FuncionarioEditRequestDto) dto).senha.isEmpty())
-            this.setPassword(((FuncionarioEditRequestDto) dto).senha);
 
         if (dto instanceof VeterinarioRequestDto)
             this.crmv = ((VeterinarioRequestDto) dto).getCrmv();
-        else if (dto instanceof VeterinarioEditRequestDto)
-            this.crmv = ((VeterinarioEditRequestDto) dto).crmv;
     }
 
     @Override
