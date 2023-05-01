@@ -1,5 +1,7 @@
 package br.vet.certvet.models;
 
+import br.vet.certvet.dto.requests.EstoqueRequestDto;
+import br.vet.certvet.models.contracts.Fillable;
 import lombok.*;
 import org.hibernate.Hibernate;
 
@@ -15,7 +17,7 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Estoque {
+public class Estoque implements Fillable<EstoqueRequestDto> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,6 +47,19 @@ public class Estoque {
     @ManyToOne
     @JoinColumn(name = "cirurgia_id")
     private Cirurgia cirurgia;
+
+    public Estoque(EstoqueRequestDto dto, Medicamento medicamento) {
+        this.fill(dto);
+        this.medicamento = medicamento;
+    }
+
+    @Override
+    public void fill(EstoqueRequestDto dto) {
+        this.quantidade = dto.quantidade();
+        this.lote = dto.lote();
+        this.validade = dto.validade();
+        this.medida = dto.medida();
+    }
 
     @Override
     public boolean equals(Object o) {
