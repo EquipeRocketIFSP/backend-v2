@@ -8,6 +8,7 @@ import org.hibernate.Hibernate;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 
 @Table(name = "Estoque")
@@ -47,6 +48,9 @@ public class Estoque implements Fillable<EstoqueRequestDto> {
     @ManyToOne
     @JoinColumn(name = "cirurgia_id")
     private Cirurgia cirurgia;
+
+    @OneToMany(mappedBy = "estoque")
+    private List<EstoqueTransacao> transacoes;
 
     public Estoque(EstoqueRequestDto dto, Medicamento medicamento) {
         this.fill(dto);
