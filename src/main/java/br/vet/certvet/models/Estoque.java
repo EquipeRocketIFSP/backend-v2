@@ -5,9 +5,10 @@ import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Objects;
 
-@Table(name = "MedicamentoEstoque")
+@Table(name = "Estoque")
 @Entity
 @Getter
 @ToString
@@ -21,12 +22,17 @@ public class Estoque {
     @Column(nullable = false)
     private Long id;
 
+    @Column(nullable = false)
     private BigDecimal quantidade;
+
+    @Column(nullable = false)
     private String medida;
 
-    @ManyToOne
-    @JoinColumn(name = "clinica_id")
-    private Clinica clinica;
+    @Column(nullable = false)
+    private String lote;
+
+    @Column(nullable = false)
+    private LocalDate validade;
 
     @ManyToOne
     @JoinColumn(name = "medicamento_id")
