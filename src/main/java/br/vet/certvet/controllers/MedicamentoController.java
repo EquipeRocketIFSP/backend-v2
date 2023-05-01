@@ -1,8 +1,10 @@
 package br.vet.certvet.controllers;
 
+import br.vet.certvet.config.security.service.TokenService;
 import br.vet.certvet.dto.requests.MedicamentoRequestDto;
 import br.vet.certvet.dto.responses.MedicamentoResponseDto;
 import br.vet.certvet.dto.responses.PaginatedResponse;
+import br.vet.certvet.models.Clinica;
 import br.vet.certvet.models.Medicamento;
 import br.vet.certvet.services.MedicamentoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,16 +15,25 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+
 @RestController
 @CrossOrigin
 @RequestMapping("/api/medicamento")
 public class MedicamentoController extends BaseController {
     @Autowired
+    private TokenService tokenService;
+
+    @Autowired
     private MedicamentoService medicamentoService;
 
     @PostMapping
-    public ResponseEntity<MedicamentoResponseDto> create(@RequestBody @Valid MedicamentoRequestDto dto) {
-        Medicamento medicamento = this.medicamentoService.create(dto);
+    public ResponseEntity<MedicamentoResponseDto> create(
+            @RequestHeader(AUTHORIZATION) String token,
+            @RequestBody @Valid MedicamentoRequestDto dto
+    ) {
+        Clinica clinica = this.tokenService.getClinica(token);
+        Medicamento medicamento = this.medicamentoService.create(dto, clinica);
 
         return new ResponseEntity<>(new MedicamentoResponseDto(medicamento), HttpStatus.CREATED);
     }

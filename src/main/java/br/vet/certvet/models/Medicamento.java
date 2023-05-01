@@ -1,14 +1,11 @@
 package br.vet.certvet.models;
 
-import br.vet.certvet.contracts.apis.anvisa.MedicationAPIResponse;
-import br.vet.certvet.exceptions.specializations.medicamento.MedicamentoUnprocessableEntityException;
+import br.vet.certvet.dto.requests.MedicamentoRequestDto;
+import br.vet.certvet.models.contracts.Fillable;
 import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.Objects;
 
 @Entity
@@ -17,7 +14,7 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Medicamento {
+public class Medicamento implements Fillable<MedicamentoRequestDto> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,11 +39,9 @@ public class Medicamento {
     @Column(nullable = false)
     private String fabricante;
 
-    @Column(nullable = false)
-    private String nomeReferencia;
-
-    @Column(nullable = false)
-    private LocalDateTime vencimentoRegistro;
+    @ManyToOne
+    @JoinColumn(name = "clinica_id")
+    private Clinica clinica;
 
     @Override
     public boolean equals(Object o) {
@@ -61,24 +56,18 @@ public class Medicamento {
         return getClass().hashCode();
     }
 
-    public static Medicamento factory(MedicationAPIResponse response) {
-        Medicamento medicamento = new Medicamento();
+    public Medicamento(MedicamentoRequestDto dto, Clinica clinica) {
+        this.fill(dto);
+        this.clinica = clinica;
+    }
 
-        medicamento.nome = response.nomeComercial();
-        medicamento.codigoRegistro = response.numeroRegistro();
-        medicamento.principioAtivo = response.principioAtivo();
-        medicamento.viaUso = (String) ((ArrayList<?>) response.apresentacoes().get(0).get("viasAdministracao")).get(0);
-        medicamento.concentracao = (String) response.apresentacoes().get(0).get("apresentacao");
-        medicamento.fabricante = response.empresa().get("razaoSocial");
-        medicamento.nomeReferencia = response.medicamentoReferencia();
-        medicamento.vencimentoRegistro = LocalDateTime.parse(response.dataVencimentoRegistro().replace("-0300", ""));
-
-        long expireAt = medicamento.vencimentoRegistro.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-        long now = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-
-        if (expireAt <= now)
-            throw new MedicamentoUnprocessableEntityException("O registro desse medicamento está vencido");
-
-        return medicamento;
+    @Override
+    public void fill(MedicamentoRequestDto dto) {
+        this.nome = dto.nome();
+        this.codigoRegistro = dto.codigoRegistro();
+        this.principioAtivo = dto.principioAtivo();
+        this.viaUso = dto.viaUso();
+        this.concentracao = dto.concentracao();
+        this.fabricante = dto.fabricante();
     }
 }
