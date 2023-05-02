@@ -13,7 +13,7 @@ public interface MedicamentoService {
 
     Medicamento edit(MedicamentoRequestDto dto, Medicamento medicamento);
 
-    Medicamento findOne(Long id);
+    Medicamento findOne(Long id, Clinica clinica);
 
     PaginatedResponse<MedicamentoResponseDto> findAll(int page, String search, String url);
 }

@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface MedicamentoRespository extends JpaRepository<Medicamento, Long> {
+    Optional<Medicamento> findByIdAndClinica(Long id, Clinica clinica);
+
     Optional<Medicamento> findByCodigoRegistroAndClinica(String codigoRegistro, Clinica clinica);
 
     @Query("SELECT m FROM Medicamento m WHERE m.nome LIKE :search%")

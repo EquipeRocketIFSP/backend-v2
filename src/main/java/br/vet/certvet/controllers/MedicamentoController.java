@@ -50,8 +50,12 @@ public class MedicamentoController extends BaseController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<MedicamentoResponseDto> findOne(@PathVariable("id") Long id) {
-        Medicamento medicamento = this.medicamentoService.findOne(id);
+    public ResponseEntity<MedicamentoResponseDto> findOne(
+            @RequestHeader(AUTHORIZATION) String token,
+            @PathVariable("id") Long id
+    ) {
+        Clinica clinica = this.tokenService.getClinica(token);
+        Medicamento medicamento = this.medicamentoService.findOne(id, clinica);
 
         return ResponseEntity.ok(new MedicamentoResponseDto(medicamento));
     }

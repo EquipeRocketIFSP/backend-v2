@@ -48,8 +48,8 @@ public class MedicamentoServiceImpl implements MedicamentoService {
     }
 
     @Override
-    public Medicamento findOne(Long id) {
-        Optional<Medicamento> response = this.medicamentoRespository.findById(id);
+    public Medicamento findOne(Long id, Clinica clinica) {
+        Optional<Medicamento> response = this.medicamentoRespository.findByIdAndClinica(id, clinica);
 
         if (response.isEmpty())
             throw new NotFoundException("Medicamento não encontrado");

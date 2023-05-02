@@ -22,7 +22,6 @@ public class EstoqueTransacao {
     @Column(nullable = false)
     private Long id;
 
-    @Setter
     @Accessors(chain = true)
     @Column(nullable = false)
     private boolean status = false;
