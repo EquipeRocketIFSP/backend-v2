@@ -2,8 +2,8 @@ package br.vet.certvet.controllers;
 
 import br.vet.certvet.config.security.service.TokenService;
 import br.vet.certvet.dto.requests.EstoqueRequestDto;
-import br.vet.certvet.dto.responses.AnimalResponseDto;
 import br.vet.certvet.dto.responses.EstoqueResponseDto;
+import br.vet.certvet.dto.responses.EstoqueTransacaoResponseDto;
 import br.vet.certvet.dto.responses.PaginatedResponse;
 import br.vet.certvet.models.Clinica;
 import br.vet.certvet.models.Estoque;
@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+
+import java.util.List;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
@@ -84,6 +86,23 @@ public class EstoqueController {
         Clinica clinica = this.tokenService.getClinica(token);
         Medicamento medicamento = this.medicamentoService.findOne(medicamentoId, clinica);
         PaginatedResponse<EstoqueResponseDto> response = this.estoqueService.findAll(page, request.getRequestURL().toString(), medicamento);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id}/transacoes")
+    public ResponseEntity<List<EstoqueTransacaoResponseDto>> findAllTransactions(
+            @RequestHeader(AUTHORIZATION) String token,
+            @PathVariable("medicamento_id") Long medicamentoId,
+            @PathVariable("id") Long id
+    ) {
+        Clinica clinica = this.tokenService.getClinica(token);
+        Medicamento medicamento = this.medicamentoService.findOne(medicamentoId, clinica);
+        Estoque estoque = this.estoqueService.findOne(id, medicamento);
+
+        List<EstoqueTransacaoResponseDto> response = estoque.getTransacoes()
+                .stream().map(EstoqueTransacaoResponseDto::new)
+                .toList();
 
         return ResponseEntity.ok(response);
     }
