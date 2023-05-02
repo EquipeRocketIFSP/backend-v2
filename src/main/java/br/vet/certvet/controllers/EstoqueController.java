@@ -33,4 +33,15 @@ public class EstoqueController {
 
         return new ResponseEntity<>(new EstoqueResponseDto(estoque), HttpStatus.CREATED);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<EstoqueResponseDto> edit(
+            @RequestBody @Valid EstoqueRequestDto dto,
+            @PathVariable("id") Long id
+    ) {
+        Estoque estoque = this.estoqueService.findOne(id);
+        estoque = this.estoqueService.edit(dto, estoque);
+
+        return ResponseEntity.ok(new EstoqueResponseDto(estoque));
+    }
 }

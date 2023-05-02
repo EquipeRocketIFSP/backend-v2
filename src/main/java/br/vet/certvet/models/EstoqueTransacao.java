@@ -1,12 +1,13 @@
 package br.vet.certvet.models;
 
+import br.vet.certvet.enums.TransacaoStatus;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Table
 @Entity
@@ -36,7 +37,7 @@ public class EstoqueTransacao {
     private String motivo;
 
     @CreationTimestamp
-    private LocalDate data;
+    private LocalDateTime data;
 
     @ManyToOne
     @JoinColumn(name = "estoque_id")
@@ -44,5 +45,10 @@ public class EstoqueTransacao {
 
     public EstoqueTransacao(Estoque estoque) {
         this.estoque = estoque;
+    }
+
+    public EstoqueTransacao setStatus(TransacaoStatus status) {
+        this.status = status.getStatus();
+        return this;
     }
 }

@@ -6,4 +6,8 @@ import br.vet.certvet.models.Medicamento;
 
 public interface EstoqueService {
     Estoque create(EstoqueRequestDto dto, Medicamento medicamento);
+
+    Estoque edit(EstoqueRequestDto dto, Estoque estoque);
+
+    Estoque findOne(Long id);
 }
