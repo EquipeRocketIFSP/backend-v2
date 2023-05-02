@@ -58,20 +58,20 @@ public class MedicamentoServiceImpl implements MedicamentoService {
     }
 
     @Override
-    public PaginatedResponse<MedicamentoResponseDto> findAll(int page, String search, String url) {
+    public PaginatedResponse<MedicamentoResponseDto> findAll(int page, String search, String url, Clinica clinica) {
         page = Math.max(page, 1);
 
         Pageable pageable = PageRequest.of(page - 1, MedicamentoServiceImpl.RESPONSE_LIMIT);
 
         Long total = search.trim().isEmpty() ?
-                this.medicamentoRespository.count() :
-                this.medicamentoRespository.countBySearchedParams(search);
+                this.medicamentoRespository.countByClinica(clinica) :
+                this.medicamentoRespository.countByClinicaAndNomeContains(clinica, search);
 
         Metadata metadata = new Metadata(url, page, MedicamentoServiceImpl.RESPONSE_LIMIT, total);
 
         List<Medicamento> medicamentos = search.trim().isEmpty() ?
-                this.medicamentoRespository.findAll(pageable).toList() :
-                this.medicamentoRespository.searchByNomeAndNomeReferencia(pageable, search);
+                this.medicamentoRespository.findAllByClinica(pageable, clinica) :
+                this.medicamentoRespository.findAllByClinicaAndNome(pageable, clinica, search);
 
         List<MedicamentoResponseDto> medicamentoResponseDtos = medicamentos.stream()
                 .map(MedicamentoResponseDto::factory)

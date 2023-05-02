@@ -40,11 +40,13 @@ public class MedicamentoController extends BaseController {
 
     @GetMapping
     ResponseEntity<PaginatedResponse<MedicamentoResponseDto>> findAll(
+            @RequestHeader(AUTHORIZATION) String token,
             @RequestParam(name = "pagina", defaultValue = "1") int page,
             @RequestParam(name = "buscar", defaultValue = "") String search,
             HttpServletRequest request
     ) {
-        PaginatedResponse<MedicamentoResponseDto> response = this.medicamentoService.findAll(page, search, request.getRequestURL().toString());
+        Clinica clinica = this.tokenService.getClinica(token);
+        PaginatedResponse<MedicamentoResponseDto> response = this.medicamentoService.findAll(page, search, request.getRequestURL().toString(), clinica);
 
         return ResponseEntity.ok(response);
     }

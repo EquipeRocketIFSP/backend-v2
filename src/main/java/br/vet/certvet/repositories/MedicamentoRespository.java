@@ -4,7 +4,6 @@ import br.vet.certvet.models.Clinica;
 import br.vet.certvet.models.Medicamento;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,9 +13,11 @@ public interface MedicamentoRespository extends JpaRepository<Medicamento, Long>
 
     Optional<Medicamento> findByCodigoRegistroAndClinica(String codigoRegistro, Clinica clinica);
 
-    @Query("SELECT m FROM Medicamento m WHERE m.nome LIKE :search%")
-    List<Medicamento> searchByNomeAndNomeReferencia(Pageable pageable, String search);
+    List<Medicamento> findAllByClinica(Pageable pageable, Clinica clinica);
 
-    @Query("SELECT COUNT(m.id) FROM Medicamento m WHERE m.nome LIKE :search%")
-    Long countBySearchedParams(String search);
+    List<Medicamento> findAllByClinicaAndNome(Pageable pageable, Clinica clinica, String nome);
+
+    Long countByClinica(Clinica clinica);
+
+    Long countByClinicaAndNomeContains(Clinica clinica, String nome);
 }
