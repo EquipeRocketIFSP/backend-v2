@@ -1,14 +1,12 @@
 package br.vet.certvet.services.implementation;
 
 import br.vet.certvet.dto.requests.EstoqueRequestDto;
-import br.vet.certvet.dto.responses.AnimalResponseDto;
 import br.vet.certvet.dto.responses.EstoqueResponseDto;
 import br.vet.certvet.dto.responses.Metadata;
 import br.vet.certvet.dto.responses.PaginatedResponse;
 import br.vet.certvet.enums.TransacaoStatus;
 import br.vet.certvet.exceptions.ConflictException;
 import br.vet.certvet.exceptions.NotFoundException;
-import br.vet.certvet.models.Animal;
 import br.vet.certvet.models.Estoque;
 import br.vet.certvet.models.EstoqueTransacao;
 import br.vet.certvet.models.Medicamento;
@@ -105,7 +103,7 @@ public class EstoqueServiceImpl implements EstoqueService {
         final Long total = this.estoqueRepository.countByMedicamento(medicamento);
         final Metadata metadata = new Metadata(url, page, EstoqueServiceImpl.RESPONSE_LIMIT, total);
 
-        final List<Estoque> estoques = this.estoqueRepository.findAllByMedicamento(pageable, medicamento);
+        final List<Estoque> estoques = this.estoqueRepository.findAllByMedicamentoOrderByIdDesc(pageable, medicamento);
 
         final List<EstoqueResponseDto> animalResponseDtos = estoques.stream()
                 .map(EstoqueResponseDto::new)

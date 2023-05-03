@@ -13,7 +13,7 @@ public interface EstoqueRepository extends JpaRepository<Estoque, Long> {
 
     Optional<Estoque> findOneByMedicamentoAndId(Medicamento medicamento, Long id);
 
-    List<Estoque> findAllByMedicamento(Pageable pageable, Medicamento medicamento);
+    List<Estoque> findAllByMedicamentoOrderByIdDesc(Pageable pageable, Medicamento medicamento);
 
     Long countByMedicamento(Medicamento medicamento);
 }
