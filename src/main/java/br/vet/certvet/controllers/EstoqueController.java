@@ -91,7 +91,7 @@ public class EstoqueController {
     }
 
     @GetMapping("/{id}/transacoes")
-    public ResponseEntity<List<EstoqueTransacaoResponseDto>> findAllTransactions(
+    public ResponseEntity<PaginatedResponse<EstoqueTransacaoResponseDto>> findAllTransactions(
             @RequestHeader(AUTHORIZATION) String token,
             @PathVariable("medicamento_id") Long medicamentoId,
             @PathVariable("id") Long id
@@ -104,6 +104,6 @@ public class EstoqueController {
                 .stream().map(EstoqueTransacaoResponseDto::new)
                 .toList();
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(new PaginatedResponse<>(response));
     }
 }

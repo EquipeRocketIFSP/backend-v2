@@ -32,7 +32,7 @@ public class EstoqueServiceImpl implements EstoqueService {
     @Autowired
     private EstoqueTransacaoRepository estoqueTransacaoRepository;
 
-    private static int RESPONSE_LIMIT = 30;
+    private static final int RESPONSE_LIMIT = 30;
 
     @Override
     @Transactional(rollbackFor = {SQLException.class, RuntimeException.class})
