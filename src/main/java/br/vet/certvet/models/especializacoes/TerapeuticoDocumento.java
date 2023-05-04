@@ -2,8 +2,15 @@ package br.vet.certvet.models.especializacoes;
 
 import br.vet.certvet.models.Documento;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import java.time.LocalDateTime;
+
+@Entity
+@DiscriminatorValue("Terapeutico")
 public class TerapeuticoDocumento extends Documento {
     public TerapeuticoDocumento(){
+        super(LocalDateTime.now());
         this.titulo = "TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO PARA REALIZAÇÃO DE PROCEDIMENTO TERAPÊUTICO DE RISCO";
         this.declaraConsentimento = "Declaro o livre consentimento para a realização do(s) procedimento(s) terapêutico(s) de risco ${prontuario.terapias} no animal abaixo identificado, a ser realizado pelo(a) Médico(a) Veterinário(a) ${veterinario.nome} CRMV-${veterinario.crmv}.";
         this.declaraCienciaRiscos = """

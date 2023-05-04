@@ -2,8 +2,15 @@ package br.vet.certvet.models.especializacoes;
 
 import br.vet.certvet.models.Documento;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import java.time.LocalDateTime;
+
+@Entity
+@DiscriminatorValue("RetiraSemAlta")
 public class RetiraSemAltaDocumento extends Documento {
     public RetiraSemAltaDocumento(){
+        super(LocalDateTime.now());
         this.titulo = "TERMO DE ESCLARECIMENTO PARA RETIRADA DE ANIMAL DO SERVIÇO VETERINÁRIO SEM ALTA MÉDICA";
         this.declaraConsentimento = "Declaro que foi esclarecido ao ora subscritor que o animal abaixo identificado não obteve alta médica e que há recomendação para manter o animal em internação em estabelecimento médico veterinário apropriado.";
         this.declaraCienciaRiscos = """

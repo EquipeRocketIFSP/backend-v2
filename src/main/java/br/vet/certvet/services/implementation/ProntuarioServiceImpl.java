@@ -1,8 +1,6 @@
 package br.vet.certvet.services.implementation;
 
-import br.vet.certvet.exceptions.DocumentoNotFoundException;
-import br.vet.certvet.exceptions.DocumentoNotPersistedException;
-import br.vet.certvet.exceptions.ProntuarioNotFoundException;
+import br.vet.certvet.exceptions.*;
 import br.vet.certvet.models.Documento;
 import br.vet.certvet.models.Prontuario;
 import br.vet.certvet.repositories.PdfRepository;
@@ -66,7 +64,7 @@ public class ProntuarioServiceImpl implements ProntuarioService {
     }
 
     @Override
-    public byte[] retrieveFromRepository(Prontuario prontuario) throws IOException {
+    public byte[] retrievePdfFromRepository(Prontuario prontuario) throws IOException {
         return pdfRepository.retrieveObject(
                 prontuario.getClinica().getCnpj(),
                 getProntuarioName(prontuario)
@@ -81,12 +79,15 @@ public class ProntuarioServiceImpl implements ProntuarioService {
 //        return prontuarioRepository.save(prontuario);
         prontuario.setCodigo(codigo);
         Optional<Clinica> clinica = clinicaRepository.findById(prontuario.getClinica().getId());
+        if(clinica.isEmpty()) throw new ClinicaNotFoundException("Clínica não cadastrada ou não identificada");
+        Optional<Usuario> tutor = tutorRepository.findById(prontuario.getTutor().getId());
+        if(tutor.isEmpty()) throw new TutorNotFoundException("Tutor não cadastrado ou não identificado");
+        Optional<Animal> animal = animalRepository.findByTutores_idAndNome(tutor.get().getId(), prontuario.getAnimal().getNome());
+        if(animal.isEmpty()) throw new AnimalNotFoundException("Animal não cadastrado ou não identificado");
         prontuario.setClinica(clinica.get());
 
-        Optional<Usuario> tutor = tutorRepository.findById(prontuario.getTutor().getId());
         prontuario.setTutor(tutor.get());
 
-        Optional<Animal> animal = animalRepository.findByTutores_idAndNome(tutor.get().getId(), prontuario.getAnimal().getNome());
         prontuario.setAnimal(animal.get());
 
         log.debug("Iniciando persistência do prontuário");
@@ -124,13 +125,13 @@ public class ProntuarioServiceImpl implements ProntuarioService {
     }
 
     @Override
-    public Optional<String> findByCertvetProntuario(String certvetCode) {
+    public Optional<Prontuario> findByCodigo(String certvetCode) {
         return Optional.empty();
     }
 
     @Override
-    public List<Prontuario> getByCodigo(String codigo) {
-        return prontuarioRepository.findAllByCodigo(codigo);
+    public Optional<Prontuario> getByCodigo(String codigo) {
+        return prontuarioRepository.findByCodigo(codigo);
     }
     @Override
     public Optional<Prontuario> createProntuario(Prontuario prontuario) {
@@ -158,21 +159,20 @@ public class ProntuarioServiceImpl implements ProntuarioService {
     }
 
     @Override
-    public List<Documento> getDocumentosByTipo(Long prontuarioId, String tipo) {
-        return prontuarioRepository.findByIdAndDocumentos_tipo(prontuarioId, tipo);
+    public List<Documento> getDocumentosFromProntuarioByTipo(String prontuarioCodigo, String tipo) {
+        return prontuarioRepository.findAllByCodigoAndDocumentos_tipo(prontuarioCodigo, tipo);
     }
 
     @Override
-    public Documento attachDocumentoAndPdfPersist(
+    public Prontuario attachDocumentoAndPdfPersist(
             String prontuarioCodigo,
             String documentoCodigo,
-            byte[] documentoBinary,
-            String tipo
+            byte[] documentoBinary
     ) throws ProntuarioNotFoundException,
             DocumentoNotFoundException,
             SQLException,
             OptimisticLockingFailureException {
-        final Prontuario prontuario = prontuarioRepository.findByCodigo(prontuarioCodigo)
+        Prontuario prontuario = prontuarioRepository.findByCodigo(prontuarioCodigo)
                 .orElseThrow(ProntuarioNotFoundException::new);
         final String fileName = prontuario.getCodigo() + ".pdf";
         Documento documento = prontuario.getDocumentos()
@@ -191,9 +191,9 @@ public class ProntuarioServiceImpl implements ProntuarioService {
             log.error("Documento não salvo");
             throw e;
         }
-        prontuarioRepository.save(prontuario);
+        prontuario = prontuarioRepository.save(prontuario);
         log.info("Prontuário Salvo");
-        return documento;
+        return prontuario;
     }
 
     private PutObjectResult persistObjectInAws(Prontuario prontuario, String fileName, byte[] pdf) throws SQLException {

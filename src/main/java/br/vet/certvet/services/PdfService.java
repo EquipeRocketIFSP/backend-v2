@@ -8,6 +8,7 @@ import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 @Service
 public interface PdfService {
@@ -20,6 +21,6 @@ public interface PdfService {
 
     byte[] setProtection(byte[] documento, Prontuario prontuario) throws IOException;
 
-    IpcResponse getIcpBrValidation(Documento documento) throws IOException, DocumentoNotPersistedException;
+    IpcResponse getIcpBrValidation(Documento documento) throws IOException, SQLException, DocumentoNotPersistedException;
 
 }

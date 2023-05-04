@@ -3,8 +3,14 @@ package br.vet.certvet.models.especializacoes;
 import br.vet.certvet.exceptions.NotSupportedDocumentoTipoException;
 import br.vet.certvet.models.Documento;
 
+import javax.persistence.*;
+import java.time.LocalDateTime;
+
+@Entity
+@DiscriminatorValue("Vacinacao")
 public class VacinacaoDocumento extends Documento {
     public VacinacaoDocumento(){
+        super(LocalDateTime.now());
         this.titulo = "ATESTADO DE VACINAÇÃO";
         this.declaraConsentimento = "Atesto para os devidos fins, que o animal abaixo identificado foi vacinado por mim nesta data, conforme informações abaixo:";
         this.assinaturaVet = """

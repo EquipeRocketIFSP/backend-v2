@@ -1,6 +1,7 @@
 package br.vet.certvet.controllers;
 
 import br.vet.certvet.dto.ProntuarioRequest;
+import br.vet.certvet.exceptions.ProntuarioNotFoundException;
 import br.vet.certvet.models.Documento;
 import br.vet.certvet.models.Prontuario;
 import br.vet.certvet.services.PdfService;
@@ -26,12 +27,13 @@ public class ProntuarioController extends BaseController {
     @Autowired
     private PdfService pdfService;
 
-    @GetMapping("/{id}")
+    @GetMapping("/{codigo}")
     public ResponseEntity<Prontuario> getProntuario(
             @PathVariable String codigo
     ){
-        Optional<Prontuario> prontuario = prontuarioService.findByCodigo(codigo);
-        return prontuario.map(value -> ResponseEntity.ok().body(value)).orElseGet(() -> ResponseEntity.notFound().build());
+        return  ResponseEntity.ok()
+                .body(prontuarioService.findByCodigo(codigo)
+                        .orElseThrow(ProntuarioNotFoundException::new));
     }
 
     @GetMapping("/{id}/pdf")

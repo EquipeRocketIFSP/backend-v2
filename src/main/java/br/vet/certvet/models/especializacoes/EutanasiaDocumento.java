@@ -2,8 +2,15 @@ package br.vet.certvet.models.especializacoes;
 
 import br.vet.certvet.models.Documento;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import java.time.LocalDateTime;
+
+@Entity
+@DiscriminatorValue("Eutanasia")
 public class EutanasiaDocumento extends Documento {
     public EutanasiaDocumento(){
+        super(LocalDateTime.now());
         this.titulo = "TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO PARA REALIZAÇÃO DE EUTANÁSIA";
         this.declaraConsentimento = "Declaro estar ciente dos motivos que levam à necessidade de realização da eutanásia, que reconheço que esta é a opção escolhida por mim para cessar definitivamente o sofrimento do animal e, portanto, declaro o livre consentimento para a realização da eutanásia do animal abaixo identificado, a ser realizado pelo(a) Médico(a) Veterinário(a) ${veterinario.nome} CRMV-${veterinario.crmv}";
         this.declaraCienciaRiscos = """

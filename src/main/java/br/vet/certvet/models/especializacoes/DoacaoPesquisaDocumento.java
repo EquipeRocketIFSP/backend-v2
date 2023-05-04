@@ -4,8 +4,15 @@ import br.vet.certvet.models.Documento;
 import br.vet.certvet.services.DocumentoService;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import java.time.LocalDateTime;
+
+@Entity
+@DiscriminatorValue("DoacaoPesquisa")
 public class DoacaoPesquisaDocumento extends Documento {
     public DoacaoPesquisaDocumento(){
+        super(LocalDateTime.now());
         this.titulo = "TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO DE DOAÇÃO DE CORPO DE ANIMAL PARA FINS DE ENSINO E PESQUISA";
         this.declaraConsentimento = "Declaro o livre consentimento sobre a doação do corpo do animal abaixo identificado.";
         this.declaraCienciaRiscos = """

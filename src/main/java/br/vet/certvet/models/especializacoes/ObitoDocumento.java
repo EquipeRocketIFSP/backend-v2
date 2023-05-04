@@ -2,8 +2,15 @@ package br.vet.certvet.models.especializacoes;
 
 import br.vet.certvet.models.Documento;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import java.time.LocalDateTime;
+
+@Entity
+@DiscriminatorValue("Obito")
 public class ObitoDocumento extends Documento {
     public ObitoDocumento(){
+        super(LocalDateTime.now());
         this.titulo = "ATESTADO DE ÓBITO";
         this.declaraConsentimento = "Atesto para os devidos fins que o animal abaixo identificado veio a óbito na localidade ${prontuario.obito.local}, às ${prontuario.obito.horas}, horas do dia (${prontuario.obito.data}), sendo a provável causa mortis ${prontuario.obito.causa}.";
         this.causaMortis = """

@@ -9,6 +9,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 @Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(
+        name="tipo",
+        discriminatorType = DiscriminatorType.STRING
+)
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
@@ -20,6 +25,7 @@ public class Documento {
     @Column(nullable = false)
     private Long id;
 
+    @Column(insertable = false, updatable = false)
     private String tipo;
     private String caminho;
 
@@ -55,18 +61,27 @@ public class Documento {
 
     protected String algorithm = null;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @ToString.Exclude
     private Prontuario prontuario;
+
+    public Documento(LocalDateTime now) {
+        setCodigo(now);
+    }
+
+    public Documento(LocalDateTime now, String tipo) {
+        setCodigo(now);
+        this.tipo = tipo;
+    }
 
     public Documento find(String documentoTipo) {
         return new AnestesiaDocumento().find(documentoTipo);
     }
 
-    public String setCodigo(LocalDateTime now) {
+    public Documento setCodigo(LocalDateTime now) {
         // exemplo: VT-D-2022_12_03_02_19_20.pdf
         this.codigo = "VT-D-"+now.format(DateTimeFormatter.ofPattern("yyyy_MM_dd_hh_mm_ss"));
-        return this.codigo;
+        return this;
     }
 
     public Documento setVeterinario(Usuario veterinario) {

@@ -65,7 +65,8 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
                 "clinica.telefone", prontuario.getClinica().getTelefone(),
                 "prontuario.codigo", prontuario.getCodigo()
         );
-        return transformTxtToXmlToPdf(parameters, layout);
+        layout = new StringSubstitutor(getFieldsToBeLoaded(prontuario)).replace(layout);
+        return transformTxtToXmlToPdf(layout);
     }
 
     @Override
@@ -77,20 +78,17 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
             OptimisticLockingFailureException,
             IOException {
         final String from = "src/main/resources/documents/consentimento/ConsentimentoLayoutV2.html";
-        final String layout = Files.readString(Path.of(from));
+        String layout = Files.readString(Path.of(from));
 
-        Map<String, String> parameters = getDivsToBeLoaded(documentoTipo);
-        documentoTipo.setCodigo(LocalDateTime.now());
         documentoRepository.save(documentoTipo);
-        final String htmlBase = new StringSubstitutor(parameters).replace(layout);
+        layout = new StringSubstitutor(getDivsToBeLoaded(documentoTipo)).replace(layout);
 
-        parameters = getFieldsToBeLoaded(prontuario);
-        return transformTxtToXmlToPdf(parameters, htmlBase);
+        layout = new StringSubstitutor(getFieldsToBeLoaded(prontuario)).replace(layout);
+        return transformTxtToXmlToPdf(layout);
     }
 
-    private byte[] transformTxtToXmlToPdf(Map<String, String> parameters, String htmlBase) throws IOException {
-        String result = new StringSubstitutor(parameters).replace(htmlBase);
-        Document document = Jsoup.parse(result, "UTF-8");
+    private byte[] transformTxtToXmlToPdf(String htmlBase) throws IOException {
+        Document document = Jsoup.parse(htmlBase, "UTF-8");
         document.outputSettings().syntax(Document.OutputSettings.Syntax.xml);
         return generatePdfFromHtml(document);
     }
@@ -99,7 +97,7 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
         return ImmutableMap.<String, String>builder()
                 .put("animal.nome", prontuario.getAnimal().getNome())
                 .put("veterinario.nome", prontuario.getVeterinario().getNome())
-                .put("veterinario.crmv", prontuario.getVeterinario().getRegistroCRMV())
+ //                .put("veterinario.crmv", prontuario.getVeterinario().getRegistroCRMV())
                 .put("clinica.razaoSocial", prontuario.getClinica().getRazaoSocial())
                 .put("clinica.telefone", prontuario.getClinica().getTelefone())
                 .put("prontuario.codigo", prontuario.getCodigo())

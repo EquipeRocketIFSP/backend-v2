@@ -8,10 +8,7 @@ import javax.persistence.*;
 import java.text.DateFormatSymbols;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
 @Getter
@@ -121,7 +118,7 @@ public class Prontuario {
     @JoinColumn(name = "tutor_id")
     private Usuario tutor;
 
-    @OneToMany // removido atributo mappedBy por não se tratar de uma relação bidirecional
+    @OneToMany(mappedBy = "id") // removido atributo mappedBy por não se tratar de uma relação bidirecional
     @ToString.Exclude
     private List<Documento> documentos;
     private Date criadoEm;

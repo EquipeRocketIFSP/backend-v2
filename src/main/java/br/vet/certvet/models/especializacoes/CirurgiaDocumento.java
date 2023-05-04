@@ -2,8 +2,15 @@ package br.vet.certvet.models.especializacoes;
 
 import br.vet.certvet.models.Documento;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import java.time.LocalDateTime;
+
+@Entity
+@DiscriminatorValue("Cirurgia")
 public class CirurgiaDocumento extends Documento {
     public CirurgiaDocumento(){
+        super(LocalDateTime.now());
         this.titulo = "TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO PARA REALIZAÇÃO DE PROCEDIMENTO CIRÚRGICO";
         this.declaraConsentimento = "Declaro o livre consentimento para a realização do procedimento cirúrgico de ${prontuario.cirurgia} no animal abaixo identificado, a ser realizado pelo(a) Médico(a) Veterinário(a) ${veterinario.nome} CRMV-${veterinario.crmv}.";
         this.declaraCienciaRiscos = """

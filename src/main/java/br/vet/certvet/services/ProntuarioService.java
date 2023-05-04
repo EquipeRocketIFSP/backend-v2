@@ -17,12 +17,10 @@ public interface ProntuarioService {
     Prontuario save(Prontuario prontuario);
 
 
-    byte[] retrieveFromRepository(Prontuario prontuario) throws IOException;
+    byte[] retrievePdfFromRepository(Prontuario prontuario) throws IOException;
     boolean exists(LocalDateTime dataAtendimento);
 
-    Optional<String> findByCertvetProntuario(String certvetCode);
-
-    List<Prontuario> getByCodigo(String codigo);
+    Optional<Prontuario> getByCodigo(String codigo);
 
     Optional<Prontuario> findById(Long id);
     Optional<Prontuario> createProntuario(Prontuario prontuario);
@@ -34,9 +32,9 @@ public interface ProntuarioService {
     byte[] getProntuarioPdfBy(Long id);
     byte[] getProntuarioPdfBy(Prontuario prontuario);
 
-    List<Documento> getDocumentosByTipo(Long prontuarioId, String tipo);
+    List<Documento> getDocumentosFromProntuarioByTipo(String prontuarioId, String tipo);
 
-    Documento attachDocumentoAndPdfPersist(String prontuarioCodigo, String documentoCodigo, byte[] documento, String tipo) throws ProntuarioNotFoundException, DocumentoNotFoundException, SQLException;
+    Prontuario attachDocumentoAndPdfPersist(String prontuarioCodigo, String documentoCodigo, byte[] documento) throws SQLException;
 
     Optional<Prontuario> findByCodigo(String codigo);
 }

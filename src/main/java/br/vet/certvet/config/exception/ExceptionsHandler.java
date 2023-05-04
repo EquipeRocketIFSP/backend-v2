@@ -34,8 +34,8 @@ public class ExceptionsHandler {
     @ExceptionHandler({
             HttpMediaTypeNotSupportedException.class
     })
-    public ResponseEntity<String> handleBadRequest(Exception exception) {
-        return ResponseEntity.badRequest().body(exception.getLocalizedMessage());
+    public ResponseEntity<String> handleUnsuportedMediaType(RuntimeException exception) {
+        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(exception.getLocalizedMessage());
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)

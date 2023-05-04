@@ -2,8 +2,15 @@ package br.vet.certvet.models.especializacoes;
 
 import br.vet.certvet.models.Documento;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import java.time.LocalDateTime;
+
+@Entity
+@DiscriminatorValue("RetiraCorpo")
 public class RetiraCorpoDocumento extends Documento {
     public RetiraCorpoDocumento(){
+        super(LocalDateTime.now());
         this.titulo = "TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO PARA RETIRADA DE CORPO DE ANIMAL EM ÓBITO";
         this.declaraConsentimento = "Declaro para os devidos fins, que, nesta ocasião, retiro o cadáver do animal abaixo identificado, que veio a óbito na localidade ${prontuario.obito.local}, às ${prontuario.obito.horas}, horas do dia (${prontuario.obito.data}), cujo óbito, provocado pela provável <b>causa mortis</b> ${prontuario.obito.causa} foi constatado pelo médico-veterinário que subscreve a presente, e que recebi esclarecimentos quanto à necessidade de dar tratamento respeitoso e destinação ambiental adequada ao cadáver, em respeito às normas ambientais.";
         this.observacoesVeterinario = """
