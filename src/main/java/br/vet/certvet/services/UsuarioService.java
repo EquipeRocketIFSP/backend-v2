@@ -12,19 +12,17 @@ import java.util.Optional;
 
 @Service
 public interface UsuarioService {
+    Usuario initialResgistration(FuncionarioRequestDto dto, Clinica clinica);
+
     Usuario create(UsuarioRequestDto dto, Clinica clinica);
 
     Usuario create(FuncionarioRequestDto dto, Clinica clinica);
-
-    Usuario create(VeterinarioRequestDto dto, Clinica clinica);
 
     Usuario edit(Usuario usuario);
 
     Usuario edit(UsuarioRequestDto dto, Usuario usuario);
 
-    Usuario edit(FuncionarioEditRequestDto dto, Usuario usuario);
-
-    Usuario edit(VeterinarioEditRequestDto dto, Usuario usuario);
+    Usuario edit(FuncionarioRequestDto dto, Usuario usuario);
 
     Usuario findOne(Long id, Clinica clinica);
 

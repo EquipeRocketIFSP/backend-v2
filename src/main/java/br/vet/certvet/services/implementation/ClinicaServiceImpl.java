@@ -46,11 +46,11 @@ public class ClinicaServiceImpl implements ClinicaService {
         Clinica clinica = this.clinicaRepository.saveAndFlush(new Clinica(dto));
 
         if (dto.donoCrmv() != null && !dto.donoCrmv().isEmpty()) {
-            usuario = this.usuarioService.create(ClinicaServiceImpl.getDonoResponsavelTecnicoDto(dto), clinica);
+            usuario = this.usuarioService.initialResgistration(ClinicaServiceImpl.getDonoResponsavelTecnicoDto(dto), clinica);
 
             clinica.setResponsavelTecnico(usuario);
             this.clinicaRepository.saveAndFlush(clinica);
-        } else usuario = this.usuarioService.create(ClinicaServiceImpl.getDonoDto(dto), clinica);
+        } else usuario = this.usuarioService.initialResgistration(ClinicaServiceImpl.getDonoDto(dto), clinica);
 
         this.sendCodigoClinicaThoughEmail(clinica, usuario);
 
@@ -88,6 +88,11 @@ public class ClinicaServiceImpl implements ClinicaService {
     }
 
     @Override
+    public Clinica edit(Clinica clinica) {
+        return this.clinicaRepository.saveAndFlush(clinica);
+    }
+
+    @Override
     public Clinica edit(ClinicaRequestDto dto, Clinica clinica) {
         clinica.fill(dto);
 
@@ -117,21 +122,21 @@ public class ClinicaServiceImpl implements ClinicaService {
     private static VeterinarioRequestDto getDonoResponsavelTecnicoDto(ClinicaInicialRequestDto dto) {
         VeterinarioRequestDto usuarioDto = new VeterinarioRequestDto();
 
-        usuarioDto.nome = dto.donoNome();
-        usuarioDto.email = dto.donoEmail();
-        usuarioDto.cpf = dto.donoCpf();
-        usuarioDto.rg = dto.donoRg();
-        usuarioDto.celular = dto.donoCelular();
-        usuarioDto.telefone = dto.donoTelefone();
-        usuarioDto.logradouro = dto.donoLogradouro();
-        usuarioDto.numero = dto.donoNumero();
-        usuarioDto.cep = dto.donoCep();
-        usuarioDto.bairro = dto.donoBairro();
-        usuarioDto.cidade = dto.donoCidade();
-        usuarioDto.estado = dto.donoEstado();
-        usuarioDto.senha = dto.donoSenha();
-        usuarioDto.crmv = dto.donoCrmv();
-        usuarioDto.is_admin = true;
+        usuarioDto.setNome(dto.donoNome())
+                .setEmail(dto.donoEmail())
+                .setCpf(dto.donoCpf())
+                .setRg(dto.donoRg())
+                .setCelular(dto.donoCelular())
+                .setTelefone(dto.donoTelefone())
+                .setLogradouro(dto.donoLogradouro())
+                .setNumero(dto.donoNumero())
+                .setCep(dto.donoCep())
+                .setBairro(dto.donoBairro())
+                .setCidade(dto.donoCidade())
+                .setEstado(dto.donoEstado());
+
+        usuarioDto.setSenha(dto.donoSenha()).setAdmin(true);
+        usuarioDto.setCrmv(dto.donoCrmv());
 
         return usuarioDto;
     }
