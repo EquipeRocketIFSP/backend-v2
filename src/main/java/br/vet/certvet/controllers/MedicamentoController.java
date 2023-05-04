@@ -38,6 +38,19 @@ public class MedicamentoController extends BaseController {
         return new ResponseEntity<>(new MedicamentoResponseDto(medicamento), HttpStatus.CREATED);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<MedicamentoResponseDto> edit(
+            @RequestHeader(AUTHORIZATION) String token,
+            @RequestBody @Valid MedicamentoRequestDto dto,
+            @PathVariable("id") Long id
+    ) {
+        Clinica clinica = this.tokenService.getClinica(token);
+        Medicamento medicamento = this.medicamentoService.findOne(id, clinica);
+        medicamento = this.medicamentoService.edit(dto, medicamento);
+
+        return ResponseEntity.ok(new MedicamentoResponseDto(medicamento));
+    }
+
     @GetMapping
     ResponseEntity<PaginatedResponse<MedicamentoResponseDto>> findAll(
             @RequestHeader(AUTHORIZATION) String token,
