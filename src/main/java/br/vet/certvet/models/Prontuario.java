@@ -108,9 +108,10 @@ public class Prontuario {
     private List<Exame> exames;
     private String codigo;
 
+    @ManyToOne
     private Usuario tutor;
 
-    @OneToMany(mappedBy = "prontuario")
+    @OneToMany(mappedBy = "id")
     @ToString.Exclude
     private List<Documento> documentos;
 

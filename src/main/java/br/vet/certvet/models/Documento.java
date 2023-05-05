@@ -19,6 +19,7 @@ public class Documento {
     private String tipo;
     private String caminho;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
+    @ToString.Exclude
     private Prontuario prontuario;
 }
