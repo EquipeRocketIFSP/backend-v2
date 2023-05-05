@@ -36,7 +36,7 @@ public class MedicamentoTest {
     void createMedicamento() {
         var dto = MedicamentoTest.factoryMedicamentoDto();
         Medicamento parametro = new Medicamento(dto);
-        when(medicamentoRepository.findByCodigoRegistro(dto.codigoRegistro)).thenReturn(Optional.empty());
+        when(medicamentoRepository.findByCodigoRegistroAndClinica(dto.codigoRegistro)).thenReturn(Optional.empty());
         when(medicamentoRepository.saveAndFlush(any())).thenReturn(parametro);
         Medicamento medicamento = this.medicamentoService.create(dto);
 
@@ -47,7 +47,7 @@ public class MedicamentoTest {
     void createDuplicateMedicamento() {
         var dto = MedicamentoTest.factoryMedicamentoDto();
         Medicamento parametro = new Medicamento(dto);
-        when(medicamentoRepository.findByCodigoRegistro(dto.codigoRegistro)).thenReturn(Optional.of(parametro));
+        when(medicamentoRepository.findByCodigoRegistroAndClinica(dto.codigoRegistro)).thenReturn(Optional.of(parametro));
 
         Exception e = assertThrows(
                 ConflictException.class,
@@ -63,7 +63,7 @@ public class MedicamentoTest {
          */
         var dto = MedicamentoTest.factoryMedicamentoDto();
         Medicamento parametro = new Medicamento(dto);
-        when(medicamentoRepository.findByCodigoRegistro(dto.codigoRegistro)).thenReturn(Optional.empty());
+        when(medicamentoRepository.findByCodigoRegistroAndClinica(dto.codigoRegistro)).thenReturn(Optional.empty());
         when(medicamentoRepository.saveAndFlush(any())).thenReturn(parametro);
         this.medicamentoService.create(dto);
 
