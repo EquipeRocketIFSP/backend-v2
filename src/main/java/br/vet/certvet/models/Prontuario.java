@@ -1,7 +1,9 @@
 package br.vet.certvet.models;
 
 
+import br.vet.certvet.enums.ProntuarioStatus;
 import lombok.*;
+import lombok.experimental.Accessors;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
@@ -24,55 +26,51 @@ public class Prontuario {
     @ManyToOne
     private Clinica clinica;
 
-    @Column(nullable = false)
+    @Setter
+    @Accessors(chain = true)
     private int frequenciaCardiaca;
 
-    @Column(nullable = false)
+    @Setter
+    @Accessors(chain = true)
     private int frequenciaRespiratoria;
 
-    @Column(nullable = false)
+    @Setter
+    @Accessors(chain = true)
     private int temperatura;
 
-    @Column(nullable = false)
+    @Setter
+    @Accessors(chain = true)
+    private String peso;
+
+    @Setter
+    @Accessors(chain = true)
     private String hidratacao;
 
-    @Column(nullable = false)
+    @Setter
+    @Accessors(chain = true)
     private String tpc;
 
-    @Column(nullable = false)
+    @Setter
+    @Accessors(chain = true)
     private String mucosa;
 
-    @Column(nullable = false)
+    @Setter
+    @Accessors(chain = true)
     private String conciencia;
 
-    @Column(nullable = false)
+    @Setter
+    @Accessors(chain = true)
     private String escoreCorporal;
 
     @Column(length = 2000)
     private String supeitaDiagnostica;
-
-    @Column(nullable = false)
     private boolean prostracao;
-
-    @Column(nullable = false)
     private boolean febre;
-
-    @Column(nullable = false)
     private boolean vomito;
-
-    @Column(nullable = false)
     private boolean diarreia;
-
-    @Column(nullable = false)
     private boolean espasmosConvulsao;
-
-    @Column(nullable = false)
     private boolean deambulacao;
-
-    @Column(nullable = false)
     private boolean sensibilidadeDor;
-
-    @Column(nullable = false)
     private boolean lesoesNodulos;
 
     private String apetite;
@@ -88,11 +86,15 @@ public class Prontuario {
 
     private LocalDateTime dataAtendimento;
 
+    @Setter
     @ManyToOne(optional = false)
+    @Accessors(chain = true)
     @JoinColumn(name = "animal_id", nullable = false)
     private Animal animal;
 
+    @Setter
     @ManyToOne
+    @Accessors(chain = true)
     @JoinColumn(name = "usuario_id")
     private Usuario veterinario;
 
@@ -108,12 +110,18 @@ public class Prontuario {
     private List<Exame> exames;
     private String codigo;
 
+    @Setter
     @ManyToOne
+    @Accessors(chain = true)
     private Usuario tutor;
 
     @OneToMany(mappedBy = "id")
     @ToString.Exclude
     private List<Documento> documentos;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ProntuarioStatus status = ProntuarioStatus.PENDING;
 
     @Override
     public boolean equals(Object o) {
@@ -131,5 +139,4 @@ public class Prontuario {
     public String getCodigo() {
         return this.codigo;
     }
-
 }
