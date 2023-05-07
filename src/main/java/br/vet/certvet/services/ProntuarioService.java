@@ -1,6 +1,9 @@
 package br.vet.certvet.services;
 
+import br.vet.certvet.dto.requests.prontuario.ProntuarioDTO;
+import br.vet.certvet.models.Animal;
 import br.vet.certvet.models.Prontuario;
+import br.vet.certvet.models.Usuario;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -8,7 +11,7 @@ import java.util.Optional;
 @Service
 public interface ProntuarioService {
 
-    Optional<Prontuario> createProntuario(Prontuario prontuario);
+    Prontuario create(ProntuarioDTO dto, Animal animal, Usuario tutor, Usuario veterinario);
 
     Optional<Prontuario> editProntuario(Prontuario prontuario);
 
@@ -17,5 +20,6 @@ public interface ProntuarioService {
     Boolean deleteProntuario(Prontuario prontuario);
 
     byte[] getProntuarioPdfBy(Long id);
+
     byte[] getProntuarioPdfBy(Prontuario prontuario);
 }
