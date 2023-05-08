@@ -8,6 +8,7 @@ import br.vet.certvet.dto.responses.PaginatedResponse;
 import br.vet.certvet.models.Clinica;
 import br.vet.certvet.models.Estoque;
 import br.vet.certvet.models.Medicamento;
+import br.vet.certvet.models.Usuario;
 import br.vet.certvet.services.EstoqueService;
 import br.vet.certvet.services.MedicamentoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,8 +43,9 @@ public class EstoqueController {
             @PathVariable("medicamento_id") Long medicamentoId
     ) {
         Clinica clinica = this.tokenService.getClinica(token);
+        Usuario responsavel = this.tokenService.getUsuario(token);
         Medicamento medicamento = this.medicamentoService.findOne(medicamentoId, clinica);
-        Estoque estoque = this.estoqueService.create(dto, medicamento);
+        Estoque estoque = this.estoqueService.create(dto, medicamento, responsavel);
 
         return new ResponseEntity<>(new EstoqueResponseDto(estoque), HttpStatus.CREATED);
     }
@@ -56,9 +58,10 @@ public class EstoqueController {
             @PathVariable("id") Long id
     ) {
         Clinica clinica = this.tokenService.getClinica(token);
+        Usuario responsavel = this.tokenService.getUsuario(token);
         Medicamento medicamento = this.medicamentoService.findOne(medicamentoId, clinica);
         Estoque estoque = this.estoqueService.findOne(id, medicamento);
-        estoque = this.estoqueService.edit(dto, estoque);
+        estoque = this.estoqueService.edit(dto, estoque, responsavel);
 
         return ResponseEntity.ok(new EstoqueResponseDto(estoque));
     }

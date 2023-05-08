@@ -42,8 +42,12 @@ public class EstoqueTransacao {
     @JoinColumn(name = "estoque_id")
     private Estoque estoque;
 
-    public EstoqueTransacao(Estoque estoque) {
+    @OneToOne
+    private Usuario responsavel;
+
+    public EstoqueTransacao(Estoque estoque, Usuario responsavel) {
         this.estoque = estoque;
+        this.responsavel = responsavel;
     }
 
     public EstoqueTransacao setStatus(TransacaoStatus status) {

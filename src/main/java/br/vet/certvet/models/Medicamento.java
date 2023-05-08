@@ -39,6 +39,9 @@ public class Medicamento implements Fillable<MedicamentoRequestDto> {
     @Column(nullable = false)
     private String fabricante;
 
+    @Column(nullable = false)
+    private String apresentacao;
+
     @ManyToOne
     @JoinColumn(name = "clinica_id")
     private Clinica clinica;
@@ -69,5 +72,6 @@ public class Medicamento implements Fillable<MedicamentoRequestDto> {
         this.viaUso = dto.viaUso();
         this.concentracao = dto.concentracao();
         this.fabricante = dto.fabricante();
+        this.apresentacao = dto.apresentacao();
     }
 }

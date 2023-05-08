@@ -5,11 +5,12 @@ import br.vet.certvet.dto.responses.EstoqueResponseDto;
 import br.vet.certvet.dto.responses.PaginatedResponse;
 import br.vet.certvet.models.Estoque;
 import br.vet.certvet.models.Medicamento;
+import br.vet.certvet.models.Usuario;
 
 public interface EstoqueService {
-    Estoque create(EstoqueRequestDto dto, Medicamento medicamento);
+    Estoque create(EstoqueRequestDto dto, Medicamento medicamento, Usuario responsavel);
 
-    Estoque edit(EstoqueRequestDto dto, Estoque estoque);
+    Estoque edit(EstoqueRequestDto dto, Estoque estoque, Usuario responsavel);
 
     Estoque findOne(Long id, Medicamento medicamento);
 
