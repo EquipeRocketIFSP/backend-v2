@@ -34,6 +34,11 @@ public record MedicamentoRequestDto(
         @NotEmpty(message = "Por favor insira o fabricante do medicamento")
         @Size(max = 255, message = "O fabricante do medicamento não pode ultrpassar 255 caracteres")
         @JsonProperty("fabricante")
-        String fabricante
+        String fabricante,
+
+        @NotEmpty(message = "Por favor insira a apresentação do medicamento")
+        @Size(max = 255, message = "A apresentação do medicamento não pode ultrpassar 255 caracteres")
+        @JsonProperty("apresentacao")
+        String apresentacao
 ) {
 }
