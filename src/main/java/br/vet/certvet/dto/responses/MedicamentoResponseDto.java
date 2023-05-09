@@ -25,11 +25,8 @@ public class MedicamentoResponseDto {
     @JsonProperty("fabricante")
     private String fabricante;
 
-    @JsonProperty("nome_referencia")
-    private String nomeReferencia;
-
-    @JsonProperty("vencimento_registro")
-    private String vencimentoRegistro;
+    @JsonProperty("apresentacao")
+    private String apresentacao;
 
     public MedicamentoResponseDto(Medicamento medicamento) {
         this.id = medicamento.getId();
@@ -39,8 +36,7 @@ public class MedicamentoResponseDto {
         this.viaUso = medicamento.getViaUso();
         this.concentracao = medicamento.getConcentracao();
         this.fabricante = medicamento.getFabricante();
-        this.nomeReferencia = medicamento.getNomeReferencia();
-        this.vencimentoRegistro = medicamento.getVencimentoRegistro().toString();
+        this.apresentacao = medicamento.getApresentacao();
     }
 
     public static MedicamentoResponseDto factory(Medicamento medicamento) {

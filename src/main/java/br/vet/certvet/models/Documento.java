@@ -38,6 +38,7 @@ public class Documento {
 
     @ManyToOne
     @JoinColumn(name = "clinica_id")
+    @ToString.Exclude
     private Clinica clinica;
     private String caminhoArquivo;
     protected String md5 = null;

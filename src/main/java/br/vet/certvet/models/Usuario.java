@@ -118,47 +118,43 @@ public class Usuario implements UserDetails, Fillable<UsuarioRequestDto> {
 
     @Override
     public void fill(UsuarioRequestDto dto) {
-        this.username = dto.email;
-        this.nome = dto.nome;
-        this.cpf = dto.cpf;
-        this.rg = dto.rg;
-        this.cep = dto.cep;
-        this.logradouro = dto.logradouro;
-        this.numero = dto.numero;
-        this.bairro = dto.bairro;
-        this.cidade = dto.cidade;
-        this.estado = dto.estado;
-        this.celular = dto.celular;
-        this.telefone = dto.telefone;
+        this.username = dto.getEmail();
+        this.nome = dto.getNome();
+        this.cpf = dto.getCpf();
+        this.rg = dto.getRg();
+        this.cep = dto.getCep();
+        this.logradouro = dto.getLogradouro();
+        this.numero = dto.getNumero();
+        this.bairro = dto.getBairro();
+        this.cidade = dto.getCidade();
+        this.estado = dto.getEstado();
+        this.celular = dto.getCelular();
+        this.telefone = dto.getTelefone();
         this.crmv = null;
 
-        if (!(dto instanceof FuncionarioEditRequestDto))
+        if (!(dto instanceof FuncionarioRequestDto))
             this.password = null;
 
-        if (dto instanceof FuncionarioRequestDto)
-            this.setPassword(((FuncionarioRequestDto) dto).senha);
-        else if (dto instanceof FuncionarioEditRequestDto && ((FuncionarioEditRequestDto) dto).senha != null && !((FuncionarioEditRequestDto) dto).senha.isEmpty())
-            this.setPassword(((FuncionarioEditRequestDto) dto).senha);
+        if (dto instanceof FuncionarioRequestDto && ((FuncionarioRequestDto) dto).getSenha() != null && !((FuncionarioRequestDto) dto).getSenha().isEmpty())
+            this.setPassword(((FuncionarioRequestDto) dto).getSenha());
 
         if (dto instanceof VeterinarioRequestDto)
-            this.crmv = ((VeterinarioRequestDto) dto).crmv;
-        else if (dto instanceof VeterinarioEditRequestDto)
-            this.crmv = ((VeterinarioEditRequestDto) dto).crmv;
+            this.crmv = ((VeterinarioRequestDto) dto).getCrmv();
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return this.deletedAt == null;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return this.deletedAt == null;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return this.deletedAt == null;
     }
 
     @Override

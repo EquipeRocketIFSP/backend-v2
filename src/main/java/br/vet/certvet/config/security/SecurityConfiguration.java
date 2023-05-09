@@ -56,9 +56,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/api/esqueci-minha-senha/**").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/redefinir-senha/*").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/redefinir-senha/**").permitAll()
-                .anyRequest().permitAll()
-//                .anyRequest().authenticated()
-//                .and().headers().frameOptions().sameOrigin()
+                .anyRequest().authenticated()
 //                .and().authorizeRequests().anyRequest().permitAll() // TODO: Comentar essa linha ao ativar SSL
                 .and().cors()
                 .and().csrf().disable()
