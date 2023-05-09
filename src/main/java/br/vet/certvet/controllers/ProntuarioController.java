@@ -1,13 +1,16 @@
 package br.vet.certvet.controllers;
 
 import br.vet.certvet.dto.requests.prontuario.SinaisVitaisDTO;
+import br.vet.certvet.dto.responses.ProntuarioResponseDTO;
 import br.vet.certvet.models.Animal;
 import br.vet.certvet.models.Clinica;
+import br.vet.certvet.models.Prontuario;
 import br.vet.certvet.models.Usuario;
 import br.vet.certvet.services.AnimalService;
 import br.vet.certvet.services.ProntuarioService;
 import br.vet.certvet.services.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,7 +31,7 @@ public class ProntuarioController extends BaseController {
     private UsuarioService usuarioService;
 
     @PostMapping
-    public ResponseEntity create(
+    public ResponseEntity<ProntuarioResponseDTO> create(
             @RequestHeader(AUTHORIZATION) String token,
             @RequestBody @Valid SinaisVitaisDTO dto
     ) {
@@ -37,9 +40,24 @@ public class ProntuarioController extends BaseController {
         Usuario veterinario = this.usuarioService.findOne(dto.getVeterinario(), clinica);
         Animal animal = this.animalService.findOne(dto.getAnimal(), tutor);
 
-        this.prontuarioService.create(dto, animal, tutor, veterinario);
+        Prontuario prontuario = this.prontuarioService.create(dto, animal, tutor, veterinario);
 
-        return ResponseEntity.ok().build();
+        return new ResponseEntity<>(new ProntuarioResponseDTO(prontuario), HttpStatus.CREATED);
+    }
+
+    @PutMapping("{id}/sinais-vitais")
+    public ResponseEntity<ProntuarioResponseDTO> edit(
+            @RequestHeader(AUTHORIZATION) String token,
+            @PathVariable("id") Long id,
+            @RequestBody @Valid SinaisVitaisDTO dto
+    ) {
+        Clinica clinica = this.tokenService.getClinica(token);
+        Usuario tutor = this.usuarioService.findOne(dto.getTutor(), clinica);
+        Animal animal = this.animalService.findOne(dto.getAnimal(), tutor);
+        Prontuario prontuario = this.prontuarioService.findOne(id, animal);
+        prontuario = this.prontuarioService.edit(dto, prontuario);
+
+        return ResponseEntity.ok(new ProntuarioResponseDTO(prontuario));
     }
 
 

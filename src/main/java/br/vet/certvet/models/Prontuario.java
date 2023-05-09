@@ -8,6 +8,7 @@ import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 
@@ -138,5 +139,10 @@ public class Prontuario {
 
     public String getCodigo() {
         return this.codigo;
+    }
+
+    public Prontuario setCodigo(LocalDateTime now) {
+        this.codigo = "VT-P-" + now.format(DateTimeFormatter.ofPattern("yyyy_MM_dd_hh_mm_ss"));
+        return this;
     }
 }

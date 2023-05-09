@@ -4,6 +4,7 @@ import br.vet.certvet.dto.requests.prontuario.ProntuarioDTO;
 import br.vet.certvet.dto.requests.prontuario.SinaisVitaisDTO;
 import br.vet.certvet.exceptions.UnprocessableEntityException;
 import br.vet.certvet.models.Prontuario;
+import br.vet.certvet.models.mappers.ProntuarioDTOMapper;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -31,16 +32,6 @@ public class ProntuarioFactory {
      * Invocado via reflection. Não remover.
      */
     private static Prontuario factoryFromSinaisVitaisDTO(SinaisVitaisDTO dto) {
-        Prontuario prontuario = new Prontuario();
-
-        return prontuario.setFrequenciaCardiaca(dto.getFrequenciaCardiaca())
-                .setFrequenciaRespiratoria(dto.getFrequenciaRespiratoria())
-                .setTemperatura(dto.getTemperatura())
-                .setPeso(dto.getPeso())
-                .setHidratacao(dto.getHidratacao())
-                .setTpc(dto.getTpc())
-                .setMucosa(dto.getMucosa())
-                .setConciencia(dto.getConciencia())
-                .setEscoreCorporal(dto.getEscoreCorporal());
+        return ProntuarioDTOMapper.mapper(dto, new Prontuario());
     }
 }
