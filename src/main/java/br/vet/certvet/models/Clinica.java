@@ -106,6 +106,18 @@ public class Clinica implements Fillable<ClinicaRequestDto> {
     @ToString.Exclude
     private List<Prontuario> prontuarios;
 
+    public void setProntuarios(List<Prontuario> prontuarios) {
+        this.prontuarios = prontuarios;
+    }
+
+    public void setAgendamentos(List<Agendamento> agendamentos) {
+        this.agendamentos = agendamentos;
+    }
+
+    public void setUsuarios(List<Usuario> usuarios) {
+        this.usuarios = usuarios;
+    }
+
     public Clinica(ClinicaInicialRequestDto dto) {
         this.nomeFantasia = dto.clinicaNomeFantasia();
         this.razaoSocial = dto.clinicaRazaoSocial();

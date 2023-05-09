@@ -1,30 +1,39 @@
 package br.vet.certvet.controllers;
 
-import br.vet.certvet.contracts.apis.ipcBr.IpcResponse;
-import br.vet.certvet.exceptions.DocumentoNotFoundException;
-import br.vet.certvet.exceptions.DocumentoNotPersistedException;
-import br.vet.certvet.exceptions.InvalidSignedDocumentoException;
-import br.vet.certvet.exceptions.ProntuarioNotFoundException;
+import br.vet.certvet.contracts.apis.ipcBr.IcpResponse;
+import br.vet.certvet.dto.responses.DocumentoResponse;
+import br.vet.certvet.exceptions.*;
 import br.vet.certvet.models.Documento;
 import br.vet.certvet.models.Prontuario;
+import br.vet.certvet.models.Usuario;
+import br.vet.certvet.repositories.AnimalRepository;
+import br.vet.certvet.repositories.UsuarioRepository;
 import br.vet.certvet.services.DocumentoService;
 import br.vet.certvet.services.PdfService;
 import br.vet.certvet.services.ProntuarioService;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.*;
+import java.net.URI;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @Slf4j
 @RequestMapping("/api/documento")
 public class DocumentoController extends BaseController {
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+    @Autowired
+    private AnimalRepository animalRepository;
 
     @Autowired
     private ProntuarioService prontuarioService;
@@ -34,6 +43,25 @@ public class DocumentoController extends BaseController {
 
     @Autowired
     private PdfService pdfService;
+
+    private Prontuario findProntuarioEClinica(String auth, String prontuarioCodigo) {
+        return prontuarioService.findByCodigo(prontuarioCodigo)
+                .filter(p -> p.getClinica().getId().equals(getClinicaIdFromRequester(auth)))
+                .orElseThrow(()->new ProntuarioNotFoundException("O prontuário buscado não foi identificado na base de dados"));
+    }
+
+    private List<Usuario> validaAssinadores(IcpResponse icpResponse) {
+        List<Usuario> assinadores = new ArrayList<>();
+        List<String> naoCadastrados = new ArrayList<>();
+        for(String key : icpResponse.getSigners().keySet()){
+            var a = usuarioRepository.findByCpf(icpResponse.getSigners().get(key).signerCpf());
+            if(a.isEmpty()) naoCadastrados.add(icpResponse.getSigners().get(key).signerCpf());
+            else assinadores.add(a.get());
+        }
+        if(!naoCadastrados.isEmpty()) throw new AssinadorNaoCadastradoException("Os CPF assinadores não estão cadastrados: " + naoCadastrados + ". Verifique se todos os assinadores estão cadastrados e salve o arquivo novamente.");
+        return assinadores;
+    }
+
 
     @GetMapping
     public ResponseEntity<List<Documento>> getDocumentosByTipo(
@@ -58,21 +86,19 @@ public class DocumentoController extends BaseController {
      */
     @GetMapping("/novo")
     public ResponseEntity<byte[]> getDocumentoEmBranco(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String auth,
             @RequestParam("tipo") String tipo,
             @RequestParam("prontuario") String prontuarioCodigo
     ) throws ProntuarioNotFoundException,
             DocumentoNotPersistedException,
             OptimisticLockingFailureException,
             IOException {
-        var prontuarioSearch = prontuarioService.getByCodigo(prontuarioCodigo);
-        if(prontuarioSearch.isEmpty()) throw new ProntuarioNotFoundException("O prontuário buscado não foi identificado na base de dados");
-        Prontuario prontuario = prontuarioSearch.get();
-        Documento documento = documentoService.provideLayout(tipo);
-        prontuario.getDocumentos().add(documentoService.save(documento));
-        return ResponseEntity.ok(pdfService.writePdfDocumentoEmBranco(
-                prontuario,
-                documentoService.provideLayout(tipo)
-        ));
+        Prontuario prontuario = findProntuarioEClinica(auth, prontuarioCodigo);
+        return ResponseEntity.ok(
+                pdfService.writePdfDocumentoEmBranco(
+                        prontuario, documentoService.provideLayout(tipo)
+                )
+        );
     }
 
 
@@ -84,23 +110,25 @@ public class DocumentoController extends BaseController {
      * @throws SQLException
      * @throws IOException
      */
-    @PostMapping(
-//            consumes = MediaType.APPLICATION_PDF_VALUE //"application/pdf"
-    )
-    public ResponseEntity<List<Documento>> saveDocumentoAssinado(
+    @PostMapping(consumes = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<DocumentoResponse> saveDocumentoAssinado(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String auth,
             @RequestParam("prontuario") String prontuarioCodigo,
             @RequestParam("documento") String documentoCodigo,
             @RequestBody byte[] documentoPdf
     ) throws IOException, SQLException {
-        final Documento queriedDocumento = documentoService.getByCodigo(documentoCodigo)
+        Prontuario prontuario = findProntuarioEClinica(auth, prontuarioCodigo);
+        Documento documento = prontuario.getDocumentos()
+                .stream()
+                .filter(p -> p.getCodigo().equals(documentoCodigo))
+                .findFirst()
                 .orElseThrow(() -> new DocumentoNotFoundException("Não foi possível identificar o id do documento na base de dados"));
-//        if(null == queriedDocumento.getMd5())
-//            throw new DocumentoNotPersistedException("O pdf do documento ainda não existe no repositório");
-        IpcResponse ipcResponse = pdfService.getIcpBrValidation(queriedDocumento);
-        if(!ipcResponse.isValidDocument()) throw new InvalidSignedDocumentoException("O documento não pôde ser confirmado pelo IPC-BR");
-        Prontuario prontuario = prontuarioService.attachDocumentoAndPdfPersist(prontuarioCodigo, documentoCodigo, documentoPdf);
-        return ResponseEntity.ok(prontuario.getDocumentos());
-//        return ResponseEntity.ok(attachedDocumento);
+        var awsResponse = pdfService.savePdfInBucket(documento, documentoPdf);
+        IcpResponse icpResponse = pdfService.getIcpBrValidation(documento);
+        if(!icpResponse.isValidDocument()) throw new InvalidSignedDocumentoException("O documento não pôde ser confirmado pelo ICP-BR");
+        Documento attachedDocumento = prontuarioService.attachDocumentoAndPdfPersist(
+                documento.assinadores(validaAssinadores(icpResponse)), awsResponse);
+        return ResponseEntity.created(URI.create("/api/documento/" + documentoCodigo))
+                .body(new DocumentoResponse(attachedDocumento));
     }
-
 }

@@ -7,13 +7,12 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 @Builder
 @Slf4j
-public record IpcResponse(
+public record IcpResponse(
         IpcReport report,
         String receipt,
         IpcHealthInfo healthInfo

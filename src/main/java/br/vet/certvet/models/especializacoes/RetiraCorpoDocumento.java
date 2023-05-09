@@ -6,11 +6,10 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import java.time.LocalDateTime;
 
-@Entity
-@DiscriminatorValue("RetiraCorpo")
-public class RetiraCorpoDocumento extends Documento {
-    public RetiraCorpoDocumento(){
-        super(LocalDateTime.now());
+
+public class RetiraCorpoDocumento extends Doc {
+    public RetiraCorpoDocumento(Documento documento){
+        super.documento = documento;
         this.titulo = "TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO PARA RETIRADA DE CORPO DE ANIMAL EM ÓBITO";
         this.declaraConsentimento = "Declaro para os devidos fins, que, nesta ocasião, retiro o cadáver do animal abaixo identificado, que veio a óbito na localidade ${prontuario.obito.local}, às ${prontuario.obito.horas}, horas do dia (${prontuario.obito.data}), cujo óbito, provocado pela provável <b>causa mortis</b> ${prontuario.obito.causa} foi constatado pelo médico-veterinário que subscreve a presente, e que recebi esclarecimentos quanto à necessidade de dar tratamento respeitoso e destinação ambiental adequada ao cadáver, em respeito às normas ambientais.";
         this.observacoesVeterinario = """
@@ -44,11 +43,5 @@ public class RetiraCorpoDocumento extends Documento {
                         (documento a ser emitido em 2 vias: 1ª via: médico-veterinário; 2ª via: proprietário/tutor)
                     </span>
                 </div>""".indent(4);
-    }
-    @Override
-    public Documento find(String tipoDocumento){
-        return  "retiraCorpo".equals(tipoDocumento)
-                ? this
-                : new RetiraSemAltaDocumento().find(tipoDocumento);
     }
 }

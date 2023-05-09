@@ -8,11 +8,10 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import java.time.LocalDateTime;
 
-@Entity
-@DiscriminatorValue("DoacaoPesquisa")
-public class DoacaoPesquisaDocumento extends Documento {
-    public DoacaoPesquisaDocumento(){
-        super(LocalDateTime.now());
+
+public class DoacaoPesquisaDocumento extends Doc {
+    public DoacaoPesquisaDocumento(Documento documento){
+        super.documento = documento;
         this.titulo = "TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO DE DOAÇÃO DE CORPO DE ANIMAL PARA FINS DE ENSINO E PESQUISA";
         this.declaraConsentimento = "Declaro o livre consentimento sobre a doação do corpo do animal abaixo identificado.";
         this.declaraCienciaRiscos = """
@@ -47,11 +46,5 @@ public class DoacaoPesquisaDocumento extends Documento {
                         (documento a ser emitido em 2 vias: 1ª via: médico-veterinário; 2ª via: proprietário/tutor)
                     </span>
                 </div>""".indent(4);
-    }
-    @Override
-    public Documento find(String tipoDocumento){
-        return  "doacaoPesquisa".equals(tipoDocumento)
-                ? this
-                : new EutanasiaDocumento().find(tipoDocumento);
     }
 }

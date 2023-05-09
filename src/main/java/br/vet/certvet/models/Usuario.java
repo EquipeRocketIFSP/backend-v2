@@ -3,7 +3,6 @@ package br.vet.certvet.models;
 import br.vet.certvet.dto.requests.*;
 import br.vet.certvet.models.contracts.Fillable;
 import lombok.*;
-import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Hibernate;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -98,9 +97,16 @@ public class Usuario implements UserDetails, Fillable<UsuarioRequestDto> {
     @JoinTable(name = "Usuario_authorities",
             joinColumns = @JoinColumn(name = "users_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "authorities_id", referencedColumnName = "id"))
-    @ToString.Exclude
     private List<Authority> authorities;
     private String email;
+
+    @ManyToMany
+    @ToString.Exclude
+    private List<Documento> assinaturas;
+
+    public void setAssinaturas(List<Documento> assinaturas) {
+        this.assinaturas = assinaturas;
+    }
 
     public Usuario(UsuarioRequestDto dto, Clinica clinica) {
         this.clinica = clinica;

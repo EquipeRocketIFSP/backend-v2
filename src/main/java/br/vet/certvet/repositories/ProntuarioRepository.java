@@ -11,12 +11,11 @@ import java.util.Optional;
 
 public interface ProntuarioRepository extends JpaRepository<Prontuario, Long> {
 
-    List<Documento> findByIdAndDocumentos_tipo(Long prontuarioId, String tipo);
+    List<Documento> findAllByIdAndDocumentos_tipo(Long prontuarioId, String tipo);
 
     boolean existsByDataAtendimento(LocalDateTime dataAtendimento);
 
-    List<Prontuario> findAllByCodigo(String codigo);
-
+    @Query("select p from Prontuario p where p.codigo = ?1")
     Optional<Prontuario> findByCodigo(String prontuarioCodigo);
 
     @Query("select p from Prontuario p inner join p.documentos documentos where p.codigo = ?1 and documentos.tipo = ?2")

@@ -7,7 +7,9 @@ import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
-import java.time.*;
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -69,6 +71,14 @@ public class Animal implements Fillable<AnimalRequestDto> {
     )
     @ToString.Exclude
     private List<Usuario> tutores;
+
+    public void setTutores(List<Usuario> tutores) {
+        this.tutores = tutores;
+    }
+
+    public void setParentescos(List<ParentescoAnimal> parentescos) {
+        this.parentescos = parentescos;
+    }
 
 
 //    /**

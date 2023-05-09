@@ -76,4 +76,11 @@ public class ExceptionsHandler {
     public ResponseEntity<String> handleBadGateway(RuntimeException exception) {
         return new ResponseEntity<String>(exception.getLocalizedMessage(), HttpStatus.BAD_GATEWAY);
     }
+
+    @ExceptionHandler({AssinadorNaoCadastradoException.class})
+    public ResponseEntity<String> handleNotAcceptable(RuntimeException exception) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_ACCEPTABLE)
+                .body(exception.getLocalizedMessage());
+    }
 }

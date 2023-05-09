@@ -7,7 +7,7 @@ import br.vet.certvet.repositories.PdfRepository;
 import br.vet.certvet.repositories.ProntuarioRepository;
 import br.vet.certvet.services.DocumentoService;
 import br.vet.certvet.services.ProntuarioService;
-import com.amazonaws.services.s3.model.PutObjectResult;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
@@ -64,7 +64,7 @@ public class ProntuarioServiceImpl implements ProntuarioService {
     }
 
     @Override
-    public byte[] retrievePdfFromRepository(Prontuario prontuario) throws IOException {
+    public Optional<byte[]> retrievePdfFromRepository(Prontuario prontuario) throws IOException {
         return pdfRepository.retrieveObject(
                 prontuario.getClinica().getCnpj(),
                 getProntuarioName(prontuario)
@@ -106,7 +106,7 @@ public class ProntuarioServiceImpl implements ProntuarioService {
         log.debug("Prontuario atualizado");
         p = prontuarioRepository.save(p);
         log.debug("prontuario persistido");
-        documentoRepository.save(tempDoc.setProntuario(p));
+        documentoRepository.save(tempDoc.prontuario(p));
         log.debug("documento persistido");
         try {
             pdfService.writeProntuario(p);
@@ -125,12 +125,7 @@ public class ProntuarioServiceImpl implements ProntuarioService {
     }
 
     @Override
-    public Optional<Prontuario> findByCodigo(String certvetCode) {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<Prontuario> getByCodigo(String codigo) {
+    public Optional<Prontuario> findByCodigo(String codigo) {
         return prontuarioRepository.findByCodigo(codigo);
     }
     @Override
@@ -164,56 +159,46 @@ public class ProntuarioServiceImpl implements ProntuarioService {
     }
 
     @Override
-    public Prontuario attachDocumentoAndPdfPersist(
-            String prontuarioCodigo,
-            String documentoCodigo,
-            byte[] documentoBinary
+    public Documento attachDocumentoAndPdfPersist(
+            Documento documento,
+            ObjectMetadata awsResponse
     ) throws ProntuarioNotFoundException,
             DocumentoNotFoundException,
-            SQLException,
             OptimisticLockingFailureException {
-        Prontuario prontuario = prontuarioRepository.findByCodigo(prontuarioCodigo)
-                .orElseThrow(ProntuarioNotFoundException::new);
-        final String fileName = prontuario.getCodigo() + ".pdf";
-        Documento documento = prontuario.getDocumentos()
-                .stream()
-                .filter(doc -> documentoCodigo.equals(doc.getCodigo()))
-                .findFirst()
-                .orElseThrow(DocumentoNotFoundException::new);
-
+        final String fileName = writeNomeArquivo(documento);
         log.info("Iniciando persistência no serviço AWS S3");
-        var res = persistObjectInAws(prontuario, fileName, documentoBinary);
-        if(null == res)
+
+        if(awsResponse.getETag() == null)
             throw new DocumentoNotPersistedException("Não foi possível gerar o documento com sucesso.");
-        try{
-            documentoRepository.save(setDocumentoMetadata(prontuario, documento, res));
+        try {
+            log.debug("Persistindo atualização dos documentos");
+            return documentoRepository.saveAndFlush(setDocumentoMetadata(documento, awsResponse, fileName));
         } catch (OptimisticLockingFailureException e){
             log.error("Documento não salvo");
             throw e;
+        } finally {
+            log.info("Documento Salvo: " + fileName);
         }
-        prontuario = prontuarioRepository.save(prontuario);
-        log.info("Prontuário Salvo");
-        return prontuario;
     }
 
-    private PutObjectResult persistObjectInAws(Prontuario prontuario, String fileName, byte[] pdf) throws SQLException {
-        return pdfRepository.putObject(
-                clinicaRepository.findById(
-                                prontuario.getClinica().getId()
-                        ).stream()
-                        .findFirst()
-                        .orElseThrow(SQLException::new)
-                        .getCnpj(),
-                fileName.substring(fileName.indexOf("/")+1),
-                pdf
-        );
+    public static String writeNomeArquivo(Documento documento) {
+        return new StringBuilder()
+                .append(documento.getProntuario().getCodigo())
+                .append("-doc-")
+                .append(documento.getTipo())
+                .append("-")
+                .append(documento.getCodigo())
+                .append(".pdf")
+                .toString();
     }
 
-    private Documento setDocumentoMetadata(Prontuario prontuario, Documento documentoTipo, PutObjectResult res) {
+    private Documento setDocumentoMetadata(Documento documentoTipo, ObjectMetadata res, String fileName) {
         return documentoTipo
-                .setMd5(res.getContentMd5())
-                .setEtag(res.getETag())
-                .setAlgorithm(res.getSSEAlgorithm())
-                .setProntuario(prontuario);
+                .md5(res.getContentMD5())
+                .etag(res.getETag())
+                .algorithm(res.getSSEAlgorithm())
+                .caminhoArquivo(fileName)
+//                .setProntuario(prontuario)
+                ;
     }
 }

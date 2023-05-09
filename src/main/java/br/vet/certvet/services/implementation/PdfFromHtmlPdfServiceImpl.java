@@ -1,15 +1,17 @@
 package br.vet.certvet.services.implementation;
 
-import br.vet.certvet.contracts.apis.ipcBr.IpcResponse;
+import br.vet.certvet.contracts.apis.ipcBr.IcpResponse;
 import br.vet.certvet.exceptions.DocumentoNotPersistedException;
 import br.vet.certvet.exceptions.PdfNaoReconhecidoException;
 import br.vet.certvet.helpers.Https;
 import br.vet.certvet.models.Documento;
 import br.vet.certvet.models.Prontuario;
+import br.vet.certvet.models.especializacoes.Doc;
 import br.vet.certvet.repositories.ClinicaRepository;
 import br.vet.certvet.repositories.DocumentoRepository;
 import br.vet.certvet.repositories.PdfRepository;
 import br.vet.certvet.services.PdfService;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,7 +33,6 @@ import org.xhtmlrenderer.pdf.ITextRenderer;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.LocalDateTime;
 import java.util.Map;
 
 @Service
@@ -72,7 +73,7 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
     @Override
     public byte[] writePdfDocumentoEmBranco(
             Prontuario prontuario,
-            Documento documentoTipo
+            Doc documentoTipo
     ) throws
             DocumentoNotPersistedException,
             OptimisticLockingFailureException,
@@ -80,7 +81,7 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
         final String from = "src/main/resources/documents/consentimento/ConsentimentoLayoutV2.html";
         String layout = Files.readString(Path.of(from));
 
-        documentoRepository.save(documentoTipo);
+        documentoRepository.save(documentoTipo.getDocumento());
         layout = new StringSubstitutor(getDivsToBeLoaded(documentoTipo)).replace(layout);
 
         layout = new StringSubstitutor(getFieldsToBeLoaded(prontuario)).replace(layout);
@@ -129,7 +130,7 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
                 .build();
     }
 
-    private static ImmutableMap<String, String> getDivsToBeLoaded(Documento documento) {
+    private static ImmutableMap<String, String> getDivsToBeLoaded(Doc documento) {
         return ImmutableMap.<String, String>builder()
                 .put("documento.titulo", documento.getTitulo())
                 .put("documento.declara_consentimento", documento.getDeclaraConsentimento())
@@ -205,25 +206,54 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
     }
 
     @Override
-    public IpcResponse getIcpBrValidation(Documento documento) throws IOException, PdfNaoReconhecidoException {
-//        final String requestUrl = new StringBuilder().append("https://validar.iti.gov.br/validar?signature_files=https://")
-//                .append(S3BucketServiceRepository.getConventionedBucketName(documento.getClinica().getCnpj())) // S3 folder
-//                .append(".s3.us-east-1.amazonaws.com/")
-//                .append(documento.getName()) // S3 fileName
-//                .toString();
-        String requestUrl = "https://validar.iti.gov.br/validar?signature_files=https://certvet-signed.s3.us-east-1.amazonaws.com/test_documento_sanitario_assinado_assinado.pdf";
-        final String json = Https.get(requestUrl, Map.of("Content-Type", "*/*", "Cache-Control", "no-cache"));
-        if(json.equals(ERRO)) throw new PdfNaoReconhecidoException("O documento pdf não foi identificado no servidor");
+    public IcpResponse getIcpBrValidation(Documento documento) throws IOException, PdfNaoReconhecidoException {
+        final String bucket = S3BucketServiceRepository.getConventionedBucketName(documento.getClinica().getCnpj());
+        final String fileName = ProntuarioServiceImpl.writeNomeArquivo(documento);
+        final String requestUrl = getSignValidationUrl(bucket, fileName);
+//        String requestUrl = "https://validar.iti.gov.br/validar?signature_files=https://certvet-signed.s3.us-east-1.amazonaws.com/test_documento_sanitario_assinado_assinado.pdf";
+        String json = ERRO;
+        try {
+            if(pdfRepository.setPublicFileReadingPermission(bucket, true)) // Libera objeto para que seja acessado publicamente na AWS
+            {
+                Thread.sleep(1000);
+                json = Https.get(requestUrl, Map.of("Content-Type", "*/*", "Cache-Control", "no-cache"));
+            }
+        } catch (Exception e){
+            log.error("Erro ao realizar liberação do arquivo para ser acessado publicamente");
+            log.error(e.getLocalizedMessage());
+        } finally {
+            pdfRepository.setPublicFileReadingPermission(bucket, false); // Sempre trava após a conexão com o serviço de assinatura
+        }
+        if(ERRO.equals(json)) throw new PdfNaoReconhecidoException("O documento pdf não foi identificado no servidor");
         try {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
             mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
-            return (IpcResponse) mapper.readValue(json, IpcResponse.class);
+            return mapper.readValue(json, IcpResponse.class);
         } catch (JsonProcessingException e){
             e.printStackTrace();
             throw e;
         }
 //        throw new ErroMapeamentoRespostaException("Não foi possível processar o documento com o ICP-BR.");
+    }
+
+    @Override
+    public ObjectMetadata savePdfInBucket(Documento documento, byte[] documentoPdf) {
+        return pdfRepository.putObject(
+                documento.getProntuario().getClinica().getCnpj(),
+                ProntuarioServiceImpl.writeNomeArquivo(documento),// fileName.substring(fileName.indexOf("/")+1),
+                documentoPdf
+        );
+    }
+
+    private static String getSignValidationUrl(String bucket, String fileName) {
+        final String requestUrl = new StringBuilder().append("https://validar.iti.gov.br/validar?signature_files=https://")
+                .append("s3.sa-east-1.amazonaws.com/")
+                .append(bucket) // S3 folder
+                .append("/")
+                .append(fileName) // S3 fileName
+                .toString();
+        return requestUrl;
     }
 
     private static String getTutorPass(Prontuario prontuario) {
