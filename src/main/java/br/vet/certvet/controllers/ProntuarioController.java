@@ -1,6 +1,7 @@
 package br.vet.certvet.controllers;
 
 import br.vet.certvet.dto.requests.prontuario.SinaisVitaisDTO;
+import br.vet.certvet.dto.requests.prontuario.SuspeitaDiagnosticaDTO;
 import br.vet.certvet.dto.responses.ProntuarioResponseDTO;
 import br.vet.certvet.models.Animal;
 import br.vet.certvet.models.Clinica;
@@ -50,6 +51,21 @@ public class ProntuarioController extends BaseController {
             @RequestHeader(AUTHORIZATION) String token,
             @PathVariable("id") Long id,
             @RequestBody @Valid SinaisVitaisDTO dto
+    ) {
+        Clinica clinica = this.tokenService.getClinica(token);
+        Usuario tutor = this.usuarioService.findOne(dto.getTutor(), clinica);
+        Animal animal = this.animalService.findOne(dto.getAnimal(), tutor);
+        Prontuario prontuario = this.prontuarioService.findOne(id, animal);
+        prontuario = this.prontuarioService.edit(dto, prontuario);
+
+        return ResponseEntity.ok(new ProntuarioResponseDTO(prontuario));
+    }
+
+    @PutMapping("{id}/supeita-diagnostica")
+    public ResponseEntity<ProntuarioResponseDTO> edit(
+            @RequestHeader(AUTHORIZATION) String token,
+            @PathVariable("id") Long id,
+            @RequestBody @Valid SuspeitaDiagnosticaDTO dto
     ) {
         Clinica clinica = this.tokenService.getClinica(token);
         Usuario tutor = this.usuarioService.findOne(dto.getTutor(), clinica);

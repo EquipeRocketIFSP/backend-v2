@@ -2,6 +2,7 @@ package br.vet.certvet.models.mappers;
 
 import br.vet.certvet.dto.requests.prontuario.ProntuarioDTO;
 import br.vet.certvet.dto.requests.prontuario.SinaisVitaisDTO;
+import br.vet.certvet.dto.requests.prontuario.SuspeitaDiagnosticaDTO;
 import br.vet.certvet.exceptions.UnprocessableEntityException;
 import br.vet.certvet.models.Prontuario;
 
@@ -47,5 +48,9 @@ public class ProntuarioDTOMapper {
                 .setMucosa(dto.getMucosa())
                 .setConciencia(dto.getConciencia())
                 .setEscoreCorporal(dto.getEscoreCorporal());
+    }
+
+    private static Prontuario mapSuspeitaDiagnosticaDTO(SuspeitaDiagnosticaDTO dto, Prontuario prontuario) {
+        return prontuario.setSupeitaDiagnostica(dto.getSupeitaDiagnostica());
     }
 }

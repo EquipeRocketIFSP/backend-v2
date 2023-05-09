@@ -14,6 +14,7 @@ import java.util.Objects;
 
 @Entity
 @Getter
+@Accessors(chain = true)
 @ToString
 @Builder
 @NoArgsConstructor
@@ -28,41 +29,33 @@ public class Prontuario {
     private Clinica clinica;
 
     @Setter
-    @Accessors(chain = true)
     private int frequenciaCardiaca;
 
     @Setter
-    @Accessors(chain = true)
     private int frequenciaRespiratoria;
 
     @Setter
-    @Accessors(chain = true)
     private int temperatura;
 
     @Setter
-    @Accessors(chain = true)
     private String peso;
 
     @Setter
-    @Accessors(chain = true)
     private String hidratacao;
 
     @Setter
-    @Accessors(chain = true)
     private String tpc;
 
     @Setter
-    @Accessors(chain = true)
     private String mucosa;
 
     @Setter
-    @Accessors(chain = true)
     private String conciencia;
 
     @Setter
-    @Accessors(chain = true)
     private String escoreCorporal;
 
+    @Setter
     @Column(length = 2000)
     private String supeitaDiagnostica;
     private boolean prostracao;
@@ -89,13 +82,11 @@ public class Prontuario {
 
     @Setter
     @ManyToOne(optional = false)
-    @Accessors(chain = true)
     @JoinColumn(name = "animal_id", nullable = false)
     private Animal animal;
 
     @Setter
     @ManyToOne
-    @Accessors(chain = true)
     @JoinColumn(name = "usuario_id")
     private Usuario veterinario;
 
