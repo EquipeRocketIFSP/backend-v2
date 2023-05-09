@@ -58,26 +58,62 @@ public class Prontuario {
     @Setter
     @Column(length = 2000)
     private String supeitaDiagnostica;
+
+    @Setter
     private boolean prostracao;
+
+    @Setter
     private boolean febre;
+
+    @Setter
     private boolean vomito;
+
+    @Setter
     private boolean diarreia;
+
+    @Setter
     private boolean espasmosConvulsao;
+
+    @Setter
     private boolean deambulacao;
+
+    @Setter
     private boolean sensibilidadeDor;
+
+    @Setter
     private boolean lesoesNodulos;
 
+    @Setter
     private String apetite;
+
+    @Setter
     private String linfonodos;
+
+    @Setter
     private String linfonodosObs;
+
+    @Setter
     private String regiaoCervical;
+
+    @Setter
     private String regiaoAbdomen;
+
+    @Setter
     private String regiaoMToracicos;
+
+    @Setter
     private String regiaoMPelvicos;
 
+    @Setter
     private boolean regiaoCabeca;
+
+    @Setter
     private boolean regiaoTorax;
 
+    @Setter
+    private String regioesObs;
+
+    @Setter
     private LocalDateTime dataAtendimento;
 
     @Setter

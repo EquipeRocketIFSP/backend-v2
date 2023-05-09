@@ -1,5 +1,6 @@
 package br.vet.certvet.models.mappers;
 
+import br.vet.certvet.dto.requests.prontuario.ManifestacoesClinicasDTO;
 import br.vet.certvet.dto.requests.prontuario.ProntuarioDTO;
 import br.vet.certvet.dto.requests.prontuario.SinaisVitaisDTO;
 import br.vet.certvet.dto.requests.prontuario.SuspeitaDiagnosticaDTO;
@@ -52,5 +53,34 @@ public class ProntuarioDTOMapper {
 
     private static Prontuario mapSuspeitaDiagnosticaDTO(SuspeitaDiagnosticaDTO dto, Prontuario prontuario) {
         return prontuario.setSupeitaDiagnostica(dto.getSupeitaDiagnostica());
+    }
+
+    private static Prontuario mapManifestacoesClinicasDTO(ManifestacoesClinicasDTO dto, Prontuario prontuario) {
+        prontuario.setProstracao(dto.isProstracao())
+                .setFebre(dto.isFebre())
+                .setVomito(dto.isVomito())
+                .setDiarreia(dto.isDiarreia())
+                .setEspasmosConvulsao(dto.isEspasmosConvulsao())
+                .setDeambulacao(dto.isDeambulacao())
+                .setSensibilidadeDor(dto.isSensibilidadeDor())
+                .setLesoesNodulos(dto.isLesoesNodulos())
+                .setRegiaoCabeca(dto.isCabeca())
+                .setRegiaoTorax(dto.isTorax())
+                .setRegiaoCervical(dto.getCervical())
+                .setRegiaoAbdomen(dto.getAbdomen())
+                .setApetite(dto.getApetite())
+                .setRegioesObs(dto.getRegioesObs())
+                .setLinfonodos(dto.getLinfonodos())
+                .setLinfonodosObs(dto.getLinfonodosObs());
+
+        if (dto.getMToracicos().length != 0)
+            prontuario.setRegiaoMToracicos(String.join(";", dto.getMToracicos()));
+        else prontuario.setRegiaoMToracicos(null);
+
+        if (dto.getMPelvicos().length != 0)
+            prontuario.setRegiaoMPelvicos(String.join(";", dto.getMPelvicos()));
+        else prontuario.setRegiaoMPelvicos(null);
+
+        return prontuario;
     }
 }
