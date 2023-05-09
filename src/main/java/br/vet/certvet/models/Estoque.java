@@ -1,32 +1,41 @@
 package br.vet.certvet.models;
 
+import br.vet.certvet.dto.requests.EstoqueRequestDto;
+import br.vet.certvet.models.contracts.Fillable;
 import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 
-@Table(name = "MedicamentoEstoque")
+@Table(name = "Estoque")
 @Entity
 @Getter
 @ToString
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Estoque {
+public class Estoque implements Fillable<EstoqueRequestDto> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
     private Long id;
 
+    @Column(nullable = false)
     private BigDecimal quantidade;
+
+    @Column(nullable = false)
     private String medida;
 
-    @ManyToOne
-    @JoinColumn(name = "clinica_id")
-    private Clinica clinica;
+    @Column(nullable = false)
+    private String lote;
+
+    @Column(nullable = false)
+    private LocalDate validade;
 
     @ManyToOne
     @JoinColumn(name = "medicamento_id")
@@ -39,6 +48,22 @@ public class Estoque {
     @ManyToOne
     @JoinColumn(name = "cirurgia_id")
     private Cirurgia cirurgia;
+
+    @OneToMany(mappedBy = "estoque")
+    private List<EstoqueTransacao> transacoes;
+
+    public Estoque(EstoqueRequestDto dto, Medicamento medicamento) {
+        this.fill(dto);
+        this.medicamento = medicamento;
+    }
+
+    @Override
+    public void fill(EstoqueRequestDto dto) {
+        this.quantidade = dto.quantidade();
+        this.lote = dto.lote();
+        this.validade = dto.validade();
+        this.medida = dto.medida();
+    }
 
     @Override
     public boolean equals(Object o) {

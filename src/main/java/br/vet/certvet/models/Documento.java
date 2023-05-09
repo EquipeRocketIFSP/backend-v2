@@ -31,7 +31,6 @@ public class Documento {
     private String codigo;
     private Integer versao;
     private Date criadoEm;
-
     @ManyToOne
     @JoinColumn(name = "veterinario_id")
     private Usuario veterinario;
