@@ -78,7 +78,7 @@ public class AnimalServiceImpl implements AnimalService {
                 this.animalRepository.findAllByNomeContainingAndTutores(pageable, search, tutor);
 
         List<AnimalResponseDto> animalResponseDtos = animais.stream()
-                .map(animal -> new AnimalResponseDto(animal))
+                .map(AnimalResponseDto::new)
                 .toList();
 
         return new PaginatedResponse<>(metadata, animalResponseDtos);

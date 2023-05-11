@@ -16,7 +16,7 @@ public abstract class BaseController {
     }
 
     protected Long getClinicaIdFromRequester(String auth) {
-        return tokenService.getUsuario(auth).getClinica().getId();
+        return getClinicaFromRequester(auth).getId();
     }
 
 

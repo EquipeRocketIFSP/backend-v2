@@ -6,6 +6,7 @@ import br.vet.certvet.models.contracts.Fillable;
 import lombok.*;
 import net.bytebuddy.utility.RandomString;
 import org.hibernate.Hibernate;
+import org.hibernate.validator.constraints.br.CNPJ;
 
 import javax.persistence.*;
 import java.util.List;
@@ -26,58 +27,59 @@ public class Clinica implements Fillable<ClinicaRequestDto> {
 
     @Setter
     @Column(nullable = false)
-    public String nomeFantasia;
+    private String nomeFantasia;
 
     @Setter
     @Column(nullable = false)
     private String razaoSocial;
 
     @Setter
-    @Column(nullable = false, length = 18)
-    public String cnpj;
+    @Column(nullable = false, unique = true)
+    @CNPJ
+    private String cnpj;
 
     @Setter
     @Column(nullable = false)
-    public String cnae;
+    private String cnae;
 
     @Setter
     @Column(nullable = false, length = 9)
-    public String cep;
+    private String cep;
 
     @Setter
     @Column(nullable = false)
-    public String logradouro;
+    private String logradouro;
 
     @Setter
     @Column(nullable = false, length = 6)
-    public String numero;
+    private String numero;
 
     @Setter
     @Column(nullable = false)
-    public String bairro;
+    private String bairro;
 
     @Setter
     @Column(nullable = false)
-    public String cidade;
+    private String cidade;
 
     @Setter
     @Column(nullable = false, length = 2)
-    public String estado;
+    private String estado;
 
     @Setter
     @Column(nullable = false, length = 15)
-    public String celular;
+    private String celular;
 
     @Setter
     @Column(length = 14)
-    public String telefone;
+    private String telefone;
 
     @Setter
     @Column(nullable = false)
-    public String email;
+    private String email;
 
     @Column(nullable = false)
-    public String code;
+    private String code;
 
     @OneToMany
     @JoinTable(
@@ -103,6 +105,18 @@ public class Clinica implements Fillable<ClinicaRequestDto> {
     @OneToMany
     @ToString.Exclude
     private List<Prontuario> prontuarios;
+
+    public void setProntuarios(List<Prontuario> prontuarios) {
+        this.prontuarios = prontuarios;
+    }
+
+    public void setAgendamentos(List<Agendamento> agendamentos) {
+        this.agendamentos = agendamentos;
+    }
+
+    public void setUsuarios(List<Usuario> usuarios) {
+        this.usuarios = usuarios;
+    }
 
     public Clinica(ClinicaInicialRequestDto dto) {
         this.nomeFantasia = dto.clinicaNomeFantasia();

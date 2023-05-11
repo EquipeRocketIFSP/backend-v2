@@ -1,10 +1,16 @@
 package br.vet.certvet.repositories;
 
-import java.io.File;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+
 import java.io.IOException;
+import java.util.Optional;
 
 public interface PdfRepository {
-    void putObject(String cnpj, String keyName, File filePath);
+    ObjectMetadata putObject(String cnpj, String keyName, byte[] bynaryArrayInputStream);
 
-    byte[] retrieveObject(String cnpj, String keyName) throws IOException;
+    Optional<byte[]> retrieveObject(String cnpj, String keyName) throws IOException;
+
+    Boolean setPublicFileReadingPermission(final String bucket, Boolean allow);
+
+    boolean exists(String cnpj, String fileName);
 }

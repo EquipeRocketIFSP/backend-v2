@@ -38,7 +38,7 @@ spring:
       platform: mysql
       continue-on-error: true
       mode: always
-# Gmail SMTP
+  # Gmail SMTP
   mail:
     host: "smtp.gmail.com"
     port: 587
@@ -62,6 +62,9 @@ app:
   jwt:
     secret: qwertyuiosdfghjk
     expiration: "864000000"
+  default:
+    pdf:
+      password: ${DEFAULT_PDF_PASS}
 api:
   version: "v0.0.2"
   description: "Interface de aplicação para sistema CertVet"

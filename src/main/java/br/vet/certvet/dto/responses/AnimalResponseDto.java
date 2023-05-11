@@ -20,7 +20,7 @@ public class AnimalResponseDto extends AnimalRequestDto {
         this.raca = animal.getRaca();
         this.sexo = String.valueOf(animal.getSexo());
         this.tutores = animal.getTutores().stream()
-                .map((tutor) -> new UsuarioResponseDto(tutor))
+                .map(UsuarioResponseDto::new)
                 .collect(Collectors.toList());
     }
 }

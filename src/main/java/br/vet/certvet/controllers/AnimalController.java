@@ -21,8 +21,8 @@ import java.util.List;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @RestController
-@CrossOrigin
 @RequestMapping("/api")
+@CrossOrigin
 public class AnimalController extends BaseController {
     @Autowired
     private TokenService tokenService;

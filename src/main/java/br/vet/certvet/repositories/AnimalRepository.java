@@ -18,4 +18,6 @@ public interface AnimalRepository extends JpaRepository<Animal, Long> {
     Long countByTutores(Usuario tutor);
 
     Long countByNomeContainingAndTutores(String search, Usuario tutor);
+
+    Optional<Animal> findByTutores_idAndNome(Long id, String nome);
 }
