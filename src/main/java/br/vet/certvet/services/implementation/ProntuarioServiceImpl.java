@@ -147,7 +147,7 @@ public class ProntuarioServiceImpl implements ProntuarioService {
 
     @Override
     public Prontuario edit(ProntuarioDTO dto, Prontuario prontuario) {
-        ProntuarioDTOMapper.mapper(dto, prontuario);
+        ProntuarioDTOMapper.assignToModel(dto, prontuario);
 
         return this.prontuarioRepository.saveAndFlush(prontuario);
     }

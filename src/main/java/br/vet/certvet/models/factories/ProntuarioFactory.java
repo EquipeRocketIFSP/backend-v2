@@ -32,6 +32,6 @@ public class ProntuarioFactory {
      * Invocado via reflection. Não remover.
      */
     private static Prontuario factoryFromSinaisVitaisDTO(SinaisVitaisDTO dto) {
-        return ProntuarioDTOMapper.mapper(dto, new Prontuario());
+        return ProntuarioDTOMapper.assignToModel(dto, new Prontuario());
     }
 }
