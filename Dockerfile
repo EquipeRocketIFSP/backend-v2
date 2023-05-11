@@ -22,6 +22,8 @@ SHELL ["/bin/sh", "-c"]
 
 EXPOSE 5000
 
-EXPOSE 8443
+EXPOSE 443
+
+EXPOSE 80
 
 CMD java ${ARGS} -jar app.jar --spring.profiles.active=${PROFILE}

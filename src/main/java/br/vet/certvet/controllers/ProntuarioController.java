@@ -4,10 +4,14 @@ import br.vet.certvet.dto.requests.prontuario.*;
 import br.vet.certvet.dto.responses.ProntuarioResponseDTO;
 import br.vet.certvet.models.Animal;
 import br.vet.certvet.models.Clinica;
+import br.vet.certvet.dto.ProntuarioRequest;
+import br.vet.certvet.exceptions.ProntuarioNotFoundException;
+import br.vet.certvet.models.Documento;
 import br.vet.certvet.models.Prontuario;
 import br.vet.certvet.models.Usuario;
 import br.vet.certvet.services.AnimalService;
 import br.vet.certvet.services.ProntuarioService;
+import lombok.extern.slf4j.Slf4j;
 import br.vet.certvet.services.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,10 +21,15 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import java.io.IOException;
+import java.net.URI;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/prontuario")
+@Slf4j
 public class ProntuarioController extends BaseController {
+
     @Autowired
     private ProntuarioService prontuarioService;
 
@@ -90,17 +99,16 @@ public class ProntuarioController extends BaseController {
         return ResponseEntity.ok(new ProntuarioResponseDTO(prontuario));
     }
 
-
-    /*
     @Autowired
     private PdfService pdfService;
 
-    @GetMapping("/{id}")
+    @GetMapping("/{codigo}")
     public ResponseEntity<Prontuario> getProntuario(
-            @PathVariable Long id
+            @PathVariable String codigo
     ){
-        Optional<Prontuario> prontuario = prontuarioService.findById(id);
-        return prontuario.map(value -> ResponseEntity.ok().body(value)).orElseGet(() -> ResponseEntity.notFound().build());
+        return  ResponseEntity.ok()
+                .body(prontuarioService.findByCodigo(codigo)
+                        .orElseThrow(ProntuarioNotFoundException::new));
     }
 
     @GetMapping("/{id}/pdf")
@@ -113,10 +121,46 @@ public class ProntuarioController extends BaseController {
                     .header("reason", "Media type not allowed")
                     .build();
         Optional<Prontuario> prontuario = prontuarioService.findById(id);
-        return prontuario.isPresent()
-                ? ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF).body(pdfService.retrieveFromRepository(prontuario.get()))
-                : ResponseEntity.notFound().build();
-    }*/
+        if(prontuario.isEmpty())
+            return ResponseEntity.notFound().build();
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdfService.retrieveFromRepository(prontuario.get()));
+    }
+
+    @PostMapping
+    public ResponseEntity<Prontuario> create(
+            @RequestBody ProntuarioRequest prontuarioDto
+            ){
+
+        Prontuario p = null;
+        try{
+            p = prontuarioDto.convert();
+        } catch (RuntimeException e){
+            throwExceptionFromController(e);
+        }
+        Optional<Prontuario> saved = prontuarioService.createProntuario(p);
+
+        return saved.map(
+                prontuario -> ResponseEntity.created(
+                        URI.create(
+                                prontuario.getCodigo()
+                        )
+                ).body(prontuario))
+                .orElseGet(
+                        () -> ResponseEntity.badRequest()
+                                .header("reason", "Erro ao criar o Prontuário")
+                                .build()
+                );
+    }
+
+    @PostMapping("/{prontuarioId}")
+    public ResponseEntity<Documento> addDocument(
+            @PathVariable Long prontuarioId,
+            @RequestBody ProntuarioRequest prontuarioDto
+    ){
+        return null;
+    }
 
 
 }

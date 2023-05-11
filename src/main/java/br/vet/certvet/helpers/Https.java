@@ -8,6 +8,7 @@ import java.io.Reader;
 import java.net.ConnectException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Map;
 
 public class Https {
 
@@ -15,7 +16,7 @@ public class Https {
         return Https.get(uri, new HashMap<>());
     }
 
-    public static String get(String uri, HashMap<String, String> headers) throws IOException {
+    public static String get(String uri, Map<String, String> headers) throws IOException {
         final String method = "GET";
         final HttpsURLConnection connection = Https.factoryConnection(uri, headers);
 
@@ -24,7 +25,7 @@ public class Https {
         return Https.handleConnection(connection);
     }
 
-    private static HttpsURLConnection factoryConnection(String uri, HashMap<String, String> headers) throws IOException {
+    private static HttpsURLConnection factoryConnection(String uri, Map<String, String> headers) throws IOException {
         URL url = new URL(uri);
         HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
 

@@ -29,7 +29,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = retrieveToken(request);
-        if (tokenService.validate(token)) {
+        if(tokenService.validate(token)){
             authenticate(token);
         }
         filterChain.doFilter(request, response);
@@ -54,7 +54,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     private String retrieveToken(HttpServletRequest request) {
         String token = request.getHeader("Authorization");
-        if (token == null || token.isEmpty() || !token.startsWith(TYPE)) {
+        if(token == null || !token.startsWith(TYPE)){
             return null;
         }
         return token.substring(TYPE.length(), token.length());

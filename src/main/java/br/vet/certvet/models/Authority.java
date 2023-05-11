@@ -28,6 +28,10 @@ public class Authority implements GrantedAuthority {
     @ToString.Exclude
     private List<Usuario> users;
 
+    public void setUsers(List<Usuario> users) {
+        this.users = users;
+    }
+
     public Authority(String authority) {
         this.authority = authority;
     }

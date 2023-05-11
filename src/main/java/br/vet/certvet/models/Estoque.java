@@ -50,7 +50,12 @@ public class Estoque implements Fillable<EstoqueRequestDto> {
     private Cirurgia cirurgia;
 
     @OneToMany(mappedBy = "estoque")
+    @ToString.Exclude
     private List<EstoqueTransacao> transacoes;
+
+    public void setTransacoes(List<EstoqueTransacao> transacoes) {
+        this.transacoes = transacoes;
+    }
 
     public Estoque(EstoqueRequestDto dto, Medicamento medicamento) {
         this.fill(dto);
