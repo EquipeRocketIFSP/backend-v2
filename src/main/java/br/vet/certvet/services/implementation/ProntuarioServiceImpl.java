@@ -12,12 +12,10 @@ import br.vet.certvet.services.DocumentoService;
 import br.vet.certvet.models.Usuario;
 import br.vet.certvet.models.factories.ProntuarioFactory;
 import br.vet.certvet.models.mappers.ProntuarioDTOMapper;
-import br.vet.certvet.repositories.ProntuarioRepository;
 import br.vet.certvet.services.ProntuarioService;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -30,7 +28,6 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -71,8 +68,6 @@ public class ProntuarioServiceImpl implements ProntuarioService {
     public Optional<Prontuario> findById(Long id) {
         return prontuarioRepository.findById(id);
     }
-    @Autowired
-    private ProntuarioRepository prontuarioRepository;
 
     @Override
     public Optional<byte[]> retrievePdfFromRepository(Prontuario prontuario) throws IOException {

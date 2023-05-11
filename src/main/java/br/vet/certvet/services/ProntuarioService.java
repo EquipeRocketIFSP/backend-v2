@@ -24,16 +24,22 @@ public interface ProntuarioService {
     Prontuario findOne(Long id, Animal animal);
 
     Prontuario save(Prontuario prontuario);
+
     Optional<byte[]> retrievePdfFromRepository(Prontuario prontuario) throws IOException;
+
     boolean exists(LocalDateTime dataAtendimento);
+
     Optional<Prontuario> findById(Long id);
-    Optional<Prontuario> createProntuario(Prontuario prontuario);
-    Optional<Prontuario> editProntuario(Prontuario prontuario);
+
     Boolean deleteProntuario(Prontuario prontuario);
+
     byte[] getProntuarioPdfBy(Long id);
 
     byte[] getProntuarioPdfBy(Prontuario prontuario);
+
     List<Documento> getDocumentosFromProntuarioByTipo(String prontuarioId, String tipo);
+
     Documento attachDocumentoAndPdfPersist(Documento documento, ObjectMetadata pdf) throws SQLException;
+
     Optional<Prontuario> findByCodigo(String codigo);
 }

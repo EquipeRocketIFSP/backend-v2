@@ -61,6 +61,7 @@ public class Prontuario {
     @Setter
     private String escoreCorporal;
 
+    @Setter
     @Column(length = 2000)
     private String supeitaDiagnostica;
 
@@ -171,10 +172,6 @@ public class Prontuario {
         return "VT-P-"+now.format(DateTimeFormatter.ofPattern("yyyy_MM_dd_hh_mm_ss"));
     }
 
-    public void setTutor(Usuario tutor) {
-        this.tutor = tutor;
-    }
-
     final public String getMonthAtendimento(){
         final var month = new DateFormatSymbols().getMonths()[
                 dataAtendimento.getMonth()
@@ -212,16 +209,6 @@ public class Prontuario {
     }
     public Prontuario setClinica(Clinica clinica) {
         this.clinica = clinica;
-        return this;
-    }
-
-    public Prontuario setVeterinario(Usuario veterinario) {
-        this.veterinario = veterinario;
-        return this;
-    }
-
-    public Prontuario setAnimal(Animal animal) {
-        this.animal = animal;
         return this;
     }
 
@@ -323,6 +310,7 @@ public class Prontuario {
         return this.codigo;
     }
 
+    @Deprecated
     public Prontuario setCodigo(LocalDateTime now) {
         this.codigo = "VT-P-" + now.format(DateTimeFormatter.ofPattern("yyyy_MM_dd_hh_mm_ss"));
         return this;
