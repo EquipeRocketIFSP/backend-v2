@@ -124,7 +124,7 @@ public class UsuarioController extends BaseController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping({"/funcionario", "/tutor"})
+    @GetMapping({"/funcionario", "/tutor","/veterinario"})
     public ResponseEntity<PaginatedResponse<UsuarioResponseDto>> findAllVeterinarios(
             @RequestHeader(AUTHORIZATION) String token,
             @RequestParam(name = "pagina", defaultValue = "1") int page,

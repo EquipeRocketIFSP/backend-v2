@@ -91,8 +91,10 @@ public class Usuario implements UserDetails, Fillable<UsuarioRequestDto> {
     @NotNull
     @ManyToOne
     @JoinColumn(name = "clinica_id", nullable = false)
+    @ToString.Exclude
     private Clinica clinica;
 
+    @ToString.Exclude
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "Usuario_authorities",
             joinColumns = @JoinColumn(name = "users_id", referencedColumnName = "id"),
