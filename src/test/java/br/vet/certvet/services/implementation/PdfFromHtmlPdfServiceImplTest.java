@@ -131,7 +131,7 @@ public class PdfFromHtmlPdfServiceImplTest {
                                                     Estoque.builder()
                                                         .medida("ml")
                                                         .quantidade(new BigDecimal("50.5"))
-                                                        .clinica(clinica)
+//                                                        .clinica(clinica)
                                                         .medicamento(
                                                                 Medicamento.builder()
                                                                         .codigoRegistro("12345689")

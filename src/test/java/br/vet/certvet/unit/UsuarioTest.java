@@ -111,7 +111,7 @@ public class UsuarioTest {
         Long idUsuario = usuario.getId();
 
         UsuarioTest.updateUsuarioDto(dto);
-        dto.senha = "4321";
+        dto.setSenha("4321");
 
         final Usuario USUARIO_COMPARATION = new Usuario(dto, UsuarioTest.clinica);
         usuario = this.usuarioService.edit(dto, usuario);
@@ -121,7 +121,7 @@ public class UsuarioTest {
         assertNotNull(usuario);
         assertEquals(usuario.getId(), idUsuario);
         assertEquals(Arrays.stream(AUTHORITIES).toList(), usuarioAuthorities);
-        assertTrue(UsuarioTest.passwordEncoder.matches(dto.senha, usuario.getPassword()));
+        assertTrue(UsuarioTest.passwordEncoder.matches(dto.getSenha(), usuario.getPassword()));
 
         assertThat(usuario.getClinica().getId())
                 .isEqualTo(UsuarioTest.clinica.getId());
@@ -169,8 +169,8 @@ public class UsuarioTest {
         Long idUsuario = usuario.getId();
 
         UsuarioTest.updateUsuarioDto(dto);
-        dto.senha = "4321";
-        dto.crmv = "RJ-12345";
+        dto.setSenha("4321");
+        dto.setCrmv("RJ-12345");
 
         final Usuario USUARIO_COMPARATION = new Usuario(dto, UsuarioTest.clinica);
         usuario = this.usuarioService.edit(dto, usuario);
@@ -180,7 +180,7 @@ public class UsuarioTest {
         assertNotNull(usuario);
         assertEquals(usuario.getId(), idUsuario);
         assertEquals(Arrays.stream(AUTHORITIES).toList(), usuarioAuthorities);
-        assertTrue(UsuarioTest.passwordEncoder.matches(dto.senha, usuario.getPassword()));
+        assertTrue(UsuarioTest.passwordEncoder.matches(dto.getSenha(), usuario.getPassword()));
 
         assertThat(usuario.getClinica().getId())
                 .isEqualTo(UsuarioTest.clinica.getId());
@@ -200,7 +200,7 @@ public class UsuarioTest {
         Long idUsuario = usuario.getId();
 
         UsuarioTest.updateUsuarioDto(dto);
-        dto.senha = "4321";
+        dto.setSenha("4321");
 
         final Usuario USUARIO_COMPARATION = new Usuario(dto, UsuarioTest.clinica);
         usuario = this.usuarioService.edit(dto, usuario);
@@ -210,7 +210,7 @@ public class UsuarioTest {
         assertNotNull(usuario);
         assertEquals(usuario.getId(), idUsuario);
         assertEquals(Arrays.stream(AUTHORITIES).toList(), usuarioAuthorities);
-        assertTrue(UsuarioTest.passwordEncoder.matches(dto.senha, usuario.getPassword()));
+        assertTrue(UsuarioTest.passwordEncoder.matches(dto.getSenha(), usuario.getPassword()));
 
         assertThat(usuario.getClinica().getId())
                 .isEqualTo(UsuarioTest.clinica.getId());
@@ -301,18 +301,18 @@ public class UsuarioTest {
     public static UsuarioRequestDto factoryTutorRequestDto() {
         UsuarioRequestDto dto = new UsuarioRequestDto();
 
-        dto.nome = "Dorguk";
-        dto.cpf = "920.137.300-71";
-        dto.rg = "36.264.815-3";
-        dto.cep = "04258-100";
-        dto.logradouro = "Rua Ikuyo Tamura";
-        dto.numero = "15";
-        dto.bairro = "Vila Arapuã";
-        dto.cidade = "São Paulo";
-        dto.estado = "SP";
-        dto.celular = "(11) 91111-1111";
-        dto.telefone = "(11) 1111-1111";
-        dto.email = "dorguk@teste.com";
+        dto.setNome("Dorguk");
+        dto.setCpf("920.137.300-71");
+        dto.setRg("36.264.815-3");
+        dto.setCep("04258-100");
+        dto.setLogradouro("Rua Ikuyo Tamura");
+        dto.setNumero("15");
+        dto.setBairro("Vila Arapuã");
+        dto.setCidade("São Paulo");
+        dto.setEstado("SP");
+        dto.setCelular("(11) 91111-1111");
+        dto.setTelefone("(11) 1111-1111");
+        dto.setEmail("dorguk@teste.com");
 
         return dto;
     }
@@ -320,19 +320,19 @@ public class UsuarioTest {
     public static FuncionarioRequestDto factoryDonoRequestDto() {
         FuncionarioRequestDto dto = new FuncionarioRequestDto();
 
-        dto.nome = "Camaeon";
-        dto.cpf = "920.137.300-71";
-        dto.rg = "13.764.333-0";
-        dto.cep = "57490-970";
-        dto.logradouro = "Rua Doutor Miguel Torres 19";
-        dto.numero = "45";
-        dto.bairro = "Centro";
-        dto.cidade = "Água Branca";
-        dto.estado = "AL";
-        dto.celular = "(11) 92222-1111";
-        dto.telefone = "(11) 2211-1111";
-        dto.email = "camaeon@teste.com";
-        dto.senha = "1234";
+        dto.setNome("Camaeon");
+        dto.setCpf("920.137.300-71");
+        dto.setRg("13.764.333-0");
+        dto.setCep("57490-970");
+        dto.setLogradouro("Rua Doutor Miguel Torres 19");
+        dto.setNumero("45");
+        dto.setBairro("Centro");
+        dto.setCidade("Água Branca");
+        dto.setEstado("AL");
+        dto.setCelular("(11) 92222-1111");
+        dto.setTelefone("(11) 2211-1111");
+        dto.setEmail("camaeon@teste.com");
+        dto.setSenha("1234");
         dto.is_admin = true;
 
         return dto;
@@ -341,19 +341,19 @@ public class UsuarioTest {
     public static FuncionarioRequestDto factoryFuncionarioRequestDto() {
         FuncionarioRequestDto dto = new FuncionarioRequestDto();
 
-        dto.nome = "Liero";
-        dto.cpf = "413.301.570-36";
-        dto.rg = "20.272.584-4";
-        dto.cep = "68908-641";
-        dto.logradouro = "Avenida Brasil";
-        dto.numero = "45";
-        dto.bairro = "Boné Azul";
-        dto.cidade = "Macapá";
-        dto.estado = "AP";
-        dto.celular = "(11) 93333-1111";
-        dto.telefone = "(11) 22333-1111";
-        dto.email = "liero@teste.com";
-        dto.senha = "1234";
+        dto.setNome("Liero");
+        dto.setCpf("413.301.570-36");
+        dto.setRg("20.272.584-4");
+        dto.setCep("68908-641");
+        dto.setLogradouro("Avenida Brasil");
+        dto.setNumero("45");
+        dto.setBairro("Boné Azul");
+        dto.setCidade("Macapá");
+        dto.setEstado("AP");
+        dto.setCelular("(11) 93333-1111");
+        dto.setTelefone("(11) 22333-1111");
+        dto.setEmail("liero@teste.com");
+        dto.setSenha("1234");
         dto.is_admin = false;
 
         return dto;
@@ -362,36 +362,36 @@ public class UsuarioTest {
     public static VeterinarioRequestDto factoryVeterinarioRequestDto() {
         VeterinarioRequestDto dto = new VeterinarioRequestDto();
 
-        dto.nome = "Buior";
-        dto.cpf = "204.107.690-96";
-        dto.rg = "35.262.255-6";
-        dto.cep = "78734-228";
-        dto.logradouro = "Rua São Benedito";
-        dto.numero = "45";
-        dto.bairro = "Conjunto Habitacional Cidade de Deus";
-        dto.cidade = "Rondonópolis";
-        dto.estado = "MT";
-        dto.celular = "(11) 93334-1111";
-        dto.telefone = "(11) 22334-1211";
-        dto.email = "buior@teste.com";
-        dto.senha = "1234";
+        dto.setNome("Buior");
+        dto.setCpf("204.107.690-96");
+        dto.setRg("35.262.255-6");
+        dto.setCep("78734-228");
+        dto.setLogradouro("Rua São Benedito");
+        dto.setNumero("45");
+        dto.setBairro("Conjunto Habitacional Cidade de Deus");
+        dto.setCidade("Rondonópolis");
+        dto.setEstado("MT");
+        dto.setCelular("(11) 93334-1111");
+        dto.setTelefone("(11) 22334-1211");
+        dto.setEmail("buior@teste.com");
+        dto.setSenha("1234");
         dto.is_admin = false;
-        dto.crmv = "SP-1234";
+        dto.setCrmv("SP-1234");
 
         return dto;
     }
 
     public static void updateUsuarioDto(UsuarioRequestDto dto) {
-        dto.nome = "Nome Teste";
-        dto.email = "teste@teste.com";
-        dto.cep = "11111-000";
-        dto.bairro = "Bairro Teste";
-        dto.logradouro = "Logradouro Teste";
-        dto.cidade = "Cidade Teste";
-        dto.estado = "SP";
-        dto.cpf = "111.111.111-11";
-        dto.rg = "11.111.111-1";
-        dto.celular = "(11) 90000-1111";
-        dto.telefone = "(11) 0000-1111";
+        dto.setNome("Nome Teste");
+        dto.setEmail("teste@teste.com");
+        dto.setCep("11111-000");
+        dto.setBairro("Bairro Teste");
+        dto.setLogradouro("Logradouro Teste");
+        dto.setCidade("Cidade Teste");
+        dto.setEstado("SP");
+        dto.setCpf("111.111.111-11");
+        dto.setRg("11.111.111-1");
+        dto.setCelular("(11) 90000-1111");
+        dto.setTelefone("(11) 0000-1111");
     }
 }
