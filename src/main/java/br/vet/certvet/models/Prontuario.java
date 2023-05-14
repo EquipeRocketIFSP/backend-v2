@@ -4,7 +4,6 @@ package br.vet.certvet.models;
 import br.vet.certvet.enums.ProntuarioStatus;
 import lombok.*;
 import lombok.experimental.Accessors;
-import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.text.DateFormatSymbols;
@@ -12,7 +11,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Date;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 
@@ -139,7 +137,7 @@ public class Prontuario {
     @ToString.Exclude
     private List<Procedimento> procedimentos;
 
-    @OneToMany(mappedBy = "prontuario")
+    @OneToMany(mappedBy = "prontuario", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private List<Exame> exames;
     private String codigo;
@@ -159,23 +157,19 @@ public class Prontuario {
         this.documentos = documentos;
     }
 
-    public void setExames(List<Exame> exames) {
-        this.exames = exames;
-    }
-
     public void setProcedimentos(List<Procedimento> procedimentos) {
         this.procedimentos = procedimentos;
     }
 
     public static String createCodigo(LocalDateTime now) {
         // exemplo: VT-P-2022_12_03_02_19_20.pdf
-        return "VT-P-"+now.format(DateTimeFormatter.ofPattern("yyyy_MM_dd_hh_mm_ss"));
+        return "VT-P-" + now.format(DateTimeFormatter.ofPattern("yyyy_MM_dd_hh_mm_ss"));
     }
 
-    final public String getMonthAtendimento(){
+    final public String getMonthAtendimento() {
         final var month = new DateFormatSymbols().getMonths()[
                 dataAtendimento.getMonth()
-                        .getValue()-1
+                        .getValue() - 1
                 ]
                 .toLowerCase();
         return month.substring(0, 1)
@@ -187,7 +181,8 @@ public class Prontuario {
         documentos = Arrays.asList(documento);
         return this;
     }
-    public Prontuario setDocumentoDetails(Documento documento){
+
+    public Prontuario setDocumentoDetails(Documento documento) {
         return addDocumentoPdf(documento)
                 .setCodigo(documento.getCodigo())
                 .setVersao(documento.getVersao())
@@ -198,6 +193,7 @@ public class Prontuario {
         this.criadoEm = criadoEm;
         return this;
     }
+
     public Prontuario setVersao(int versao) {
         this.versao = versao;
         return this;
@@ -207,6 +203,7 @@ public class Prontuario {
         this.codigo = codigo;
         return this;
     }
+
     public Prontuario setClinica(Clinica clinica) {
         this.clinica = clinica;
         return this;

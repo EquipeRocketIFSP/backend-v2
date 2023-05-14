@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api/prontuario")
 @Slf4j
 public class ProntuarioController extends BaseController {

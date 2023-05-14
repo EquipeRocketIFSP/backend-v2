@@ -1,22 +1,21 @@
 package br.vet.certvet.models;
 
-import br.vet.certvet.dto.requests.ExameRequestDto;
-import br.vet.certvet.models.contracts.Fillable;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Setter
 @Getter
 @Entity
+@Accessors(chain = true)
 @Table(name = "exame")
-public class Exame implements Fillable<ExameRequestDto> {
+public class Exame {
     @Id
+    @Setter(AccessLevel.NONE)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
@@ -46,26 +45,7 @@ public class Exame implements Fillable<ExameRequestDto> {
     @JoinColumn(name = "prontuario_id")
     private Prontuario prontuario;
 
-    public Exame(ExameRequestDto dto, Prontuario prontuario) {
+    public Exame(Prontuario prontuario) {
         this.prontuario = prontuario;
-
-        this.fill(dto);
-    }
-
-    @Override
-    public void fill(ExameRequestDto dto) {
-        this.tipoExame = dto.tipo_exame;
-        this.outrosExames = dto.outros_exames;
-        this.outrosCitologia = dto.outros_citologia;
-        this.bioquimico = dto.bioquimico;
-        this.hematologia = dto.hematologia;
-        this.citologia = dto.citologia;
-        this.imagem = dto.imagem;
-        this.imagemRegiaoCervical = dto.imagem_regiao_cervical;
-        this.imagemRegiaoAbdomen = dto.imagem_regiao_abdomen;
-        this.imagemRegiaoMToracicos = dto.imagem_regiao_mtoracicos;
-        this.imagemRegiaoMPelvicos = dto.imagem_regiao_mpelvicos;
-        this.imagemRegiaoCabeca = dto.imagem_regiao_cabeca;
-        this.imagemRegiaoTorax = dto.imagem_regiao_torax;
     }
 }
