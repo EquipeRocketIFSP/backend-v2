@@ -14,6 +14,8 @@ WORKDIR /opt/app
 
 CMD mkdir /opt/pdf
 
+COPY .ebextensions/ .ebextensions/
+
 COPY ${WAR_FILE} app.jar
 
 #ENTRYPOINT ["java", "-jar", "/opt/app.jar", "-Dspring.profiles.active=dev"]
