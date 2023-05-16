@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+
 import java.io.IOException;
 import java.util.Optional;
 
@@ -106,12 +107,12 @@ public class ProntuarioController extends BaseController {
     }
 
     @GetMapping("/{codigo}")
-    public ResponseEntity<Prontuario> getProntuario(
+    public ResponseEntity<ProntuarioResponseDTO> getProntuario(
             @PathVariable String codigo
-    ){
-        return  ResponseEntity.ok()
-                .body(prontuarioService.findByCodigo(codigo)
-                        .orElseThrow(ProntuarioNotFoundException::new));
+    ) {
+        Prontuario prontuario = prontuarioService.findByCodigo(codigo).orElseThrow(ProntuarioNotFoundException::new);
+
+        return ResponseEntity.ok(new ProntuarioResponseDTO(prontuario));
     }
 
     @GetMapping("/{id}/pdf")
@@ -124,7 +125,7 @@ public class ProntuarioController extends BaseController {
                     .header("reason", "Media type not allowed")
                     .build();
         Optional<Prontuario> prontuario = prontuarioService.findById(id);
-        if(prontuario.isEmpty())
+        if (prontuario.isEmpty())
             return ResponseEntity.notFound().build();
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_PDF)
@@ -135,7 +136,7 @@ public class ProntuarioController extends BaseController {
     public ResponseEntity<Documento> addDocument(
             @PathVariable Long prontuarioId,
             @RequestBody ProntuarioRequest prontuarioDto
-    ){
+    ) {
         return null;
     }
 }
