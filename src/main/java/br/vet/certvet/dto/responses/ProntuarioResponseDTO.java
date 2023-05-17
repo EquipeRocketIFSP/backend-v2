@@ -94,6 +94,15 @@ public class ProntuarioResponseDTO {
     @JsonProperty("codigo")
     private String codigo;
 
+    @JsonProperty("animal")
+    private AnimalResponseDto animal;
+
+    @JsonProperty("tutor")
+    private UsuarioResponseDto tutor;
+
+    @JsonProperty("veterinario")
+    private UsuarioResponseDto veterinario;
+
     public ProntuarioResponseDTO(Prontuario prontuario) {
         this.id = prontuario.getId();
         this.frequenciaRespiratoria = prontuario.getFrequenciaRespiratoria();
@@ -124,6 +133,9 @@ public class ProntuarioResponseDTO {
         this.regiaoCabeca = prontuario.isRegiaoCabeca();
         this.regiaoTorax = prontuario.isRegiaoTorax();
         this.codigo = prontuario.getCodigo();
+        this.animal = new AnimalResponseDto(prontuario.getAnimal());
+        this.tutor = new UsuarioResponseDto(prontuario.getTutor());
+        this.veterinario = new UsuarioResponseDto(prontuario.getVeterinario());
 
         if (prontuario.getDataAtendimento() != null)
             this.dataAtendimento = prontuario.getDataAtendimento().toString();
