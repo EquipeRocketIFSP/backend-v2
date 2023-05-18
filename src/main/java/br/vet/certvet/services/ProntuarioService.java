@@ -1,10 +1,9 @@
 package br.vet.certvet.services;
 
 import br.vet.certvet.dto.requests.prontuario.ProntuarioDTO;
-import br.vet.certvet.models.Animal;
-import br.vet.certvet.models.Documento;
-import br.vet.certvet.models.Prontuario;
-import br.vet.certvet.models.Usuario;
+import br.vet.certvet.dto.responses.PaginatedResponse;
+import br.vet.certvet.dto.responses.ProntuarioResponseDTO;
+import br.vet.certvet.models.*;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +21,8 @@ public interface ProntuarioService {
     Prontuario edit(ProntuarioDTO dto, Prontuario prontuario);
 
     Prontuario findOne(Long id, Animal animal);
+
+    PaginatedResponse<ProntuarioResponseDTO> findAll(int page, String search, String url, Animal animal);
 
     Prontuario save(Prontuario prontuario);
 

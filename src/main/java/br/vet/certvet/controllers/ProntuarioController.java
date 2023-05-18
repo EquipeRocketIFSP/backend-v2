@@ -1,26 +1,17 @@
 package br.vet.certvet.controllers;
 
 import br.vet.certvet.dto.requests.prontuario.*;
-import br.vet.certvet.dto.responses.ProntuarioResponseDTO;
-import br.vet.certvet.models.Animal;
-import br.vet.certvet.models.Clinica;
+import br.vet.certvet.dto.responses.*;
+import br.vet.certvet.models.*;
+import br.vet.certvet.services.*;
 import br.vet.certvet.dto.ProntuarioRequest;
 import br.vet.certvet.exceptions.ProntuarioNotFoundException;
-import br.vet.certvet.models.Documento;
-import br.vet.certvet.models.Prontuario;
-import br.vet.certvet.models.Usuario;
-import br.vet.certvet.services.AnimalService;
-import br.vet.certvet.services.PdfService;
-import br.vet.certvet.services.ProntuarioService;
 import lombok.extern.slf4j.Slf4j;
-import br.vet.certvet.services.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -30,7 +21,7 @@ import java.util.Optional;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/api/prontuario")
+@RequestMapping("/api")
 @Slf4j
 public class ProntuarioController extends BaseController {
 
@@ -61,7 +52,7 @@ public class ProntuarioController extends BaseController {
         return new ResponseEntity<>(new ProntuarioResponseDTO(prontuario), HttpStatus.CREATED);
     }
 
-    @PutMapping("{id}/sinais-vitais")
+    @PutMapping("/prontuario/{id}/sinais-vitais")
     public ResponseEntity<ProntuarioResponseDTO> edit(
             @RequestHeader(AUTHORIZATION) String token,
             @PathVariable("id") Long id,
@@ -76,7 +67,7 @@ public class ProntuarioController extends BaseController {
         return ResponseEntity.ok(new ProntuarioResponseDTO(prontuario));
     }
 
-    @PutMapping("{id}/supeita-diagnostica")
+    @PutMapping("/prontuario/{id}/supeita-diagnostica")
     public ResponseEntity<ProntuarioResponseDTO> edit(
             @RequestHeader(AUTHORIZATION) String token,
             @PathVariable("id") Long id,
@@ -91,7 +82,7 @@ public class ProntuarioController extends BaseController {
         return ResponseEntity.ok(new ProntuarioResponseDTO(prontuario));
     }
 
-    @PutMapping("{id}/manifestacoes-clinicas")
+    @PutMapping("/prontuario/{id}/manifestacoes-clinicas")
     public ResponseEntity<ProntuarioResponseDTO> edit(
             @RequestHeader(AUTHORIZATION) String token,
             @PathVariable("id") Long id,
@@ -106,7 +97,7 @@ public class ProntuarioController extends BaseController {
         return ResponseEntity.ok(new ProntuarioResponseDTO(prontuario));
     }
 
-    @GetMapping("/{codigo}")
+    @GetMapping("/prontuario/{codigo}")
     public ResponseEntity<ProntuarioResponseDTO> getProntuario(
             @PathVariable String codigo
     ) {
@@ -115,7 +106,7 @@ public class ProntuarioController extends BaseController {
         return ResponseEntity.ok(new ProntuarioResponseDTO(prontuario));
     }
 
-    @GetMapping("/{id}/pdf")
+    @GetMapping("/prontuario/{id}/pdf")
     public ResponseEntity<byte[]> getProntuarioPdf(
             @RequestHeader(HttpHeaders.CONTENT_TYPE) String contentType,
             @PathVariable Long id
@@ -132,7 +123,25 @@ public class ProntuarioController extends BaseController {
                 .body(pdfService.retrieveFromRepository(prontuario.get()));
     }
 
-    @PostMapping("/{prontuarioId}")
+    @GetMapping("/tutor/{tutor_id}/animal/{animal_id}/prontuarios")
+    public ResponseEntity<PaginatedResponse<ProntuarioResponseDTO>> findAll(
+            @RequestHeader(AUTHORIZATION) String token,
+            @PathVariable("tutor_id") Long tutorId,
+            @PathVariable("animal_id") Long animalId,
+            @RequestParam(name = "pagina", defaultValue = "1") int page,
+            @RequestParam(name = "buscar", defaultValue = "") String search,
+            HttpServletRequest request
+    ) {
+        Clinica clinica = this.tokenService.getClinica(token);
+        Usuario tutor = this.usuarioService.findOne(tutorId, clinica);
+        Animal animal = this.animalService.findOne(animalId, tutor);
+
+        PaginatedResponse<ProntuarioResponseDTO> response = this.prontuarioService.findAll(page, search, request.getRequestURL().toString(), animal);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/prontuario/{prontuarioId}")
     public ResponseEntity<Documento> addDocument(
             @PathVariable Long prontuarioId,
             @RequestBody ProntuarioRequest prontuarioDto

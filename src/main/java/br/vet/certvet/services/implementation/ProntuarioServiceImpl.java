@@ -1,27 +1,21 @@
 package br.vet.certvet.services.implementation;
 
+import br.vet.certvet.dto.responses.*;
 import br.vet.certvet.exceptions.*;
-import br.vet.certvet.models.Documento;
+import br.vet.certvet.models.*;
+import br.vet.certvet.repositories.*;
+import br.vet.certvet.services.*;
+import org.springframework.data.domain.*;
 import br.vet.certvet.dto.requests.prontuario.ProntuarioDTO;
-import br.vet.certvet.exceptions.NotFoundException;
-import br.vet.certvet.models.Animal;
-import br.vet.certvet.models.Prontuario;
-import br.vet.certvet.repositories.PdfRepository;
-import br.vet.certvet.repositories.ProntuarioRepository;
-import br.vet.certvet.services.DocumentoService;
-import br.vet.certvet.models.Usuario;
 import br.vet.certvet.models.factories.ProntuarioFactory;
 import br.vet.certvet.models.mappers.ProntuarioDTOMapper;
-import br.vet.certvet.services.ProntuarioService;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import br.vet.certvet.models.*;
-import br.vet.certvet.repositories.*;
-import br.vet.certvet.services.PdfService;
+
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.SQLException;
@@ -60,7 +54,9 @@ public class ProntuarioServiceImpl implements ProntuarioService {
     @Autowired
     private DocumentoService documentoService;
 
-    private String getProntuarioName(Prontuario prontuario){
+    private static final int RESPONSE_LIMIT = 30;
+
+    private String getProntuarioName(Prontuario prontuario) {
         return prontuario.getCodigo() + ".pdf";
     }
 
@@ -85,11 +81,11 @@ public class ProntuarioServiceImpl implements ProntuarioService {
 //        return prontuarioRepository.save(prontuario);
         prontuario.setCodigo(codigo);
         Optional<Clinica> clinica = clinicaRepository.findById(prontuario.getClinica().getId());
-        if(clinica.isEmpty()) throw new ClinicaNotFoundException("Clínica não cadastrada ou não identificada");
+        if (clinica.isEmpty()) throw new ClinicaNotFoundException("Clínica não cadastrada ou não identificada");
         Optional<Usuario> tutor = tutorRepository.findById(prontuario.getTutor().getId());
-        if(tutor.isEmpty()) throw new TutorNotFoundException("Tutor não cadastrado ou não identificado");
+        if (tutor.isEmpty()) throw new TutorNotFoundException("Tutor não cadastrado ou não identificado");
         Optional<Animal> animal = animalRepository.findByTutores_idAndNome(tutor.get().getId(), prontuario.getAnimal().getNome());
-        if(animal.isEmpty()) throw new AnimalNotFoundException("Animal não cadastrado ou não identificado");
+        if (animal.isEmpty()) throw new AnimalNotFoundException("Animal não cadastrado ou não identificado");
         prontuario.setClinica(clinica.get());
 
         prontuario.setTutor(tutor.get());
@@ -103,7 +99,7 @@ public class ProntuarioServiceImpl implements ProntuarioService {
                 .criadoEm(now)
                 .veterinario(prontuario.getVeterinario())
                 .clinica(clinica.get())
-                .caminhoArquivo("/" + S3BucketServiceRepository.getConventionedBucketName(prontuario.getClinica().getCnpj()) + "/" + prontuario.getCodigo()+".pdf")
+                .caminhoArquivo("/" + S3BucketServiceRepository.getConventionedBucketName(prontuario.getClinica().getCnpj()) + "/" + prontuario.getCodigo() + ".pdf")
                 .build();
 //        log.debug("doc a ser persistido: " + doc);
         Documento tempDoc = documentoRepository.save(doc);
@@ -117,7 +113,7 @@ public class ProntuarioServiceImpl implements ProntuarioService {
         try {
             pdfService.writeProntuario(p);
             log.debug("Processo de gravação de PDF finalizado");
-        } catch (SQLException e){
+        } catch (SQLException e) {
             log.error("\"Erro de validação SQL do ID da Clínica\": " + e.getMessage());
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -134,6 +130,7 @@ public class ProntuarioServiceImpl implements ProntuarioService {
     public Optional<Prontuario> findByCodigo(String codigo) {
         return prontuarioRepository.findByCodigo(codigo);
     }
+
     @Override
     public Prontuario create(ProntuarioDTO dto, Animal animal, Usuario tutor, Usuario veterinario) {
         Prontuario prontuario = ProntuarioFactory.factory(dto)
@@ -160,6 +157,29 @@ public class ProntuarioServiceImpl implements ProntuarioService {
             throw new NotFoundException("Prontuário não encontrado");
 
         return response.get();
+    }
+
+    @Override
+    public PaginatedResponse<ProntuarioResponseDTO> findAll(int page, String search, String url, Animal animal) {
+        page = Math.max(page, 1);
+
+        Pageable pageable = PageRequest.of(page - 1, ProntuarioServiceImpl.RESPONSE_LIMIT);
+
+        Long total = search.trim().isEmpty() ?
+                this.prontuarioRepository.countByAnimal(animal) :
+                this.prontuarioRepository.countByAnimalAndCodigoContains(animal, search);
+
+        Metadata metadata = new Metadata(url, page, ProntuarioServiceImpl.RESPONSE_LIMIT, total);
+
+        List<Prontuario> prontuarios = search.trim().isEmpty() ?
+                this.prontuarioRepository.findAllByAnimal(pageable, animal) :
+                this.prontuarioRepository.findAllByAnimalAndCodigoContains(pageable, animal, search);
+
+        List<ProntuarioResponseDTO> medicamentoResponseDtos = prontuarios.stream()
+                .map(ProntuarioResponseDTO::new)
+                .toList();
+
+        return new PaginatedResponse<>(metadata, medicamentoResponseDtos);
     }
 
     @Override
@@ -192,12 +212,12 @@ public class ProntuarioServiceImpl implements ProntuarioService {
         final String fileName = writeNomeArquivo(documento);
         log.info("Iniciando persistência no serviço AWS S3");
 
-        if(awsResponse.getETag() == null)
+        if (awsResponse.getETag() == null)
             throw new DocumentoNotPersistedException("Não foi possível gerar o documento com sucesso.");
         try {
             log.debug("Persistindo atualização dos documentos");
             return documentoRepository.saveAndFlush(setDocumentoMetadata(documento, awsResponse, fileName));
-        } catch (OptimisticLockingFailureException e){
+        } catch (OptimisticLockingFailureException e) {
             log.error("Documento não salvo");
             throw e;
         } finally {
