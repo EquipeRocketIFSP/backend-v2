@@ -9,9 +9,11 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface MedicamentoService {
-    Medicamento create(MedicamentoRequestDto dto);
+    Medicamento create(MedicamentoRequestDto dto, Clinica clinica);
 
-    Medicamento findOne(Long id);
+    Medicamento edit(MedicamentoRequestDto dto, Medicamento medicamento);
 
-    PaginatedResponse<MedicamentoResponseDto> findAll(int page, String url);
+    Medicamento findOne(Long id, Clinica clinica);
+
+    PaginatedResponse<MedicamentoResponseDto> findAll(int page, String search, String url, Clinica clinica);
 }

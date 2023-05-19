@@ -45,29 +45,37 @@ public class AnimalController extends BaseController {
         return new ResponseEntity<>(new AnimalResponseDto(animal), HttpStatus.CREATED);
     }
 
-    @PutMapping("/animal/{id}")
+    @PutMapping("/tutor/{tutor_id}/animal/{id}")
     public ResponseEntity<AnimalResponseDto> edit(
             @RequestHeader(AUTHORIZATION) String token,
             @RequestBody @Valid AnimalRequestDto dto,
+            @PathVariable("tutor_id") Long previousTutorId,
             @PathVariable("id") Long id
     ) {
         Clinica clinica = this.tokenService.getClinica(token);
+        Usuario tutor = this.usuarioService.findOne(previousTutorId, clinica);
         List<Usuario> tutores = dto.tutores.stream().map((tutorId) -> this.usuarioService.findOne(tutorId, clinica)).toList();
 
-        Animal animal = this.animalService.findOne(id);
+        Animal animal = this.animalService.findOne(id, tutor);
         animal = this.animalService.edit(dto, animal, tutores);
 
         return new ResponseEntity<>(new AnimalResponseDto(animal), HttpStatus.CREATED);
     }
 
-    @GetMapping("/animal/{id}")
-    public ResponseEntity<AnimalResponseDto> findOne(@PathVariable("id") Long id) {
-        Animal animal = this.animalService.findOne(id);
+    @GetMapping("/tutor/{tutor_id}/animal/{id}")
+    public ResponseEntity<AnimalResponseDto> findOne(
+            @RequestHeader(AUTHORIZATION) String token,
+            @PathVariable("tutor_id") Long tutorId,
+            @PathVariable("id") Long id
+    ) {
+        Clinica clinica = this.tokenService.getClinica(token);
+        Usuario tutor = this.usuarioService.findOne(tutorId, clinica);
+        Animal animal = this.animalService.findOne(id, tutor);
 
         return ResponseEntity.ok(new AnimalResponseDto(animal));
     }
 
-    @GetMapping("tutor/{tutor_id}/animal")
+    @GetMapping("/tutor/{tutor_id}/animal")
     public ResponseEntity<PaginatedResponse> findAll(
             @RequestHeader(AUTHORIZATION) String token,
             @PathVariable("tutor_id") Long tutorId,

@@ -1,6 +1,7 @@
 package br.vet.certvet.controllers;
 
 import br.vet.certvet.dto.ProntuarioRequest;
+import br.vet.certvet.exceptions.ProntuarioNotFoundException;
 import br.vet.certvet.models.Documento;
 import br.vet.certvet.models.Prontuario;
 import br.vet.certvet.services.PdfService;
@@ -26,12 +27,13 @@ public class ProntuarioController extends BaseController {
     @Autowired
     private PdfService pdfService;
 
-    @GetMapping("/{id}")
+    @GetMapping("/{codigo}")
     public ResponseEntity<Prontuario> getProntuario(
-            @PathVariable Long id
+            @PathVariable String codigo
     ){
-        Optional<Prontuario> prontuario = prontuarioService.findById(id);
-        return prontuario.map(value -> ResponseEntity.ok().body(value)).orElseGet(() -> ResponseEntity.notFound().build());
+        return  ResponseEntity.ok()
+                .body(prontuarioService.findByCodigo(codigo)
+                        .orElseThrow(ProntuarioNotFoundException::new));
     }
 
     @GetMapping("/{id}/pdf")
@@ -44,9 +46,11 @@ public class ProntuarioController extends BaseController {
                     .header("reason", "Media type not allowed")
                     .build();
         Optional<Prontuario> prontuario = prontuarioService.findById(id);
-        return prontuario.isPresent()
-                ? ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF).body(pdfService.retrieveFromRepository(prontuario.get()))
-                : ResponseEntity.notFound().build();
+        if(prontuario.isEmpty())
+            return ResponseEntity.notFound().build();
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdfService.retrieveFromRepository(prontuario.get()));
     }
 
     @PostMapping

@@ -2,8 +2,14 @@ package br.vet.certvet.models.especializacoes;
 
 import br.vet.certvet.models.Documento;
 
-public class CirurgiaDocumento extends Documento {
-    public CirurgiaDocumento(){
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import java.time.LocalDateTime;
+
+
+public class CirurgiaDocumento extends Doc {
+    public CirurgiaDocumento(Documento documento){
+        super.documento = documento;
         this.titulo = "TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO PARA REALIZAÇÃO DE PROCEDIMENTO CIRÚRGICO";
         this.declaraConsentimento = "Declaro o livre consentimento para a realização do procedimento cirúrgico de ${prontuario.cirurgia} no animal abaixo identificado, a ser realizado pelo(a) Médico(a) Veterinário(a) ${veterinario.nome} CRMV-${veterinario.crmv}.";
         this.declaraCienciaRiscos = """
@@ -34,11 +40,5 @@ public class CirurgiaDocumento extends Documento {
                         (documento a ser emitido em 2 vias: 1ª via: médico-veterinário; 2ª via: proprietário/tutor)
                     </span>
                 </div>""".indent(4);
-    }
-    @Override
-    public Documento find(String tipoDocumento){
-        return  "cirurgia".equals(tipoDocumento)
-                ? this
-                : new DoacaoPesquisaDocumento().find(tipoDocumento);
     }
 }

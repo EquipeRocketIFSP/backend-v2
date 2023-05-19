@@ -106,39 +106,51 @@ public class Clinica implements Fillable<ClinicaRequestDto> {
     @ToString.Exclude
     private List<Prontuario> prontuarios;
 
+    public void setProntuarios(List<Prontuario> prontuarios) {
+        this.prontuarios = prontuarios;
+    }
+
+    public void setAgendamentos(List<Agendamento> agendamentos) {
+        this.agendamentos = agendamentos;
+    }
+
+    public void setUsuarios(List<Usuario> usuarios) {
+        this.usuarios = usuarios;
+    }
+
     public Clinica(ClinicaInicialRequestDto dto) {
-        this.nomeFantasia = dto.clinica_nome_fantasia;
-        this.razaoSocial = dto.clinica_razao_social;
-        this.cep = dto.clinica_cep;
-        this.logradouro = dto.clinica_logradouro;
-        this.numero = dto.clinica_numero;
-        this.bairro = dto.clinica_bairro;
-        this.cidade = dto.clinica_cidade;
-        this.estado = dto.clinica_estado;
-        this.cnae = dto.clinica_cnae;
-        this.cnpj = dto.clinica_cnpj;
-        this.email = dto.clinica_email;
-        this.celular = dto.clinica_celular;
-        this.telefone = dto.clinica_telefone;
+        this.nomeFantasia = dto.clinicaNomeFantasia();
+        this.razaoSocial = dto.clinicaRazaoSocial();
+        this.cep = dto.clinicaCep();
+        this.logradouro = dto.clinicaLogradouro();
+        this.numero = dto.clinicaNumero();
+        this.bairro = dto.clinicaBairro();
+        this.cidade = dto.clinicaCidade();
+        this.estado = dto.clinicaEstado();
+        this.cnae = dto.clinicaCnae();
+        this.cnpj = dto.clinicaCnpj();
+        this.email = dto.clinicaEmail();
+        this.celular = dto.clinicaCelular();
+        this.telefone = dto.clinicaTelefone();
 
         this.code = RandomString.hashOf(this.cnpj);
     }
 
     @Override
     public void fill(ClinicaRequestDto dto) {
-        this.nomeFantasia = dto.nome_fantasia;
-        this.razaoSocial = dto.razao_social;
-        this.cep = dto.cep;
-        this.logradouro = dto.logradouro;
-        this.numero = dto.numero;
-        this.bairro = dto.bairro;
-        this.cidade = dto.cidade;
-        this.estado = dto.estado;
-        this.cnae = dto.cnae;
-        this.cnpj = dto.cnpj;
-        this.email = dto.email;
-        this.celular = dto.celular;
-        this.telefone = dto.telefone;
+        this.nomeFantasia = dto.nomeFantasia();
+        this.razaoSocial = dto.razaoSocial();
+        this.cep = dto.cep();
+        this.logradouro = dto.logradouro();
+        this.numero = dto.numero();
+        this.bairro = dto.bairro();
+        this.cidade = dto.cidade();
+        this.estado = dto.estado();
+        this.cnae = dto.cnae();
+        this.cnpj = dto.cnpj();
+        this.email = dto.email();
+        this.celular = dto.celular();
+        this.telefone = dto.telefone();
     }
 
     @Override

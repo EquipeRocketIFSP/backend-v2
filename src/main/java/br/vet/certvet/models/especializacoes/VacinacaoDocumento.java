@@ -3,8 +3,13 @@ package br.vet.certvet.models.especializacoes;
 import br.vet.certvet.exceptions.NotSupportedDocumentoTipoException;
 import br.vet.certvet.models.Documento;
 
-public class VacinacaoDocumento extends Documento {
-    public VacinacaoDocumento(){
+import javax.persistence.*;
+import java.time.LocalDateTime;
+
+
+public class VacinacaoDocumento extends Doc {
+    public VacinacaoDocumento(Documento documento){
+        super.documento = documento;
         this.titulo = "ATESTADO DE VACINAÇÃO";
         this.declaraConsentimento = "Atesto para os devidos fins, que o animal abaixo identificado foi vacinado por mim nesta data, conforme informações abaixo:";
         this.assinaturaVet = """
@@ -18,11 +23,5 @@ public class VacinacaoDocumento extends Documento {
                         (documento a ser emitido em 2 vias: 1ª via: médico-veterinário; 2ª via: proprietário/tutor)
                     </span>
                 </div>""".indent(4);
-    }
-    @Override
-    public Documento find(String tipoDocumento) throws NotSupportedDocumentoTipoException{
-        if("vacinacao".equals(tipoDocumento))
-            return this;
-        throw new NotSupportedDocumentoTipoException();
     }
 }

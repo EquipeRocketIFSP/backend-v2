@@ -1,31 +1,50 @@
 package br.vet.certvet.services.implementation;
 
-import br.vet.certvet.models.Animal;
+import br.vet.certvet.contracts.apis.ipcBr.IcpResponse;
+import br.vet.certvet.exceptions.DocumentoNotPersistedException;
+import br.vet.certvet.exceptions.PdfNaoReconhecidoException;
+import br.vet.certvet.helpers.Https;
 import br.vet.certvet.models.Documento;
 import br.vet.certvet.models.Prontuario;
-import br.vet.certvet.models.Usuario;
+import br.vet.certvet.models.especializacoes.Doc;
 import br.vet.certvet.repositories.ClinicaRepository;
+import br.vet.certvet.repositories.DocumentoRepository;
 import br.vet.certvet.repositories.PdfRepository;
 import br.vet.certvet.services.PdfService;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
+import com.lowagie.text.pdf.PdfReader;
+import com.lowagie.text.pdf.PdfStamper;
+import com.lowagie.text.pdf.PdfWriter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.StringSubstitutor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 
 @Service
+@Slf4j
 public class PdfFromHtmlPdfServiceImpl implements PdfService {
+
+    final static String ERRO = "{\"Error\":\"E022: Não foi possível baixar o arquivo da URL fornecida\"}";
+
+    @Value("${app.default.pdf.password}")
+    private String OWNER_PASSWORD;
+    @Autowired
+    private DocumentoRepository documentoRepository;
 
     @Autowired
     private PdfRepository pdfRepository;
@@ -34,15 +53,10 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
     private ClinicaRepository clinicaRepository;
 
     @Override
-    public byte[] termoAutorizacaoProcedimentoCirurgico(String estabelecimento, String procedimento, String cidade, Animal animal, Usuario veterinario, Usuario tutor) throws Exception {
-        return new byte[0];
-    }
-
-    @Override
     public byte[] writeProntuario(Prontuario prontuario) throws Exception {
 
         String from = "src/main/resources/documents/prontuario/ProntuarioLayout.html";
-        String fileName = "res/" + prontuario.getCodigo() + ".pdf";
+        String fileName = prontuario.getCodigo() + ".pdf";
         String layout = Files.readString(Path.of(from));
         Map<String, String> parameters = Map.of(
                 "animal.nome", prontuario.getAnimal().getNome(),
@@ -52,40 +66,39 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
                 "clinica.telefone", prontuario.getClinica().getTelefone(),
                 "prontuario.codigo", prontuario.getCodigo()
         );
-        return transformTxtToXmlToPdf(fileName, parameters, layout);
+        layout = new StringSubstitutor(getFieldsToBeLoaded(prontuario)).replace(layout);
+        return transformTxtToXmlToPdf(layout);
     }
 
     @Override
-    public byte[] writeDocumento(Prontuario prontuario, Documento documentoTipo) throws Exception {
-        final String fileName = "res/" + prontuario.getCodigo() + ".pdf";
+    public byte[] writePdfDocumentoEmBranco(
+            Prontuario prontuario,
+            Doc documentoTipo
+    ) throws
+            DocumentoNotPersistedException,
+            OptimisticLockingFailureException,
+            IOException {
         final String from = "src/main/resources/documents/consentimento/ConsentimentoLayoutV2.html";
-        final String layout = Files.readString(Path.of(from));
+        String layout = Files.readString(Path.of(from));
 
-        Map<String, String> parameters = getDivsToBeLoaded(documentoTipo);
-        final String htmlBase = new StringSubstitutor(parameters).replace(layout);
+        documentoRepository.save(documentoTipo.getDocumento());
+        layout = new StringSubstitutor(getDivsToBeLoaded(documentoTipo)).replace(layout);
 
-        parameters = getFieldsToBeLoaded(prontuario);
-        return transformTxtToXmlToPdf(fileName, parameters, htmlBase);
+        layout = new StringSubstitutor(getFieldsToBeLoaded(prontuario)).replace(layout);
+        return transformTxtToXmlToPdf(layout);
     }
 
-    private byte[] transformTxtToXmlToPdf(String fileName, Map<String, String> parameters, String htmlBase) throws IOException {
-        String result = new StringSubstitutor(parameters).replace(htmlBase);
-        Document document = Jsoup.parse(result, "UTF-8");
+    private byte[] transformTxtToXmlToPdf(String htmlBase) throws IOException {
+        Document document = Jsoup.parse(htmlBase, "UTF-8");
         document.outputSettings().syntax(Document.OutputSettings.Syntax.xml);
-        generatePdfFromHtml(document, new File(fileName));
-        Path of = Path.of(fileName);
-        try {
-            return Files.readAllBytes(of);
-        } finally {
-            Files.deleteIfExists(of);
-        }
+        return generatePdfFromHtml(document);
     }
 
     private static ImmutableMap<String, String> getFieldsToBeLoaded(Prontuario prontuario) {
         return ImmutableMap.<String, String>builder()
                 .put("animal.nome", prontuario.getAnimal().getNome())
                 .put("veterinario.nome", prontuario.getVeterinario().getNome())
-                .put("veterinario.crmv", prontuario.getVeterinario().getRegistroCRMV())
+ //                .put("veterinario.crmv", prontuario.getVeterinario().getRegistroCRMV())
                 .put("clinica.razaoSocial", prontuario.getClinica().getRazaoSocial())
                 .put("clinica.telefone", prontuario.getClinica().getTelefone())
                 .put("prontuario.codigo", prontuario.getCodigo())
@@ -117,7 +130,7 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
                 .build();
     }
 
-    private static ImmutableMap<String, String> getDivsToBeLoaded(Documento documento) {
+    private static ImmutableMap<String, String> getDivsToBeLoaded(Doc documento) {
         return ImmutableMap.<String, String>builder()
                 .put("documento.titulo", documento.getTitulo())
                 .put("documento.declara_consentimento", documento.getDeclaraConsentimento())
@@ -151,8 +164,8 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
                 .build();
     }
 
-    private static void generatePdfFromHtml(Document document, File outputPdf) throws IOException {
-        try (OutputStream outputStream = new FileOutputStream(outputPdf)) {
+    private static byte[] generatePdfFromHtml(Document document) throws IOException {
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             ITextRenderer renderer = new ITextRenderer();
             SharedContext sharedContext = renderer.getSharedContext();
             sharedContext.setPrint(true);
@@ -161,11 +174,92 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
             renderer.setDocumentFromString(document.html());
             renderer.layout();
             renderer.createPDF(outputStream);
+            return outputStream.toByteArray();
         }
     }
 
     @Override
     public byte[] retrieveFromRepository(Prontuario prontuario) throws IOException {
+//        PdfReader reader = new PdfReader();
+//        PdfStamper //
         return new byte[0];
+    }
+
+    @Override
+    public byte[] setProtection(byte[] documento, Prontuario prontuario) throws IOException {
+        try(PdfReader reader = new PdfReader(documento)){
+            try(ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+                PdfStamper stamper = new PdfStamper(reader, out);
+                try {
+                    stamper.setEncryption(
+                            getTutorPass(prontuario).getBytes(),
+                            OWNER_PASSWORD.getBytes(),
+                            PdfWriter.ALLOW_PRINTING,
+                            PdfWriter.ENCRYPTION_AES_128
+                    );
+                    return out.toByteArray();
+                } finally {
+                    stamper.close();
+                }
+            }
+        }
+    }
+
+    @Override
+    public IcpResponse getIcpBrValidation(Documento documento) throws IOException, PdfNaoReconhecidoException {
+        final String bucket = S3BucketServiceRepository.getConventionedBucketName(documento.getClinica().getCnpj());
+        final String fileName = ProntuarioServiceImpl.writeNomeArquivo(documento);
+        final String requestUrl = getSignValidationUrl(bucket, fileName);
+//        String requestUrl = "https://validar.iti.gov.br/validar?signature_files=https://certvet-signed.s3.us-east-1.amazonaws.com/test_documento_sanitario_assinado_assinado.pdf";
+        String json = ERRO;
+        try {
+            if(pdfRepository.setPublicFileReadingPermission(bucket, true)) // Libera objeto para que seja acessado publicamente na AWS
+            {
+                Thread.sleep(1000);
+                json = Https.get(requestUrl, Map.of("Content-Type", "*/*", "Cache-Control", "no-cache"));
+            }
+        } catch (Exception e){
+            log.error("Erro ao realizar liberação do arquivo para ser acessado publicamente");
+            log.error(e.getLocalizedMessage());
+        } finally {
+            pdfRepository.setPublicFileReadingPermission(bucket, false); // Sempre trava após a conexão com o serviço de assinatura
+        }
+        if(ERRO.equals(json)) throw new PdfNaoReconhecidoException("O documento pdf não foi identificado no servidor");
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+            mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
+            return mapper.readValue(json, IcpResponse.class);
+        } catch (JsonProcessingException e){
+            e.printStackTrace();
+            throw e;
+        }
+//        throw new ErroMapeamentoRespostaException("Não foi possível processar o documento com o ICP-BR.");
+    }
+
+    @Override
+    public ObjectMetadata savePdfInBucket(Documento documento, byte[] documentoPdf) {
+        return pdfRepository.putObject(
+                documento.getProntuario().getClinica().getCnpj(),
+                ProntuarioServiceImpl.writeNomeArquivo(documento),// fileName.substring(fileName.indexOf("/")+1),
+                documentoPdf
+        );
+    }
+
+    private static String getSignValidationUrl(String bucket, String fileName) {
+        final String requestUrl = new StringBuilder().append("https://validar.iti.gov.br/validar?signature_files=https://")
+                .append("s3.sa-east-1.amazonaws.com/")
+                .append(bucket) // S3 folder
+                .append("/")
+                .append(fileName) // S3 fileName
+                .toString();
+        return requestUrl;
+    }
+
+    private static String getTutorPass(Prontuario prontuario) {
+        return prontuario.getTutor()
+                .getCpf()
+                .replace(".", "")
+                .substring(5, 9);
     }
 }

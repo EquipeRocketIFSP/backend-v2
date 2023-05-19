@@ -39,8 +39,11 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         Long userId = tokenService.getUsuarioId(token);
         log.info("Usuário logado: " + userId);
         Usuario usuario;
-        try{
+        try {
             usuario = repository.findById(userId).orElseThrow();
+
+            if (usuario.getDeletedAt() != null)
+                throw new NoSuchElementException();
         } catch (NoSuchElementException e) {
             log.error(e.getLocalizedMessage());
             throw new NoSuchElementException(e);

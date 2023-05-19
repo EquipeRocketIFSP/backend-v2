@@ -48,14 +48,12 @@ public class AnimalServiceImpl implements AnimalService {
         animal.getTutores().clear();
         animal.getTutores().addAll(tutores);
 
-        //System.out.println(tutores.toString());
-
         return this.animalRepository.saveAndFlush(animal);
     }
 
     @Override
-    public Animal findOne(Long id) {
-        Optional<Animal> response = this.animalRepository.findById(id);
+    public Animal findOne(Long id, Usuario tutor) {
+        Optional<Animal> response = this.animalRepository.findOneByIdAndTutores(id, tutor);
 
         if (response.isEmpty())
             throw new NotFoundException("Animal não encontrado");

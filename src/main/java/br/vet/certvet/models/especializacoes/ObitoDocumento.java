@@ -2,8 +2,13 @@ package br.vet.certvet.models.especializacoes;
 
 import br.vet.certvet.models.Documento;
 
-public class ObitoDocumento extends Documento {
-    public ObitoDocumento(){
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import java.time.LocalDateTime;
+
+public class ObitoDocumento extends Doc {
+    public ObitoDocumento(Documento documento){
+        super.documento = documento;
         this.titulo = "ATESTADO DE ÓBITO";
         this.declaraConsentimento = "Atesto para os devidos fins que o animal abaixo identificado veio a óbito na localidade ${prontuario.obito.local}, às ${prontuario.obito.horas}, horas do dia (${prontuario.obito.data}), sendo a provável causa mortis ${prontuario.obito.causa}.";
         this.causaMortis = """
@@ -38,11 +43,5 @@ public class ObitoDocumento extends Documento {
                         (documento a ser emitido em 2 vias: 1ª via: médico-veterinário; 2ª via: proprietário/tutor)
                     </span>
                 </div>""".indent(4);
-    }
-    @Override
-    public Documento find(String tipoDocumento){
-        return  "obito".equals(tipoDocumento)
-                ? this
-                : new RetiraCorpoDocumento().find(tipoDocumento);
     }
 }

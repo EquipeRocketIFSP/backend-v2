@@ -18,7 +18,7 @@ public class Authority implements GrantedAuthority {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false)
+//    @Column()
     private Long id;
 
     @Column(unique = true)
@@ -27,6 +27,10 @@ public class Authority implements GrantedAuthority {
     @ManyToMany(mappedBy = "authorities")
     @ToString.Exclude
     private List<Usuario> users;
+
+    public void setUsers(List<Usuario> users) {
+        this.users = users;
+    }
 
     public Authority(String authority) {
         this.authority = authority;

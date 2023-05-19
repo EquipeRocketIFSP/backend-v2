@@ -3,8 +3,14 @@ package br.vet.certvet.models.especializacoes;
 import br.vet.certvet.models.Documento;
 import org.springframework.stereotype.Service;
 
-public class AnestesiaDocumento extends Documento {
-    public AnestesiaDocumento(){
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import java.time.LocalDateTime;
+
+
+public class AnestesiaDocumento extends Doc {
+    public AnestesiaDocumento(Documento documento){
+        super.documento = documento;
         this.titulo = "TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO PARA REALIZAÇÃO DE PROCEDIMENTOS ANESTÉSICOS";
         this.declaraConsentimento = "Declaro o livre consentimento para a realização do(s) procedimento(s) anestésico(s) necessário(s) no animal abaixo identificado, a ser realizado pelo(a) Médico(a) Veterinário(a) ${veterinario.nome} CRMV-${veterinario.crmv}.";
         this.declaraCienciaRiscos = """
@@ -35,11 +41,5 @@ public class AnestesiaDocumento extends Documento {
                         (documento a ser emitido em 2 vias: 1ª via: médico-veterinário; 2ª via: proprietário/tutor)
                     </span>
                 </div>""".indent(4);
-    }
-    @Override
-    public Documento find(String tipoDocumento){
-        return  "anestesia".equals(tipoDocumento)
-                ? this
-                : new CirurgiaDocumento().find(tipoDocumento);
     }
 }

@@ -6,7 +6,6 @@ import br.vet.certvet.repositories.ClinicaRepository;
 import br.vet.certvet.repositories.PdfRepository;
 import br.vet.certvet.repositories.ProntuarioRepository;
 import br.vet.certvet.services.DocumentoService;
-import br.vet.certvet.services.implementation.PdfFromHtmlPdfServiceImpl;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.*;
@@ -20,24 +19,26 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @ActiveProfiles("test")
 public class PdfFromHtmlPdfServiceImplTest {
+
     public static final Date DATE = new Date();
     public static final Locale L = new Locale("pt", "BR");
 
@@ -46,6 +47,8 @@ public class PdfFromHtmlPdfServiceImplTest {
     @Mock private ClinicaRepository clinicaRepository; // = mock(ClinicaRepository.class);
 
     @Mock private PdfRepository pdfRepository;
+
+    @Mock private DocumentoService documentoService;
 
     @InjectMocks
     @Qualifier("pdfFromHtmlPdfServiceImpl")
@@ -130,7 +133,7 @@ public class PdfFromHtmlPdfServiceImplTest {
                                                     Estoque.builder()
                                                         .medida("ml")
                                                         .quantidade(new BigDecimal("50.5"))
-                                                        .clinica(clinica)
+//                                                        .clinica(clinica)
                                                         .medicamento(
                                                                 Medicamento.builder()
                                                                         .codigoRegistro("12345689")
@@ -178,11 +181,15 @@ public class PdfFromHtmlPdfServiceImplTest {
         final String path = "src/test/resources/prontuario/htmlToPdf/";
         final File parameterFile = new File(path + "doc_" + documentoTipo + ".txt");
         final File outputFile = new File(path + "test_documento_" + documentoTipo+ ".pdf");
+        when(documentoService.provideLayout(documentoTipo))
+                .thenReturn(new DocumentoServiceImpl()
+                        .provideLayout(documentoTipo));
+
         Files.write(
                 outputFile.toPath(),
-                service.writeDocumento(
+                service.writePdfDocumentoEmBranco(
                         getProntuarioInstance(),
-                        new DocumentoService().provideLayout(documentoTipo)));
+                        documentoService.provideLayout(documentoTipo)));
         final String txtFromPdf = new PDFTextStripper().getText(
                 PDDocument.load(outputFile));
 

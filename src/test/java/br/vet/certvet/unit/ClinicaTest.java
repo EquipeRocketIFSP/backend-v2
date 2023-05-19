@@ -48,7 +48,7 @@ public class ClinicaTest {
     @Test
     public void createClinicaWithResponsavelTecnico() {
         ClinicaInicialRequestDto dto = ClinicaTest.factoryClinicaInicialRequestDto();
-        dto.dono_crmv = "SP-1234";
+        //dto.dono_crmv = "SP-1234";
 
         final Clinica expected = new Clinica(dto);
         final Usuario expectedDono = new Usuario(ClinicaTest.getDonoDto(dto), expected);
@@ -116,76 +116,72 @@ public class ClinicaTest {
     }
 
     public static ClinicaInicialRequestDto factoryClinicaInicialRequestDto() {
-        ClinicaInicialRequestDto dto = new ClinicaInicialRequestDto();
+        return new ClinicaInicialRequestDto(
+                "Nome fantasia",
+                "Razão social",
+                "11.243.612/0001-21",
+                "15378",
+                "57490-970",
+                "Rua Doutor Miguel Torres 19",
+                "45",
+                "Centro",
+                "Água Branca",
+                "AL",
+                "(11) 91111-1111",
+                "(11) 1111-1111",
+                "clinica@teste.com",
 
-        dto.clinica_nome_fantasia = "Nome fantasia";
-        dto.clinica_razao_social = "Razão social";
-        dto.clinica_cnpj = "11.243.612/0001-21";
-        dto.clinica_cnae = "15378";
-        dto.clinica_cep = "57490-970";
-        dto.clinica_logradouro = "Rua Doutor Miguel Torres 19";
-        dto.clinica_numero = "45";
-        dto.clinica_bairro = "Centro";
-        dto.clinica_cidade = "Água Branca";
-        dto.clinica_estado = "AL";
-        dto.clinica_celular = "(11) 91111-1111";
-        dto.clinica_telefone = "(11) 1111-1111";
-        dto.clinica_email = "clinica@teste.com";
-
-        dto.dono_nome = "Camaeon";
-        dto.dono_cpf = "920.137.300-71";
-        dto.dono_rg = "13.764.333-0";
-        dto.dono_cep = "57490-970";
-        dto.dono_logradouro = "Rua Doutor Miguel Torres 19";
-        dto.dono_numero = "45";
-        dto.dono_bairro = "Centro";
-        dto.dono_cidade = "Água Branca";
-        dto.dono_estado = "AL";
-        dto.dono_celular = "(11) 92222-1111";
-        dto.dono_telefone = "(11) 2211-1111";
-        dto.dono_email = "camaeon@teste.com";
-        dto.dono_senha = "1234";
-        dto.dono_crmv = null;
-
-        return dto;
+                "Camaeon",
+                "920.137.300-71",
+                "13.764.333-0",
+                "57490-970",
+                "Rua Doutor Miguel Torres 19",
+                "45",
+                "Centro",
+                "Água Branca",
+                "AL",
+                "(11) 92222-1111",
+                "(11) 2211-1111",
+                "camaeon@teste.com",
+                "1234",
+                null
+        );
     }
 
     public static ClinicaRequestDto factoryUpdatedClinicaDto() {
-        ClinicaRequestDto dto = new ClinicaRequestDto();
-
-        dto.nome_fantasia = "Nome fantasia 2";
-        dto.razao_social = "Razão social 2";
-        dto.cnpj = "11.243.612/0001-00";
-        dto.cnae = "15";
-        dto.cep = "01111-970";
-        dto.logradouro = "Rua Doutor Miguel Torres";
-        dto.numero = "12";
-        dto.bairro = "Centro 2";
-        dto.cidade = "São Paulo";
-        dto.estado = "SP";
-        dto.celular = "(11) 91222-1111";
-        dto.telefone = "(11) 1112-1111";
-        dto.email = "clinica2@teste.com";
-
-        return dto;
+        return new ClinicaRequestDto(
+                "Nome fantasia 2",
+                "Razão social 2",
+                "11.243.612/0001-00",
+                "15",
+                "01111-970",
+                "Rua Doutor Miguel Torres",
+                "12",
+                "Centro 2",
+                "São Paulo",
+                "SP",
+                "(11) 91222-1111",
+                "(11) 1112-1111",
+                "clinica2@teste.com"
+        );
     }
 
     private static FuncionarioRequestDto getDonoDto(ClinicaInicialRequestDto dto) {
         FuncionarioRequestDto usuarioDto = new FuncionarioRequestDto();
 
-        usuarioDto.nome = dto.dono_nome;
-        usuarioDto.email = dto.dono_email;
-        usuarioDto.cpf = dto.dono_cpf;
-        usuarioDto.rg = dto.dono_rg;
-        usuarioDto.celular = dto.dono_celular;
-        usuarioDto.telefone = dto.dono_telefone;
-        usuarioDto.logradouro = dto.dono_logradouro;
-        usuarioDto.numero = dto.dono_numero;
-        usuarioDto.cep = dto.dono_cep;
-        usuarioDto.bairro = dto.dono_bairro;
-        usuarioDto.cidade = dto.dono_cidade;
-        usuarioDto.estado = dto.dono_estado;
-        usuarioDto.senha = dto.dono_senha;
+        usuarioDto.setNome(dto.donoNome());
+        usuarioDto.setEmail(dto.donoEmail());
+        usuarioDto.setCpf(dto.donoCpf());
+        usuarioDto.setRg(dto.donoRg());
+        usuarioDto.setCelular(dto.donoCelular());
+        usuarioDto.setTelefone(dto.donoTelefone());
+        usuarioDto.setLogradouro(dto.donoLogradouro());
+        usuarioDto.setNumero(dto.donoNumero());
+        usuarioDto.setCep(dto.donoCep());
+        usuarioDto.setBairro(dto.donoBairro());
+        usuarioDto.setCidade(dto.donoCidade());
+        usuarioDto.setEstado(dto.donoEstado());
+        usuarioDto.setSenha(dto.donoSenha());
         usuarioDto.is_admin = true;
 
         return usuarioDto;

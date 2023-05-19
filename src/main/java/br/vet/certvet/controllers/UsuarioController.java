@@ -5,7 +5,6 @@ import br.vet.certvet.dto.requests.*;
 import br.vet.certvet.dto.responses.PaginatedResponse;
 import br.vet.certvet.dto.responses.UsuarioResponseDto;
 import br.vet.certvet.dto.responses.VeterinarioResponseDto;
-import br.vet.certvet.models.Authority;
 import br.vet.certvet.models.Clinica;
 import br.vet.certvet.models.Usuario;
 import br.vet.certvet.services.ClinicaService;
@@ -18,9 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-
-import java.util.List;
-import java.util.Optional;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
@@ -74,7 +70,7 @@ public class UsuarioController extends BaseController {
     @PutMapping("/funcionario/{id}")
     public ResponseEntity<UsuarioResponseDto> edit(
             @RequestHeader(AUTHORIZATION) String token,
-            @RequestBody @Valid FuncionarioEditRequestDto dto,
+            @RequestBody @Valid FuncionarioRequestDto dto,
             @PathVariable("id") Long id
     ) {
         Clinica clinica = this.tokenService.getClinica(token);
@@ -87,12 +83,17 @@ public class UsuarioController extends BaseController {
     @PutMapping("/veterinario/{id}")
     public ResponseEntity<UsuarioResponseDto> edit(
             @RequestHeader(AUTHORIZATION) String token,
-            @RequestBody @Valid VeterinarioEditRequestDto dto,
+            @RequestBody @Valid VeterinarioRequestDto dto,
             @PathVariable("id") Long id
     ) {
         Clinica clinica = this.tokenService.getClinica(token);
         Usuario usuario = this.usuarioService.findOne(id, clinica);
         usuario = this.usuarioService.edit(dto, usuario);
+
+        if (dto.isTechnicalResponsible()) {
+            clinica.setResponsavelTecnico(usuario);
+            this.clinicaService.edit(clinica);
+        }
 
         return ResponseEntity.ok(new UsuarioResponseDto(usuario));
     }
@@ -110,18 +111,7 @@ public class UsuarioController extends BaseController {
         return ResponseEntity.ok(new UsuarioResponseDto(usuario));
     }
 
-    @GetMapping("/usuario")
-    public ResponseEntity<UsuarioResponseDto> findOne(@RequestHeader(AUTHORIZATION) String token) {
-        Usuario usuario = this.tokenService.getUsuario(token);
-        Optional<Authority> authorityResponse = this.usuarioService.findUsuarioAuthority(usuario, "VETERINARIO");
-
-        if (authorityResponse.isPresent())
-            return ResponseEntity.ok(new VeterinarioResponseDto(usuario));
-
-        return ResponseEntity.ok(new UsuarioResponseDto(usuario));
-    }
-
-    @GetMapping({"/funcionario/{id}", "/veterinario/{id}", "/tutor/{id}"})
+    @GetMapping({"/funcionario/{id}", "/tutor/{id}"})
     public ResponseEntity<UsuarioResponseDto> findOne(
             @RequestHeader(AUTHORIZATION) String token,
             @PathVariable("id") Long id
@@ -129,10 +119,12 @@ public class UsuarioController extends BaseController {
         Clinica clinica = this.tokenService.getClinica(token);
         Usuario usuario = this.usuarioService.findOne(id, clinica);
 
-        return ResponseEntity.ok(new UsuarioResponseDto(usuario));
+        UsuarioResponseDto response = (usuario.getCrmv() != null) ? new VeterinarioResponseDto(usuario) : new UsuarioResponseDto(usuario);
+
+        return ResponseEntity.ok(response);
     }
 
-    @GetMapping({"/funcionario", "/veterinario", "/tutor"})
+    @GetMapping({"/funcionario", "/tutor","/veterinario"})
     public ResponseEntity<PaginatedResponse<UsuarioResponseDto>> findAllVeterinarios(
             @RequestHeader(AUTHORIZATION) String token,
             @RequestParam(name = "pagina", defaultValue = "1") int page,
@@ -145,15 +137,7 @@ public class UsuarioController extends BaseController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/usuario/autoridades")
-    public ResponseEntity<List<String>> findAuthorities(@RequestHeader(AUTHORIZATION) String token) {
-        Usuario usuario = this.tokenService.getUsuario(token);
-        List<String> authorities = usuario.getAuthorities().stream().map(Authority::getAuthority).toList();
-
-        return ResponseEntity.ok(authorities);
-    }
-
-    @DeleteMapping({"/funcionario/{id}", "/veterinario/{id}", "/tutor/{id}"})
+    @DeleteMapping({"/funcionario/{id}", "/tutor/{id}"})
     public ResponseEntity<Void> delete(
             @RequestHeader(AUTHORIZATION) String token,
             @PathVariable("id") Long id
@@ -166,7 +150,7 @@ public class UsuarioController extends BaseController {
         return ResponseEntity.accepted().build();
     }
 
-    @PutMapping({"/funcionario/{id}/restaurar", "/veterinario/{id}/restaurar", "/tutor/{id}/restaurar"})
+    @PutMapping({"/funcionario/{id}/restaurar", "/tutor/{id}/restaurar"})
     public ResponseEntity<UsuarioResponseDto> recover(
             @RequestHeader(AUTHORIZATION) String token,
             @PathVariable("id") Long id

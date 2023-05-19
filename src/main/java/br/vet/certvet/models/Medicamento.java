@@ -34,28 +34,17 @@ public class Medicamento implements Fillable<MedicamentoRequestDto> {
     private String viaUso;
 
     @Column(nullable = false)
-    private String dose;
-
-    @Column(nullable = false)
     private String concentracao;
 
     @Column(nullable = false)
-    private String intervaloDose;
+    private String fabricante;
 
-    public Medicamento(MedicamentoRequestDto dto) {
-        this.fill(dto);
-    }
+    @Column(nullable = false)
+    private String apresentacao;
 
-    @Override
-    public void fill(MedicamentoRequestDto dto) {
-        this.nome = dto.nome;
-        this.codigoRegistro = dto.codigoRegistro;
-        this.principioAtivo = dto.principioAtivo;
-        this.concentracao = dto.concentracao;
-        this.dose = dto.dose;
-        this.viaUso = dto.viaUso;
-        this.intervaloDose = dto.intervaloDose;
-    }
+    @ManyToOne
+    @JoinColumn(name = "clinica_id")
+    private Clinica clinica;
 
     @Override
     public boolean equals(Object o) {
@@ -68,5 +57,21 @@ public class Medicamento implements Fillable<MedicamentoRequestDto> {
     @Override
     public int hashCode() {
         return getClass().hashCode();
+    }
+
+    public Medicamento(MedicamentoRequestDto dto, Clinica clinica) {
+        this.fill(dto);
+        this.clinica = clinica;
+    }
+
+    @Override
+    public void fill(MedicamentoRequestDto dto) {
+        this.nome = dto.nome();
+        this.codigoRegistro = dto.codigoRegistro();
+        this.principioAtivo = dto.principioAtivo();
+        this.viaUso = dto.viaUso();
+        this.concentracao = dto.concentracao();
+        this.fabricante = dto.fabricante();
+        this.apresentacao = dto.apresentacao();
     }
 }
