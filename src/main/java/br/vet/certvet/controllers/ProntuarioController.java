@@ -6,6 +6,7 @@ import br.vet.certvet.models.Documento;
 import br.vet.certvet.models.Prontuario;
 import br.vet.certvet.services.PdfService;
 import br.vet.certvet.services.ProntuarioService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -20,6 +21,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/prontuario")
 @Slf4j
+@SecurityRequirement(name = "bearer-key")
 public class ProntuarioController extends BaseController {
 
     @Autowired

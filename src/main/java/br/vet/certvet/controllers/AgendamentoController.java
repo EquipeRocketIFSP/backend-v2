@@ -6,6 +6,7 @@ import br.vet.certvet.dto.responses.AgendamentoResponseDto;
 import br.vet.certvet.models.Agendamento;
 import br.vet.certvet.models.Clinica;
 import br.vet.certvet.services.AgendamentoService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @RestController
 @CrossOrigin
 @RequestMapping("/api")
+@SecurityRequirement(name = "bearer-key")
 public class AgendamentoController extends BaseController {
     @Autowired
     private AgendamentoService agendamentoService;
