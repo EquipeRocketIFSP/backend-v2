@@ -97,7 +97,7 @@ public class Prontuario {
     private String linfonodosObs;
 
     @Setter
-    private String regiaoCervical;
+    private String regiaoColuna;
 
     @Setter
     private String regiaoAbdomen;
@@ -247,7 +247,7 @@ public class Prontuario {
         if (!Objects.equals(linfonodos, that.linfonodos)) return false;
         if (!Objects.equals(linfonodosObs, that.linfonodosObs))
             return false;
-        if (!Objects.equals(regiaoCervical, that.regiaoCervical))
+        if (!Objects.equals(regiaoColuna, that.regiaoColuna))
             return false;
         if (!Objects.equals(regiaoAbdomen, that.regiaoAbdomen))
             return false;
@@ -288,7 +288,7 @@ public class Prontuario {
         result = 31 * result + (apetite != null ? apetite.hashCode() : 0);
         result = 31 * result + (linfonodos != null ? linfonodos.hashCode() : 0);
         result = 31 * result + (linfonodosObs != null ? linfonodosObs.hashCode() : 0);
-        result = 31 * result + (regiaoCervical != null ? regiaoCervical.hashCode() : 0);
+        result = 31 * result + (regiaoColuna != null ? regiaoColuna.hashCode() : 0);
         result = 31 * result + (regiaoAbdomen != null ? regiaoAbdomen.hashCode() : 0);
         result = 31 * result + (regiaoMToracicos != null ? regiaoMToracicos.hashCode() : 0);
         result = 31 * result + (regiaoMPelvicos != null ? regiaoMPelvicos.hashCode() : 0);

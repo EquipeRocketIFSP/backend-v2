@@ -47,11 +47,11 @@ public class ManifestacoesClinicasDTO extends ProntuarioDTO {
     @JsonProperty("linfonodos_obs")
     private String linfonodosObs;
 
-    @JsonProperty("cervical")
-    private String cervical;
+    @JsonProperty("coluna")
+    private String[] coluna = {};
 
     @JsonProperty("abdomen")
-    private String abdomen;
+    private String[] abdomen = {};
 
     @JsonProperty("m_toracicos")
     private String[] mToracicos = {};

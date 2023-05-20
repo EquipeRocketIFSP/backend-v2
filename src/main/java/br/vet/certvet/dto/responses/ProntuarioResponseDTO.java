@@ -70,22 +70,25 @@ public class ProntuarioResponseDTO {
     @JsonProperty("linfonodos_obs")
     private String linfonodosObs;
 
-    @JsonProperty("regiao_cervical")
-    private String regiaoCervical;
+    @JsonProperty("coluna")
+    private String[] regiaoColuna = {};
 
-    @JsonProperty("regiao_abdomen")
-    private String regiaoAbdomen;
+    @JsonProperty("abdomen")
+    private String[] regiaoAbdomen = {};
 
-    @JsonProperty("regiao_m_toracicos")
-    private String regiaoMToracicos;
+    @JsonProperty("m_toracicos")
+    private String[] regiaoMToracicos = {};
 
-    @JsonProperty("regiao_m_pelvicos")
-    private String regiaoMPelvicos;
+    @JsonProperty("m_pelvicos")
+    private String[] regiaoMPelvicos = {};
 
-    @JsonProperty("regiao_cabeca")
+    @JsonProperty("regioes_obs")
+    private String regioesObs;
+
+    @JsonProperty("cabeca")
     private boolean regiaoCabeca;
 
-    @JsonProperty("regiao_torax")
+    @JsonProperty("torax")
     private boolean regiaoTorax;
 
     @JsonProperty("data_atendimento")
@@ -126,16 +129,25 @@ public class ProntuarioResponseDTO {
         this.apetite = prontuario.getApetite();
         this.linfonodos = prontuario.getLinfonodos();
         this.linfonodosObs = prontuario.getLinfonodosObs();
-        this.regiaoCervical = prontuario.getRegiaoCervical();
-        this.regiaoAbdomen = prontuario.getRegiaoAbdomen();
-        this.regiaoMToracicos = prontuario.getRegiaoMToracicos();
-        this.regiaoMPelvicos = prontuario.getRegiaoMPelvicos();
         this.regiaoCabeca = prontuario.isRegiaoCabeca();
         this.regiaoTorax = prontuario.isRegiaoTorax();
+        this.regioesObs = prontuario.getRegioesObs();
         this.codigo = prontuario.getCodigo();
         this.animal = new AnimalResponseDto(prontuario.getAnimal());
         this.tutor = new UsuarioResponseDto(prontuario.getTutor());
         this.veterinario = new UsuarioResponseDto(prontuario.getVeterinario());
+
+        if (prontuario.getRegiaoColuna() != null)
+            this.regiaoColuna = prontuario.getRegiaoColuna().split(";");
+
+        if (prontuario.getRegiaoAbdomen() != null)
+            this.regiaoAbdomen = prontuario.getRegiaoAbdomen().split(";");
+
+        if (prontuario.getRegiaoMToracicos() != null)
+            this.regiaoMToracicos = prontuario.getRegiaoMToracicos().split(";");
+
+        if (prontuario.getRegiaoMPelvicos() != null)
+            this.regiaoMPelvicos = prontuario.getRegiaoMPelvicos().split(";");
 
         if (prontuario.getDataAtendimento() != null)
             this.dataAtendimento = prontuario.getDataAtendimento().toString();
