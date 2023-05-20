@@ -8,6 +8,7 @@ import br.vet.certvet.models.Clinica;
 import br.vet.certvet.models.Usuario;
 import br.vet.certvet.services.ClinicaService;
 import br.vet.certvet.services.UsuarioService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +37,7 @@ public class ClinicaController extends BaseController {
     }
 
     @PutMapping("/clinica")
+    @SecurityRequirement(name = "bearer-key")
     public ResponseEntity<ClinicaResponseDto> edit(
             @RequestHeader(AUTHORIZATION) String token,
             @RequestBody @Valid ClinicaRequestDto dto
@@ -52,6 +54,7 @@ public class ClinicaController extends BaseController {
     }
 
     @GetMapping("/clinica")
+    @SecurityRequirement(name = "bearer-key")
     public ResponseEntity<ClinicaResponseDto> findOne(@RequestHeader(AUTHORIZATION) String token) {
         Clinica clinica = this.tokenService.getClinica(token);
 

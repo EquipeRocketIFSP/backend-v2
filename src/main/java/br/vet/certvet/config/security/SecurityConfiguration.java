@@ -41,21 +41,27 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http
 //                .requiresChannel().anyRequest().requiresSecure().and()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/hello").permitAll()
-                .antMatchers(HttpMethod.GET, "/ping").permitAll()
-                .antMatchers(HttpMethod.GET, "/actuator/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/db/*").permitAll()
-                .antMatchers(HttpMethod.GET, "/db/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/auth/*").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/clinica/*").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/clinica/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/usuario/clinicas/*").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/usuario/clinicas/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/esqueci-minha-senha/*").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/esqueci-minha-senha/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/redefinir-senha/*").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/redefinir-senha/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/error",
+                        "/hello",
+                        "/ping",
+                        "/swagger-ui.html",
+                        "/swagger-ui/**",
+                        "/v3/api-docs/**",
+                        "/actuator/**",
+                        "/db/*",
+                        "/db/**",
+                        "/api/usuario/clinicas/*",
+                        "/api/usuario/clinicas/**"
+                ).permitAll()
+                .antMatchers(HttpMethod.POST, "/api/auth/*",
+                        "/api/auth/**",
+                        "/api/clinica/*",
+                        "/api/clinica/**",
+                        "/api/esqueci-minha-senha/*",
+                        "/api/esqueci-minha-senha/**",
+                        "/api/redefinir-senha/*",
+                        "/api/redefinir-senha/**"
+                ).permitAll()
                 .anyRequest().authenticated()
 //                .and().authorizeRequests().anyRequest().permitAll() // TODO: Comentar essa linha ao ativar SSL
                 .and().cors()

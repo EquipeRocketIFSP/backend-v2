@@ -70,7 +70,8 @@ api:
   description: "Interface de aplicação para sistema CertVet"
   server:
     # TODO: Checar a URL que será a base no momento do deploy
-    url: "https://certvet-back.us-east-1.elasticbeanstalk.com:8443"
+    url: "https://certvet-back.us-east-1.elasticbeanstalk.com:443"
 springdoc:
-  swagger-ui:
-    path: "/api/swagger-ui.html"
+  #  swagger-ui:
+  #    path: "/api/swagger-ui.html"
+  show-actuator: true

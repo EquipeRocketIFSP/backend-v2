@@ -9,6 +9,7 @@ import br.vet.certvet.models.Clinica;
 import br.vet.certvet.models.Usuario;
 import br.vet.certvet.services.AnimalService;
 import br.vet.certvet.services.UsuarioService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @RestController
 @RequestMapping("/api")
 @CrossOrigin
+@SecurityRequirement(name = "bearer-key")
 public class AnimalController extends BaseController {
     @Autowired
     private TokenService tokenService;
