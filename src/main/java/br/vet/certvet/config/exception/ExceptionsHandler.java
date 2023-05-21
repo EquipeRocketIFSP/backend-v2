@@ -52,7 +52,10 @@ public class ExceptionsHandler {
     }
 
     @ResponseStatus(HttpStatus.CONFLICT)
-    @ExceptionHandler(ConflictException.class)
+    @ExceptionHandler({
+            ConflictException.class,
+            AlreadyPrescribedException.class
+    })
     public ResponseEntity<String> handleConflict(RuntimeException exception) {
         return new ResponseEntity<String>(exception.getLocalizedMessage(), HttpStatus.CONFLICT);
     }
