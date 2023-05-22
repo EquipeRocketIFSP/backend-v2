@@ -13,35 +13,28 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/prontuario/prescricao")
 @CrossOrigin
 @Slf4j
 public class PrescricaoController extends BaseController {
-
-    private final ProntuarioService prontuarioService;
     private final ProcedimentoService procedimentoService;
 
     public PrescricaoController(
-            ProntuarioService prontuarioService,
             ProcedimentoService procedimentoService
     ) {
-        this.prontuarioService = prontuarioService;
         this.procedimentoService = procedimentoService;
     }
 
     @GetMapping("/{prontuario}")
     public ResponseEntity<MedicacaoPrescritaListDTO> getPrescricao(
-            @PathVariable("prontuario") String prontuarioCodigo){
-        Prontuario prontuario = prontuarioService.findByCodigo(prontuarioCodigo)
-                .stream()
-                .findFirst()
-                .orElseThrow(ProntuarioNotFoundException::new);
+            @PathVariable("prontuario") String prontuarioCodigo
+    ){
+        Prontuario prontuario = findProntuario(prontuarioCodigo);
         var prescricoes = prontuario.getProcedimentos()
                 .stream()
                 .filter(p -> p.getDescricao().equals("Medicação"))
@@ -61,10 +54,7 @@ public class PrescricaoController extends BaseController {
             @PathVariable("prontuario") String prontuarioCodigo,
             @RequestBody MedicacaoPrescritaListDTO medicacaoPrescritaList
     ){
-        Prontuario prontuario = prontuarioService.findByCodigo(prontuarioCodigo)
-                .stream()
-                .findFirst()
-                .orElseThrow(ProntuarioNotFoundException::new);
+        Prontuario prontuario = findProntuario(prontuarioCodigo);
         var prescritoPreviamente = medicacaoPrescritaList.getMedicacoesUtilizadas()
                 .stream()
                 .map(MedicacaoPrescritaDTO::translate)
@@ -76,17 +66,12 @@ public class PrescricaoController extends BaseController {
                     jaPrescrito.add(procedimento);
             }
         }
-//
-//        if(!jaPrescrito.isEmpty())
-//            throwExceptionFromController(new AlreadyPrescribedException("A medicacão prescrita já foi receitada neste prontuário."));
-
         Procedimento procedimento = procedimentoService.savePrescricao(
                 jaPrescrito.stream()
                         .findFirst()
                         .orElseThrow(()->new AlreadyPrescribedException("A medicacão prescrita já foi receitada neste prontuário.")),
                 medicacaoPrescritaList.translate()
         );
-
         return ResponseEntity.ok(
                 new MedicacaoPrescritaListDTO().of(
                         procedimento.getPrescricao()
@@ -96,6 +81,48 @@ public class PrescricaoController extends BaseController {
                 )
         );
     }
+
+    @DeleteMapping("/{prontuario}")
+    public ResponseEntity<String> deletePrescricao(
+            @PathVariable("prontuario") String prontuarioCodigo,
+            @RequestBody MedicacaoPrescritaListDTO medicacaoPrescritaList
+    ){
+        var prescritoARemover = medicacaoPrescritaList.getMedicacoesUtilizadas()
+                .stream()
+                .map(MedicacaoPrescritaDTO::translate)
+                .toList();
+        Prontuario prontuario = findProntuario(prontuarioCodigo);
+
+//        prontuario.getProcedimentos()
+//                .forEach(procedimento -> procedimento.getPrescricao()
+//                        .stream()
+//                        .map(prescricao -> {
+//                            if(prescritoARemover.contains(prescricao))
+//                                prescricao.delete();
+//                            return prescricao;
+//                        })
+//                        .collect(Collectors.toList())
+//                );
+        List<Procedimento> excluidoEm = new ArrayList<>();
+        for(Procedimento procedimento : prontuario.getProcedimentos()){
+            for(Prescricao prescricao : procedimento.getPrescricao()){
+                if(prescritoARemover.contains(prescricao)) {
+                    prescricao.delete();
+                    excluidoEm.add(procedimento);
+                }
+            }
+        }
+
+        var excluidos = excluidoEm.stream()
+                .map(procedimentoService::save)
+                .flatMap(procedimento -> procedimento.getPrescricao()
+                        .stream()
+                        .map(Prescricao::getDataExclusao))
+                .map(LocalDate::toString)
+                .toList();
+        return ResponseEntity.ok("Removido com sucesso em: " + excluidos );
+    }
+
 
 
 

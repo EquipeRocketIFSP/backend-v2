@@ -9,4 +9,6 @@ import java.util.List;
 @Service
 public interface ProcedimentoService {
     Procedimento savePrescricao(Procedimento procedimento, List<Prescricao> translate);
+
+    Procedimento save(Procedimento procedimento);
 }

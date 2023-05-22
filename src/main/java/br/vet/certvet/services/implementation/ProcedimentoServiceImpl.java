@@ -19,4 +19,9 @@ public class ProcedimentoServiceImpl implements ProcedimentoService {
         translate.forEach(p ->procedimento.getPrescricao().add(p));
         return procedimentoRepository.save(procedimento);
     }
+
+    @Override
+    public Procedimento save(Procedimento procedimento) {
+        return procedimentoRepository.save(procedimento);
+    }
 }

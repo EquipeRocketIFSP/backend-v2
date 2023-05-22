@@ -3,6 +3,7 @@ package br.vet.certvet.models;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.Objects;
 
 @Entity
@@ -26,6 +27,13 @@ public class Prescricao {
     private String duracao;
     private String quandoAplicar;
     private String observacoes;
+
+    private LocalDate dataCriacao;
+    private LocalDate dataExclusao;
+
+    public boolean isDeleted(){
+        return dataExclusao != null;
+    }
 
     @ManyToOne
     private Procedimento procedimento;
@@ -62,5 +70,9 @@ public class Prescricao {
         result = 31 * result + (observacoes != null ? observacoes.hashCode() : 0);
         result = 31 * result + procedimento.hashCode();
         return result;
+    }
+
+    public void delete() {
+        this.dataExclusao = LocalDate.now();
     }
 }
