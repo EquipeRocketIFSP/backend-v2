@@ -37,6 +37,7 @@ public class Exame {
     private String imagemRegiaoAbdomen;
     private String imagemRegiaoMToracicos;
     private String imagemRegiaoMPelvicos;
+    private String imagemObsRegioes;
 
     private boolean imagemRegiaoCabeca;
     private boolean imagemRegiaoTorax;

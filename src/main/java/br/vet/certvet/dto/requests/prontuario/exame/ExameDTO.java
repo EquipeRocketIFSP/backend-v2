@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 import javax.validation.constraints.Size;
+import java.util.List;
 
 @Getter
 public class ExameDTO extends ProntuarioDTO {
@@ -46,15 +47,15 @@ public class ExameDTO extends ProntuarioDTO {
     @JsonProperty("linfonodos_obs")
     private String linfonodosObs;
 
-    @JsonProperty("cervical")
-    private String cervical;
+    @JsonProperty("coluna")
+    private List<String> coluna;
 
     @JsonProperty("abdomen")
-    private String abdomen;
+    private List<String> abdomen;
 
     @JsonProperty("m_toracicos")
-    private String[] mToracicos = {};
+    private List<String> mToracicos;
 
     @JsonProperty("m_pelvicos")
-    private String[] mPelvicos = {};
+    private List<String> mPelvicos;
 }

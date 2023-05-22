@@ -3,6 +3,8 @@ package br.vet.certvet.dto.responses;
 import br.vet.certvet.models.Prontuario;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.List;
+
 public class ProntuarioResponseDTO {
     @JsonProperty("id")
     private Long id;
@@ -91,6 +93,9 @@ public class ProntuarioResponseDTO {
     @JsonProperty("torax")
     private boolean regiaoTorax;
 
+    @JsonProperty("exames")
+    private List<ExameResponseDTO> exames;
+
     @JsonProperty("data_atendimento")
     private String dataAtendimento;
 
@@ -136,6 +141,7 @@ public class ProntuarioResponseDTO {
         this.animal = new AnimalResponseDto(prontuario.getAnimal());
         this.tutor = new UsuarioResponseDto(prontuario.getTutor());
         this.veterinario = new UsuarioResponseDto(prontuario.getVeterinario());
+        this.exames = prontuario.getExames().stream().map(ExameResponseDTO::new).toList();
 
         if (prontuario.getRegiaoColuna() != null)
             this.regiaoColuna = prontuario.getRegiaoColuna().split(";");

@@ -12,18 +12,14 @@ public class ExameDTOMapper {
                 .setHematologia(dto.getHematologia())
                 .setCitologia(dto.getCitologia())
                 .setImagem(dto.getImagem())
-                .setImagemRegiaoCervical(dto.getCervical())
-                .setImagemRegiaoAbdomen(dto.getAbdomen())
                 .setImagemRegiaoCabeca(dto.isCabeca())
-                .setImagemRegiaoTorax(dto.isTorax());
+                .setImagemRegiaoTorax(dto.isTorax())
+                .setImagemObsRegioes(dto.getRegioesObs());
 
-        if (dto.getMToracicos().length != 0)
-            model.setImagemRegiaoMToracicos(String.join(";", dto.getMToracicos()));
-        else model.setImagemRegiaoMToracicos(null);
-
-        if (dto.getMPelvicos().length != 0)
-            model.setImagemRegiaoMPelvicos(String.join(";", dto.getMPelvicos()));
-        else model.setImagemRegiaoMPelvicos(null);
+        model.setImagemRegiaoMToracicos(dto.getMToracicos() == null ? null : String.join(";", dto.getMToracicos()))
+                .setImagemRegiaoMPelvicos(dto.getMPelvicos() == null ? null : String.join(";", dto.getMPelvicos()))
+                .setImagemRegiaoAbdomen(dto.getAbdomen() == null ? null : String.join(";", dto.getAbdomen()))
+                .setImagemRegiaoCervical(dto.getColuna() == null ? null : String.join(";", dto.getColuna()));
 
         return model;
     }
