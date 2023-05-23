@@ -133,7 +133,7 @@ public class Prontuario {
     @OneToOne
     private Cirurgia cirurgia;
 
-    @OneToMany(mappedBy = "prontuario")
+    @OneToMany(mappedBy = "prontuario", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private List<Procedimento> procedimentos;
 
