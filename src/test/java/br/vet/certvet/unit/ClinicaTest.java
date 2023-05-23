@@ -169,20 +169,20 @@ public class ClinicaTest {
     private static FuncionarioRequestDto getDonoDto(ClinicaInicialRequestDto dto) {
         FuncionarioRequestDto usuarioDto = new FuncionarioRequestDto();
 
-        usuarioDto.nome = dto.donoNome();
-        usuarioDto.email = dto.donoEmail();
-        usuarioDto.cpf = dto.donoCpf();
-        usuarioDto.rg = dto.donoRg();
-        usuarioDto.celular = dto.donoCelular();
-        usuarioDto.telefone = dto.donoTelefone();
-        usuarioDto.logradouro = dto.donoLogradouro();
-        usuarioDto.numero = dto.donoNumero();
-        usuarioDto.cep = dto.donoCep();
-        usuarioDto.bairro = dto.donoBairro();
-        usuarioDto.cidade = dto.donoCidade();
-        usuarioDto.estado = dto.donoEstado();
-        usuarioDto.senha = dto.donoSenha();
-        usuarioDto.is_admin = true;
+        usuarioDto.setNome(dto.donoNome());
+        usuarioDto.setEmail(dto.donoEmail());
+        usuarioDto.setCpf(dto.donoCpf());
+        usuarioDto.setRg(dto.donoRg());
+        usuarioDto.setCelular(dto.donoCelular());
+        usuarioDto.setTelefone(dto.donoTelefone());
+        usuarioDto.setLogradouro(dto.donoLogradouro());
+        usuarioDto.setNumero(dto.donoNumero());
+        usuarioDto.setCep(dto.donoCep());
+        usuarioDto.setBairro(dto.donoBairro());
+        usuarioDto.setCidade(dto.donoCidade());
+        usuarioDto.setEstado(dto.donoEstado());
+        usuarioDto.setSenha(dto.donoSenha());
+        usuarioDto.setAdmin(true);
 
         return usuarioDto;
     }

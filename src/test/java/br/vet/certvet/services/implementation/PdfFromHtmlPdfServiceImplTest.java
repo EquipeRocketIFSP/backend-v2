@@ -28,9 +28,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -131,7 +128,7 @@ public class PdfFromHtmlPdfServiceImplTest {
                                                     Estoque.builder()
                                                         .medida("ml")
                                                         .quantidade(new BigDecimal("50.5"))
-                                                        .clinica(clinica)
+//                                                        .clinica(clinica)
                                                         .medicamento(
                                                                 Medicamento.builder()
                                                                         .codigoRegistro("12345689")
