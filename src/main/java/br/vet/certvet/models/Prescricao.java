@@ -18,6 +18,9 @@ public class Prescricao {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
+    private int versao;
+    private String codigo;
+
     private String uso;
     private String nome;
     private String dose;
@@ -36,7 +39,7 @@ public class Prescricao {
     }
 
     @ManyToOne
-    private Procedimento procedimento;
+    private Prontuario prontuario;
 
     @Override
     public boolean equals(Object o) {
@@ -54,7 +57,7 @@ public class Prescricao {
         if (!duracao.equals(that.duracao)) return false;
         if (!quandoAplicar.equals(that.quandoAplicar)) return false;
         if (!Objects.equals(observacoes, that.observacoes)) return false;
-        return procedimento.equals(that.procedimento);
+        return prontuario.equals(that.prontuario);
     }
 
     @Override
@@ -68,7 +71,7 @@ public class Prescricao {
         result = 31 * result + duracao.hashCode();
         result = 31 * result + quandoAplicar.hashCode();
         result = 31 * result + (observacoes != null ? observacoes.hashCode() : 0);
-        result = 31 * result + procedimento.hashCode();
+        result = 31 * result + prontuario.hashCode();
         return result;
     }
 

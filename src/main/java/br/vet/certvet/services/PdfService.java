@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Optional;
 
 @Service
 public interface PdfService {
@@ -26,4 +27,6 @@ public interface PdfService {
     IcpResponse getIcpBrValidation(Documento documento) throws IOException, SQLException, DocumentoNotPersistedException;
 
     ObjectMetadata savePdfInBucket(Documento documento, byte[] documentoPdf);
+
+    Optional<byte[]> getPrescricaoPdf(Prontuario prontuario);
 }

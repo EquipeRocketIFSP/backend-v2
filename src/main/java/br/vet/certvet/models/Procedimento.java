@@ -28,15 +28,6 @@ public class Procedimento {
     @ToString.Exclude
     private List<Estoque> medicamentosConsumidos;
 
-    @OneToMany
-    @JoinTable(
-            name = "procedimento_prescricoes",
-            joinColumns = @JoinColumn(name = "procedimento_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "prescricao_id", referencedColumnName = "id")
-    )
-    @ToString.Exclude
-    private List<Prescricao> prescricao;
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -153,6 +153,16 @@ public class Prontuario {
     private List<Documento> documentos;
     private Date criadoEm;
 
+    @OneToMany
+    @JoinTable(
+            name = "prontuario_prescricoes",
+            joinColumns = @JoinColumn(name = "prontuario_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "prescricao_id", referencedColumnName = "id")
+    )
+    @ToString.Exclude
+    @Setter
+    private List<Prescricao> prescricao;
+
     public void setDocumentos(List<Documento> documentos) {
         this.documentos = documentos;
     }

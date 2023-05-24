@@ -5,6 +5,7 @@ import br.vet.certvet.exceptions.DocumentoNotPersistedException;
 import br.vet.certvet.exceptions.PdfNaoReconhecidoException;
 import br.vet.certvet.helpers.Https;
 import br.vet.certvet.models.Documento;
+import br.vet.certvet.models.Prescricao;
 import br.vet.certvet.models.Prontuario;
 import br.vet.certvet.models.especializacoes.Doc;
 import br.vet.certvet.repositories.ClinicaRepository;
@@ -33,7 +34,9 @@ import org.xhtmlrenderer.pdf.ITextRenderer;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -244,6 +247,29 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
                 ProntuarioServiceImpl.writeNomeArquivo(documento),// fileName.substring(fileName.indexOf("/")+1),
                 documentoPdf
         );
+    }
+
+    @Override
+    public Optional<byte[]> getPrescricaoPdf(final Prontuario prontuario) {
+        final String cnpj = S3BucketServiceRepository.getConventionedBucketName(prontuario.getClinica().getCnpj());
+        int highest = prontuario.getPrescricao()
+                .stream()
+                .mapToInt(Prescricao::getVersao)
+                .max()
+                .orElse(1);
+        final String keyName = prontuario.getPrescricao()
+                .stream()
+                .findFirst()
+                .orElseThrow()
+                .getCodigo() +
+                "-v" + highest;
+        try {
+            return pdfRepository.retrieveObject(cnpj, keyName);
+        } catch (IOException e){
+            log.error(e.getLocalizedMessage());
+            log.error(Arrays.toString(e.getStackTrace()));
+        }
+        return Optional.empty();
     }
 
     private static String getSignValidationUrl(String bucket, String fileName) {
