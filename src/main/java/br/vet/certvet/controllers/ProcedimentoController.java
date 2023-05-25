@@ -39,7 +39,7 @@ public class ProcedimentoController extends BaseController {
         final Animal animal = this.animalService.findOne(dto.getAnimal(), tutor);
         final Prontuario prontuario = this.prontuarioService.findOne(id, animal);
 
-        this.procedimentoService.assignToProntuario(dto, prontuario);
+        this.procedimentoService.assignToProntuario(dto, clinica, prontuario);
 
         return ResponseEntity.ok(new ProntuarioResponseDTO(prontuario));
     }

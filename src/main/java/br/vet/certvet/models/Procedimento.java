@@ -4,7 +4,7 @@ import lombok.*;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
-import java.util.List;
+import java.math.BigDecimal;
 
 @Builder
 @AllArgsConstructor
@@ -28,8 +28,11 @@ public class Procedimento {
     @JoinColumn(name = "prontuario_id")
     private Prontuario prontuario;
 
-    @OneToMany(mappedBy = "procedimento")
-    private List<Estoque> medicamentosConsumidos;
+    @OneToOne
+    @JoinColumn(name = "estoque_id")
+    private Estoque medicamentoConsumido;
+
+    private BigDecimal doseMedicamento;
 
     public Procedimento(Prontuario prontuario) {
         this.prontuario = prontuario;

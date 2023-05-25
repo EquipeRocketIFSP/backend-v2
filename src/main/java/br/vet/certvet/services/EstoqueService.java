@@ -12,6 +12,8 @@ public interface EstoqueService {
 
     Estoque edit(EstoqueRequestDto dto, Estoque estoque, Usuario responsavel);
 
+    Estoque subtract(String dose, String reason, Estoque estoque, Usuario responsavel);
+
     Estoque findOne(Long id, Medicamento medicamento);
 
     PaginatedResponse<EstoqueResponseDto> findAll(int page, String url, Medicamento medicamento);

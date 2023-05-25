@@ -6,6 +6,7 @@ import br.vet.certvet.dto.responses.Metadata;
 import br.vet.certvet.dto.responses.PaginatedResponse;
 import br.vet.certvet.enums.TransacaoStatus;
 import br.vet.certvet.exceptions.ConflictException;
+import br.vet.certvet.exceptions.ForbiddenException;
 import br.vet.certvet.exceptions.NotFoundException;
 import br.vet.certvet.models.Estoque;
 import br.vet.certvet.models.EstoqueTransacao;
@@ -74,7 +75,7 @@ public class EstoqueServiceImpl implements EstoqueService {
 
             transacao.setStatus(TransacaoStatus.EXIT).setQuantidade(quantity).setMotivo(reason);
             this.estoqueTransacaoRepository.saveAndFlush(transacao);
-        } else if(estoque.getQuantidade().floatValue() < dto.quantidade().floatValue()) {
+        } else if (estoque.getQuantidade().floatValue() < dto.quantidade().floatValue()) {
             reason = "Edição de estoque: Entrada no estoque";
             quantity = dto.quantidade().subtract(estoque.getQuantidade());
 
@@ -84,6 +85,29 @@ public class EstoqueServiceImpl implements EstoqueService {
 
         estoque.fill(dto);
 
+        return this.estoqueRepository.saveAndFlush(estoque);
+    }
+
+    @Override
+    @Transactional(rollbackFor = {SQLException.class, RuntimeException.class})
+    public Estoque subtract(String dose, String reason, Estoque estoque, Usuario responsavel) {
+        final EstoqueTransacao transacao = new EstoqueTransacao(estoque, responsavel).setMotivo(reason).setStatus(TransacaoStatus.EXIT);
+
+        dose = dose.replace(".", "")
+                .replace(",", ".")
+                .replaceAll("[A-z]", "")
+                .trim();
+
+        final BigDecimal quantityToSubtract = new BigDecimal(dose);
+        final BigDecimal quantity = estoque.getQuantidade().subtract(quantityToSubtract);
+
+        if (quantity.floatValue() < 0)
+            throw new ForbiddenException("Esse medicamento não possui estoque o suficiente");
+
+        estoque.setQuantidade(quantity);
+        transacao.setQuantidade(quantityToSubtract);
+
+        this.estoqueTransacaoRepository.saveAndFlush(transacao);
         return this.estoqueRepository.saveAndFlush(estoque);
     }
 

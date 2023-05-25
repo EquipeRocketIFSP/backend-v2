@@ -6,5 +6,5 @@ import br.vet.certvet.models.*;
 import java.util.List;
 
 public interface ProcedimentoService {
-    List<Procedimento> assignToProntuario(ProcedimentoListDTO dto, Prontuario prontuario);
+    List<Procedimento> assignToProntuario(ProcedimentoListDTO dto, Clinica clinica, Prontuario prontuario);
 }

@@ -3,6 +3,7 @@ package br.vet.certvet.models;
 import br.vet.certvet.dto.requests.EstoqueRequestDto;
 import br.vet.certvet.models.contracts.Fillable;
 import lombok.*;
+import lombok.experimental.Accessors;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
@@ -12,15 +13,17 @@ import java.util.List;
 import java.util.Objects;
 
 @Table(name = "Estoque")
+@Accessors(chain = true)
 @Entity
+@Setter
 @Getter
-@ToString
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Estoque implements Fillable<EstoqueRequestDto> {
 
     @Id
+    @Setter(AccessLevel.NONE)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
     private Long id;
@@ -41,9 +44,8 @@ public class Estoque implements Fillable<EstoqueRequestDto> {
     @JoinColumn(name = "medicamento_id")
     private Medicamento medicamento;
 
-    @ManyToOne
-    @JoinColumn(name = "procedimento_id")
-    private Procedimento procedimento;
+    @OneToMany(mappedBy = "medicamentoConsumido")
+    private List<Procedimento> procedimentos;
 
     @ManyToOne
     @JoinColumn(name = "cirurgia_id")
