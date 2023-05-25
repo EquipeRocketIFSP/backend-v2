@@ -21,14 +21,14 @@ import java.util.Optional;
 public class S3BucketServiceRepository implements PdfRepository {
 final static private String OPEN_POLICY = """
 {
-    \"Version\": \"2012-10-17\",
-    \"Statement\": [
+    "Version": "2012-10-17",
+    "Statement": [
         {
-            \"Sid\": \"PublicReadGetObject\",
-            \"Effect\": \"Allow\",
-            \"Principal\": \"*\",
-            \"Action\": [\"s3:GetObject\"],
-            \"Resource\": [\"arn:aws:s3:::${bucketName}/*\"]
+            "Sid": "PublicReadGetObject",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": ["s3:GetObject"],
+            "Resource": ["arn:aws:s3:::${bucketName}/*"]
         }
     ]
 }
@@ -54,7 +54,7 @@ final static private String OPEN_POLICY = """
                     .getObjectContent()
                     .readAllBytes();
         } catch (AmazonS3Exception e) {
-            log.error(e.getLocalizedMessage());
+            logAmazonError(e);
         }
 //        log.error("Nenhum arquivo identificado para o nome: " + keyName);
         return Optional.ofNullable(arr);
@@ -71,7 +71,7 @@ final static private String OPEN_POLICY = """
             }
             return Boolean.TRUE;
         } catch (AmazonS3Exception e) {
-            log.error(e.getLocalizedMessage());
+            logAmazonError(e);
         }
         return Boolean.FALSE;
     }
@@ -100,11 +100,7 @@ final static private String OPEN_POLICY = """
             }
         } catch (AmazonS3Exception e) {
             log.error("Erro na criação do Bucket");
-            log.error("Error Message:    " + e.getMessage());
-            log.error("HTTP Status Code: " + e.getStatusCode());
-            log.error("AWS Error Code:   " + e.getErrorCode());
-            log.error("Error Type:       " + e.getErrorType());
-            log.error("Request ID:       " + e.getRequestId());
+            logAmazonError(e);
         }
 
         try {
@@ -117,11 +113,7 @@ final static private String OPEN_POLICY = """
             }
         } catch (AmazonS3Exception e) {
             log.warn("Arquivo não identificado. Gravando...");
-            log.error("Error Message:    " + e.getMessage());
-            log.error("HTTP Status Code: " + e.getStatusCode());
-            log.error("AWS Error Code:   " + e.getErrorCode());
-            log.error("Error Type:       " + e.getErrorType());
-            log.error("Request ID:       " + e.getRequestId());
+            logAmazonError(e);
         } finally {
             setPublicFileReadingPermission(bucketName, false);
         }
@@ -132,6 +124,14 @@ final static private String OPEN_POLICY = """
             log.error(e.getLocalizedMessage());
         }
         return null;
+    }
+
+    private static void logAmazonError(AmazonS3Exception e) {
+        log.error("Error Message:    " + e.getMessage());
+        log.error("HTTP Status Code: " + e.getStatusCode());
+        log.error("AWS Error Code:   " + e.getErrorCode());
+        log.error("Error Type:       " + e.getErrorType());
+        log.error("Request ID:       " + e.getRequestId());
     }
 
     private static ObjectMetadata getObjectMetadata(byte[] storedFile) throws IOException {

@@ -49,6 +49,7 @@ public class Prescricao {
         Prescricao that = (Prescricao) o;
 
         if (!uso.equals(that.uso)) return false;
+        if (!dataCriacao.equals(that.dataCriacao)) return false;
         if (!nome.equals(that.nome)) return false;
         if (!dose.equals(that.dose)) return false;
         if (!formaFarmaceutica.equals(that.formaFarmaceutica)) return false;
@@ -63,6 +64,7 @@ public class Prescricao {
     @Override
     public int hashCode() {
         int result = uso.hashCode();
+        result = 31 * result + dataCriacao.hashCode();
         result = 31 * result + nome.hashCode();
         result = 31 * result + dose.hashCode();
         result = 31 * result + formaFarmaceutica.hashCode();
@@ -77,5 +79,15 @@ public class Prescricao {
 
     public void delete() {
         this.dataExclusao = LocalDate.now();
+    }
+
+    public Prescricao firstVersion() {
+        this.versao = 1;
+        return this;
+    }
+
+    public Prescricao increaseVersion() {
+        this.versao += 1;
+        return this;
     }
 }

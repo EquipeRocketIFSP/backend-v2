@@ -161,7 +161,7 @@ public class Prontuario {
     )
     @ToString.Exclude
     @Setter
-    private List<Prescricao> prescricao;
+    private List<Prescricao> prescricoes;
 
     public void setDocumentos(List<Documento> documentos) {
         this.documentos = documentos;
@@ -174,6 +174,12 @@ public class Prontuario {
     public static String createCodigo(LocalDateTime now) {
         // exemplo: VT-P-2022_12_03_02_19_20.pdf
         return "VT-P-" + now.format(DateTimeFormatter.ofPattern("yyyy_MM_dd_hh_mm_ss"));
+    }
+
+    public List<Prescricao> getPrescricoes(int versao) {
+        return prescricoes.stream()
+                .filter(prescricao -> prescricao.getVersao() == versao)
+                .toList();
     }
 
     final public String getMonthAtendimento() {
@@ -321,5 +327,17 @@ public class Prontuario {
     public Prontuario setCodigo(LocalDateTime now) {
         this.codigo = "VT-P-" + now.format(DateTimeFormatter.ofPattern("yyyy_MM_dd_hh_mm_ss"));
         return this;
+    }
+
+    public String getPrescricaoCodigo() {
+        return codigo + "-prescricao";
+    }
+
+    public String prescricaoLatestVersion() {
+        return String.valueOf(
+                prescricoes.stream()
+                .mapToInt(Prescricao::getVersao)
+                .max()
+                .orElse(1));
     }
 }

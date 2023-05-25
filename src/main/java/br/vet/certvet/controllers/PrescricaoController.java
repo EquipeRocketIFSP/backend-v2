@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -35,29 +36,38 @@ public class PrescricaoController extends BaseController {
             consumes = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<MedicacaoPrescritaListDTO> getPrescricao(
-            @PathVariable("prontuario") String prontuarioCodigo
+            @PathVariable("prontuario") String prontuarioCodigo,
+            @RequestHeader(value = "version", required = false) Integer v
     ){
+        final int version = null == v ? 1 : v;
         Prontuario prontuario = findProntuario(prontuarioCodigo);
-        var prescricoes = prontuario.getPrescricao().stream()
-                .map(prescricao -> new MedicacaoPrescritaDTO()
-                        .of(prescricao))
+        List<MedicacaoPrescritaDTO> prescricoes = prontuario.getPrescricoes(version)
+                .stream()
+                .map(prescricao -> new MedicacaoPrescritaDTO().of(prescricao))
                 .toList();
         return prescricoes.isEmpty()
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.ok(new MedicacaoPrescritaListDTO().of(prescricoes));
     }
 
+    /**
+     * Se nenhum valor for informado para version, o valor default será 1
+     * @param prontuarioCodigo
+     * @param v
+     * @return pdf
+     */
     @GetMapping(
             value="/{prontuario}",
             consumes= MediaType.APPLICATION_PDF_VALUE
     )
     public ResponseEntity<byte[]> getPrescricaoPdf(
-            @PathVariable("prontuario") String prontuarioCodigo
+            @PathVariable("prontuario") String prontuarioCodigo,
+            @RequestHeader(value = "version", required = false) Integer v
     ){
-        //TODO: Adicionar retrieve de documento com versão mais recente
+        final int version = null == v ? 1 : v;
         Prontuario prontuario = findProntuario(prontuarioCodigo);
 
-        Optional<byte[]> pdf = pdfService.getPrescricaoPdf(prontuario);
+        Optional<byte[]> pdf = pdfService.getPrescricaoPdf(prontuario, version);
         return pdf.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.noContent().build());
     }
@@ -67,31 +77,26 @@ public class PrescricaoController extends BaseController {
             @PathVariable("prontuario") String prontuarioCodigo,
             @RequestBody MedicacaoPrescritaListDTO medicacaoPrescritaList
     ){
-        //TODO: Adicionar versionamento de documento e código
+        //TODO: testar ser versionamento esta correspondendo a expectativa
         final Prontuario prontuario = findProntuario(prontuarioCodigo);
         medicacaoPrescritaList.getMedicacoesUtilizadas()
                 .stream()
-                .map(MedicacaoPrescritaDTO::translate)
-                .toList()
-                .forEach(
-                        prescricao -> prontuario.getPrescricao()
-                                .add(prescricao)
-                );
-
-        prontuario.setPrescricao(
-                new HashSet<>(prontuario.getPrescricao())
-                        .stream()
-                        .toList()
-        );
+                .map(medicacaoPrescrita -> new MedicacaoPrescritaDTO().translate(prontuario))
+                .forEach(prescricao -> {
+                    var p = prontuario.getPrescricoes();
+                    if(p.contains(prescricao)) p.set(p.indexOf(prescricao), p.get(p.indexOf(prescricao)).increaseVersion());
+                    else p.add(prescricao.firstVersion());
+                });
         Prontuario savedProntuario = prontuarioService.save(prontuario);
-        return ResponseEntity.ok(
-                new MedicacaoPrescritaListDTO().of(
-                        savedProntuario.getPrescricao()
+        return ResponseEntity.created(
+                URI.create("/api/prontuario/prescricao/" + prontuarioCodigo))
+                .header("version", savedProntuario.prescricaoLatestVersion())
+                .body(new MedicacaoPrescritaListDTO().of(
+                        savedProntuario.getPrescricoes()
                                 .stream()
                                 .map(p -> new MedicacaoPrescritaDTO().of(p))
                                 .toList()
-                )
-        );
+                ));
     }
 
     @DeleteMapping("/{prontuario}")
@@ -100,19 +105,19 @@ public class PrescricaoController extends BaseController {
             @RequestBody MedicacaoPrescritaListDTO medicacaoPrescritaList
     ){
         //TODO: Sempre marcar como excluído a versão do documento anterior
+        Prontuario prontuario = findProntuario(prontuarioCodigo);
         List<Prescricao> prescritoARemover = medicacaoPrescritaList.getMedicacoesUtilizadas()
                 .stream()
-                .map(MedicacaoPrescritaDTO::translate)
+                .map(medicacaoPrescrita -> new MedicacaoPrescritaDTO().translate(prontuario))
                 .toList();
-        Prontuario prontuario = findProntuario(prontuarioCodigo);
-        prontuario.getPrescricao()
+        prontuario.getPrescricoes()
                 .forEach(prescricao -> {
                     if(prescritoARemover.contains(prescricao)) {
                         prescricao.delete();
                     }
                 });
         List<String> excluidos = prontuarioService.save(prontuario)
-                .getPrescricao()
+                .getPrescricoes()
                 .stream()
                 .map(Prescricao::getDataExclusao)
                 .map(LocalDate::toString)

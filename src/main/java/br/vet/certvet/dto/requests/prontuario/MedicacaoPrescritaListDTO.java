@@ -1,6 +1,7 @@
 package br.vet.certvet.dto.requests.prontuario;
 
 import br.vet.certvet.models.Prescricao;
+import br.vet.certvet.models.Prontuario;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
@@ -16,9 +17,9 @@ public class MedicacaoPrescritaListDTO extends ProntuarioDTO {
         return this;
     }
 
-    public List<Prescricao> translate() {
+    public List<Prescricao> translate(Prontuario prontuario) {
         return medicacoesUtilizadas.stream()
-                .map(MedicacaoPrescritaDTO::translate)
+                .map(i -> new MedicacaoPrescritaDTO().translate(prontuario))
                 .toList();
     }
 }

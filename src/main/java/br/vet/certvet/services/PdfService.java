@@ -28,5 +28,5 @@ public interface PdfService {
 
     ObjectMetadata savePdfInBucket(Documento documento, byte[] documentoPdf);
 
-    Optional<byte[]> getPrescricaoPdf(Prontuario prontuario);
+    Optional<byte[]> getPrescricaoPdf(Prontuario prontuario, int version);
 }

@@ -2,6 +2,7 @@ package br.vet.certvet.dto.requests.prontuario;
 
 import br.vet.certvet.models.Prescricao;
 import br.vet.certvet.models.Procedimento;
+import br.vet.certvet.models.Prontuario;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
@@ -67,8 +68,9 @@ public class MedicacaoPrescritaDTO {
         return this;
     }
 
-    public Prescricao translate() {
+    public Prescricao translate(Prontuario prontuario) {
         return Prescricao.builder()
+                .codigo(prontuario.getPrescricaoCodigo())
                 .uso(this.uso)
                 .nome(this.nome)
                 .dose(this.dose)

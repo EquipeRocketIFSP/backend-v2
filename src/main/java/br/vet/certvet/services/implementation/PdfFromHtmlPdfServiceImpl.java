@@ -5,7 +5,6 @@ import br.vet.certvet.exceptions.DocumentoNotPersistedException;
 import br.vet.certvet.exceptions.PdfNaoReconhecidoException;
 import br.vet.certvet.helpers.Https;
 import br.vet.certvet.models.Documento;
-import br.vet.certvet.models.Prescricao;
 import br.vet.certvet.models.Prontuario;
 import br.vet.certvet.models.especializacoes.Doc;
 import br.vet.certvet.repositories.ClinicaRepository;
@@ -250,19 +249,16 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
     }
 
     @Override
-    public Optional<byte[]> getPrescricaoPdf(final Prontuario prontuario) {
-        final String cnpj = S3BucketServiceRepository.getConventionedBucketName(prontuario.getClinica().getCnpj());
-        int highest = prontuario.getPrescricao()
-                .stream()
-                .mapToInt(Prescricao::getVersao)
-                .max()
-                .orElse(1);
-        final String keyName = prontuario.getPrescricao()
+    public Optional<byte[]> getPrescricaoPdf(final Prontuario prontuario, int version) {
+        final String cnpj = S3BucketServiceRepository.getConventionedBucketName(
+                prontuario.getClinica()
+                        .getCnpj());
+        final String keyName = prontuario.getPrescricoes(version)
                 .stream()
                 .findFirst()
                 .orElseThrow()
                 .getCodigo() +
-                "-v" + highest;
+                "-v" + version;
         try {
             return pdfRepository.retrieveObject(cnpj, keyName);
         } catch (IOException e){
@@ -273,13 +269,12 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
     }
 
     private static String getSignValidationUrl(String bucket, String fileName) {
-        final String requestUrl = new StringBuilder().append("https://validar.iti.gov.br/validar?signature_files=https://")
+        return new StringBuilder().append("https://validar.iti.gov.br/validar?signature_files=https://")
                 .append("s3.sa-east-1.amazonaws.com/")
                 .append(bucket) // S3 folder
                 .append("/")
                 .append(fileName) // S3 fileName
                 .toString();
-        return requestUrl;
     }
 
     private static String getTutorPass(Prontuario prontuario) {
