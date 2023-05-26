@@ -3,6 +3,7 @@ package br.vet.certvet.models;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -20,6 +21,8 @@ public class Procedimento {
     private Long id;
 
     private String descricao;
+
+    private LocalDate dataAplicacao;
 
     @ManyToOne
     private Prontuario prontuario;

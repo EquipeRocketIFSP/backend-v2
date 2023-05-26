@@ -76,7 +76,7 @@ public class PrescricaoController extends BaseController {
     public ResponseEntity<MedicacaoPrescritaListDTO> setPrescricao(
             @PathVariable("prontuario") String prontuarioCodigo,
             @RequestBody MedicacaoPrescritaListDTO medicacaoPrescritaList
-    ){
+    ) throws Exception {
         //TODO: testar ser versionamento esta correspondendo a expectativa
         final Prontuario prontuario = findProntuario(prontuarioCodigo);
         medicacaoPrescritaList.getMedicacoesUtilizadas()
@@ -88,6 +88,7 @@ public class PrescricaoController extends BaseController {
                     else p.add(prescricao.firstVersion());
                 });
         Prontuario savedProntuario = prontuarioService.save(prontuario);
+        var pdf = pdfService.writeProntuario(prontuario);
         return ResponseEntity.created(
                 URI.create("/api/prontuario/prescricao/" + prontuarioCodigo))
                 .header("version", savedProntuario.prescricaoLatestVersion())

@@ -5,6 +5,8 @@ import br.vet.certvet.exceptions.DocumentoNotPersistedException;
 import br.vet.certvet.exceptions.PdfNaoReconhecidoException;
 import br.vet.certvet.helpers.Https;
 import br.vet.certvet.models.Documento;
+import br.vet.certvet.models.Estoque;
+import br.vet.certvet.models.Procedimento;
 import br.vet.certvet.models.Prontuario;
 import br.vet.certvet.models.especializacoes.Doc;
 import br.vet.certvet.repositories.ClinicaRepository;
@@ -98,37 +100,73 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
 
     private static ImmutableMap<String, String> getFieldsToBeLoaded(Prontuario prontuario) {
         return ImmutableMap.<String, String>builder()
-                .put("animal.nome", prontuario.getAnimal().getNome())
-                .put("veterinario.nome", prontuario.getVeterinario().getNome())
- //                .put("veterinario.crmv", prontuario.getVeterinario().getRegistroCRMV())
-                .put("clinica.razaoSocial", prontuario.getClinica().getRazaoSocial())
-                .put("clinica.telefone", prontuario.getClinica().getTelefone())
-                .put("prontuario.codigo", prontuario.getCodigo())
-                .put("animal.especie", prontuario.getAnimal().getEspecie())
-                .put("animal.raca", prontuario.getAnimal().getRaca())
-                .put("animal.sexo", prontuario.getAnimal().getSexo().name().toLowerCase())
-                .put("animal.idade", String.valueOf(prontuario.getAnimal().getIdade()))
-                .put("animal.pelagem", prontuario.getAnimal().getPelagem())
-                .put("documento.observacaoVet", "observacaoVet") //TODO: Substituir pela observacao do documento
-                .put("documento.observacaoTutor", "observacaoTutor") //TODO: Substituir pela observacao do documento
-                .put("documento.causaMortis", "causaMortis") //TODO: Substituir pela observacao do documento
-                .put("documento.orientaDestinoCorpo", "orientaDestinoCorpo") //TODO: Substituir pela observacao do documento
-                .put("tutor.nome", prontuario.getTutor().getNome())
-                .put("tutor.cpf", prontuario.getTutor().getCpf())
-                .put("tutor.endereco", prontuario.getTutor().getEnderecoCompleto())
-                .put("documento.outrasObservacoes", "outrasObservacoes") //TODO: Substituir pela observacao do documento
-                .put("cidade", prontuario.getClinica().getCidade())
-                .put("data.dia", String.valueOf(prontuario.getDataAtendimento().getDayOfMonth()))
-                .put("data.mes", prontuario.getMonthAtendimento())
-                .put("data.ano", String.valueOf(prontuario.getDataAtendimento().getYear()))
-                .put("prontuario.obito.local", "prontuario.obito.local") //TODO: Substituir pela observacao do documento
-                .put("prontuario.obito.horas", "prontuario.obito.horas") //TODO: Substituir pela observacao do documento
-                .put("prontuario.obito.data", "prontuario.obito.data") //TODO: Substituir pela observacao do documento
-                .put("prontuario.obito.causa", "prontuario.obito.causa")  //TODO: Substituir pela observacao do documento
-                .put("prontuario.exames", String.valueOf(prontuario.getExames()))
-                .put("prontuario.terapias", "prontuario.terapia") //TODO: Identificar como ficarão registradas as terapias
-                .put("prontuario.cirurgia", String.valueOf(prontuario.getCirurgia()))
-                .put("prontuario.anestesia", "prontuario.anestesia") //TODO: Identificar como ficarão registradas as anestesias
+                .put("animal.nome",                         prontuario.getAnimal().getNome())
+                .put("veterinario.nome",                    prontuario.getVeterinario().getNome())
+//                .put("veterinario.crmv",                  prontuario.getVeterinario().getRegistroCRMV())
+                .put("clinica.razaoSocial",                 prontuario.getClinica().getRazaoSocial())
+                .put("clinica.telefone",                    prontuario.getClinica().getTelefone())
+                .put("prontuario.codigo",                   prontuario.getCodigo())
+                .put("animal.especie",                      prontuario.getAnimal().getEspecie())
+                .put("animal.raca",                         prontuario.getAnimal().getRaca())
+                .put("animal.sexo",                         prontuario.getAnimal().getSexo().name().toLowerCase())
+                .put("animal.idade",                        String.valueOf(prontuario.getAnimal().getIdade()))
+                .put("animal.pelagem",                      prontuario.getAnimal().getPelagem())
+                .put("documento.observacaoVet",             "observacaoVet") //TODO: Substituir pela observacao do documento
+                .put("documento.observacaoTutor",           "observacaoTutor") //TODO: Substituir pela observacao do documento
+                .put("documento.causaMortis",               "causaMortis") //TODO: Substituir pela observacao do documento
+                .put("documento.orientaDestinoCorpo",       "orientaDestinoCorpo") //TODO: Substituir pela observacao do documento
+                .put("tutor.nome",                          prontuario.getTutor().getNome())
+                .put("tutor.cpf",                           prontuario.getTutor().getCpf())
+                .put("tutor.endereco",                      prontuario.getTutor().getEnderecoCompleto())
+                .put("tutor.telefone",                      prontuario.getTutor().getTelefone())
+                .put("documento.outrasObservacoes",         "outrasObservacoes") //TODO: Substituir pela observacao do documento
+                .put("cidade",                              prontuario.getClinica().getCidade())
+                .put("data.dia",                            String.valueOf(prontuario.getDataAtendimento().getDayOfMonth()))
+                .put("data.mes",                            prontuario.getMonthAtendimento())
+                .put("data.ano",                            String.valueOf(prontuario.getDataAtendimento().getYear()))
+                .put("prontuario.obito.local",              "prontuario.obito.local") //TODO: Substituir pela observacao do documento
+                .put("prontuario.obito.horas",              "prontuario.obito.horas") //TODO: Substituir pela observacao do documento
+                .put("prontuario.obito.data",               "prontuario.obito.data") //TODO: Substituir pela observacao do documento
+                .put("prontuario.obito.causa",              "prontuario.obito.causa")  //TODO: Substituir pela observacao do documento
+                .put("prontuario.exames",                   String.valueOf(prontuario.getExames()))
+                .put("prontuario.terapias",                 "prontuario.terapia") //TODO: Identificar como ficarão registradas as terapias
+                .put("prontuario.cirurgia",                 String.valueOf(prontuario.getCirurgia()))
+                .put("prontuario.anestesia",                "prontuario.anestesia") //TODO: Identificar como ficarão registradas as anestesias
+                .put("prontuario.fc",                       String.valueOf(prontuario.getFrequenciaCardiaca()))
+                .put("prontuario.temp",                     String.valueOf(prontuario.getTemperatura()))
+                .put("prontuario.fr",                       String.valueOf(prontuario.getFrequenciaRespiratoria()))
+                .put("prontuario.desidratacao",             prontuario.getHidratacao())
+                .put("prontuario.manifestacoes.nomes[]",    "manifestacoesClinicas")
+                .put("prontuario.areasDor[]",               "areasDor")
+                .put("prontuario.linfonodo",                prontuario.getLinfonodos())
+                .put("prontuario.manifestacoes.outros",     "manifestacoes.outros")
+                //TODO: Ajustar forma de inserir a listagem de medicação aplicada
+                .put("prontuario.histVacina[0].nome",       prontuario.getProcedimentos()
+                        .stream()
+                        .filter(procedimento -> procedimento.getDescricao()
+                                .equals("vacinação"))
+                        .flatMap(vacina -> vacina.getMedicamentosConsumidos()
+                                .stream()
+                                .map(estoque -> estoque.getMedicamento().getNome()))
+                        .toList()
+                        .toString())
+                .put("prontuario.histVacina[0].data",       prontuario.getProcedimentos()
+                        .stream()
+                        .filter(procedimento -> procedimento.getDescricao()
+                                .equals("vacinação"))
+                        .map(Procedimento::getDataAplicacao)
+                        .toList()
+                        .toString())
+                .put("prontuario.histVacina[1].nome",       "histVacina[1].nome")
+                .put("prontuario.histVacina[1].data",       "histVacina[1].data")
+                .put("prontuario.histCirur[0].nome",        "histCirur[0].nome")
+                .put("prontuario.histCirur[0].data",        "histCirur[0].data")
+                .put("prontuario.histMedic[0].nome",        "histMedic[0].nome")
+                .put("prontuario.histMedic[0].data",        "histMedic[0].data")
+                .put("prontuario.suspeita[0]",              "suspeita[0]")
+                .put("prontuario.suspeita[1]",              "suspeita[1]")
+                .put("prontuario.suspeita[2]",              "suspeita[2]")
+                .put("prontuario.observacoes",              "observacoes")
                 .build();
     }
 
