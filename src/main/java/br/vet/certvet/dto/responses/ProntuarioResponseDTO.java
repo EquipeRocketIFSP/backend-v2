@@ -99,6 +99,9 @@ public class ProntuarioResponseDTO {
     @JsonProperty("procedimentos")
     private List<ProcedimentoResponseDTO> procedimentos;
 
+    @JsonProperty("cirurgia")
+    private CirurgiaResponseDTO cirurgia;
+
     @JsonProperty("data_atendimento")
     private String dataAtendimento;
 
@@ -146,6 +149,9 @@ public class ProntuarioResponseDTO {
         this.veterinario = new UsuarioResponseDto(prontuario.getVeterinario());
         this.exames = prontuario.getExames().stream().map(ExameResponseDTO::new).toList();
         this.procedimentos = prontuario.getProcedimentos().stream().map(ProcedimentoResponseDTO::new).toList();
+
+        if (prontuario.getCirurgia() != null)
+            this.cirurgia = new CirurgiaResponseDTO(prontuario.getCirurgia());
 
         if (prontuario.getRegiaoColuna() != null)
             this.regiaoColuna = prontuario.getRegiaoColuna().split(";");
