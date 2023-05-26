@@ -37,7 +37,7 @@ public class ProntuarioController extends BaseController {
     @Autowired
     private PdfService pdfService;
 
-    @PostMapping
+    @PostMapping("/prontuario")
     public ResponseEntity<ProntuarioResponseDTO> create(
             @RequestHeader(AUTHORIZATION) String token,
             @RequestBody @Valid SinaisVitaisDTO dto

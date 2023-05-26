@@ -9,10 +9,7 @@ import javax.persistence.*;
 import java.text.DateFormatSymbols;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
 @Getter
@@ -130,16 +127,16 @@ public class Prontuario {
     @JoinColumn(name = "usuario_id")
     private Usuario veterinario;
 
-    @OneToOne
+    @OneToOne(mappedBy = "prontuario")
     private Cirurgia cirurgia;
 
     @OneToMany(mappedBy = "prontuario", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
-    private List<Procedimento> procedimentos;
+    private List<Procedimento> procedimentos = new ArrayList<>();
 
     @OneToMany(mappedBy = "prontuario", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
-    private List<Exame> exames;
+    private List<Exame> exames = new ArrayList<>();
     private String codigo;
 
     @Setter
@@ -150,7 +147,7 @@ public class Prontuario {
 
     @OneToMany(mappedBy = "id")
     @ToString.Exclude
-    private List<Documento> documentos;
+    private List<Documento> documentos = new ArrayList<>();
     private Date criadoEm;
 
     public void setDocumentos(List<Documento> documentos) {

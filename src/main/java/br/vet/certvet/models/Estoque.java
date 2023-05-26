@@ -47,9 +47,9 @@ public class Estoque implements Fillable<EstoqueRequestDto> {
     @OneToMany(mappedBy = "medicamentoConsumido")
     private List<Procedimento> procedimentos;
 
-    @ManyToOne
-    @JoinColumn(name = "cirurgia_id")
-    private Cirurgia cirurgia;
+    @OneToMany(mappedBy = "estoque", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
+    private List<CirurgiaEstoqueMedicamento> cirugias;
 
     @OneToMany(mappedBy = "estoque")
     @ToString.Exclude
