@@ -55,8 +55,8 @@ spring:
           auth: true
           starttls:
             enable: true
-http:
-  port: 8080
+server:
+  port: 80
 app:
   jwt:
     secret: test

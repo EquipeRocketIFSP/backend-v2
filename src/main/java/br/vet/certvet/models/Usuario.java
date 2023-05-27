@@ -25,7 +25,7 @@ import java.util.Objects;
 public class Usuario implements UserDetails, Fillable<UsuarioRequestDto> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+//    @Column(name = "id")
     private Long id;
 
     @Email
@@ -92,8 +92,10 @@ public class Usuario implements UserDetails, Fillable<UsuarioRequestDto> {
     @ManyToOne
     @ToString.Exclude
     @JoinColumn(name = "clinica_id", nullable = false)
+    @ToString.Exclude
     private Clinica clinica;
 
+    @ToString.Exclude
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "Usuario_authorities",
             joinColumns = @JoinColumn(name = "users_id", referencedColumnName = "id"),

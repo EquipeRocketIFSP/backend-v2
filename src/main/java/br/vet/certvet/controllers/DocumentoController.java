@@ -12,6 +12,7 @@ import br.vet.certvet.services.DocumentoService;
 import br.vet.certvet.services.PdfService;
 import br.vet.certvet.services.ProntuarioService;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -29,6 +30,7 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequestMapping("/api/documento")
+@SecurityRequirement(name = "bearer-key")
 public class DocumentoController extends BaseController {
     @Autowired
     private UsuarioRepository usuarioRepository;

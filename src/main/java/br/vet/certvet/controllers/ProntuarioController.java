@@ -6,6 +6,7 @@ import br.vet.certvet.models.*;
 import br.vet.certvet.services.*;
 import br.vet.certvet.dto.ProntuarioRequest;
 import br.vet.certvet.exceptions.ProntuarioNotFoundException;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -23,6 +24,7 @@ import java.util.Optional;
 @CrossOrigin
 @RequestMapping("/api")
 @Slf4j
+@SecurityRequirement(name = "bearer-key")
 public class ProntuarioController extends BaseController {
 
     @Autowired

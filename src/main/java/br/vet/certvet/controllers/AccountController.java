@@ -8,6 +8,8 @@ import br.vet.certvet.dto.responses.VeterinarioResponseDto;
 import br.vet.certvet.models.Authority;
 import br.vet.certvet.models.Usuario;
 import br.vet.certvet.services.UsuarioService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +23,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @RestController
 @CrossOrigin
 @RequestMapping("api/usuario")
+@SecurityRequirement(name = "bearer-key")
 public class AccountController {
     @Autowired
     private TokenService tokenService;

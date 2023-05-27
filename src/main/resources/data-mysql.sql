@@ -44,6 +44,11 @@ insert into prontuario_documentos
 values
     (1,1);
 
+alter table usuario_authorities
+    add constraint key_name
+        unique (authorities_id, users_id);
+
+
 insert into usuario_authorities
 (users_id, authorities_id)
 values
@@ -51,3 +56,27 @@ values
     (1,1),
     (2,4),
     (3,2);
+
+INSERT INTO certvet.usuarios (bairro, celular, cep, cidade, cpf, crmv, deleted_at, email, estado, logradouro, nome,
+                              numero, password, reset_password_token, rg, telefone, username, clinica_id)
+VALUES
+    ("Bairro", '(11)987452541', '05856-160', 'Aracaju', '260.604.320-00', null, null, 'ilana.s@gmail.teste', 'SE', 'RUA ', 'Ilana Silveira', '23', null, null, '43.776.341-9', '(11)987452541', 'ilana.s@gmail.teste', 3),
+    ('Calhau','(98) 99967-5470','65071-485','São Luís','479.048.782-24',null,null,'julia.teresinha.mendes@vemter.com.br','MA','Rua Tremembes','Vera Ivanovna',114,null,null,'12.602.923-4','(98) 3708-8624','julia.teresinha.mendes@vemter.com.br',3);
+
+INSERT INTO certvet.animal (ano_nascimento, especie, forma_identificacao, nome, pelagem, peso, raca, sexo)
+VALUES (2017, 'Canina', null, 'Bidu', 'Longa', 10, 'SRD', 1),
+       (2015, 'Felina', null, 'Fifi', 'Curta', 3, 'Siames', 2);
+
+INSERT INTO certvet.prontuario (apetite, codigo, conciencia, criado_em, data_atendimento, deambulacao, diarreia,
+                                escore_corporal, espasmos_convulsao, febre, frequencia_cardiaca,
+                                frequencia_respiratoria, hidratacao, lesoes_nodulos, linfonodos, linfonodos_obs, mucosa,
+                                prostracao, regiao_abdomen, regiao_cabeca, regiao_cervical, regiaompelvicos,
+                                regiaomtoracicos, regiao_torax, sensibilidade_dor, supeita_diagnostica, temperatura,
+                                tpc, versao, vomito, animal_id, cirurgia_id, clinica_id, tutor_id, usuario_id)
+VALUES (null, 'VET-123', 'Consciente', '2023-05-13 18:18:37.000000', null, true, false, 'Ideal', false, false, 112, 24,
+        '>= 3s', false, 'null', 'null', 'Rosácea', true, null, false, null, null, null, false, false,
+        'Intoxicação por planta domestica', 38, '< 2s', 1, true, 3, null, 3, 6, null);
+
+INSERT INTO certvet.procedimento (descricao, prontuario_id)
+VALUES ('Consulta', 2);
+
