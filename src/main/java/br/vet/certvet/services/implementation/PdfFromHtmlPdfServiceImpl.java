@@ -192,7 +192,8 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
         final String layoutFile = "src/main/resources/documents/prontuario/PrescricaoLayout.html";
 //        String fileName = prontuario.getCodigo() + ".pdf";
         String layout = Files.readString(Path.of(layoutFile));
-        layout = ProntuarioPdfHelper.fillLayoutFields(prontuario, layout);
+        layout = ProntuarioPdfHelper.replaceWithDivsForPrescricao(layout, prontuario.getPrescricoes());
+        layout = ProntuarioPdfHelper.fillLayoutFieldsForPrescricao(prontuario, layout);
         return Optional.of(transformTxtToXmlToPdf(layout));
     }
 

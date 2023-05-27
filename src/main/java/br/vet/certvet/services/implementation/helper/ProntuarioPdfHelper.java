@@ -2,10 +2,12 @@ package br.vet.certvet.services.implementation.helper;
 
 import br.vet.certvet.models.*;
 import br.vet.certvet.models.especializacoes.Doc;
+import br.vet.certvet.models.especializacoes.PrescricaoDocumento;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.text.StringSubstitutor;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class ProntuarioPdfHelper {
@@ -101,4 +103,30 @@ public class ProntuarioPdfHelper {
         ).replace(layout);
     }
 
+    public static String fillLayoutFieldsForPrescricao(Prontuario prontuario, String layout) {
+        final Animal animal = prontuario.getAnimal();
+        final Usuario veterinario = prontuario.getVeterinario();
+        final Usuario tutor = prontuario.getTutor();
+        final Clinica clinica = prontuario.getClinica();
+
+        return new StringSubstitutor(ImmutableMap.<String, String>builder()
+                .put("animal.nome",         animal.getNome())
+                .put("animal.especie",      animal.getEspecie())
+                .put("animal.sexo",         animal.getSexo().name().toLowerCase())
+                .put("animal.idade",        String.valueOf(animal.getIdade()))
+                .put("clinica.razaoSocial", clinica.getRazaoSocial())
+                .put("tutor.nome",          tutor.getNome())
+                .put("tutor.cpf",           tutor.getCpf())
+                .put("tutor.telefone",      tutor.getTelefone())
+                .put("veterinario.nome",    veterinario.getNome())
+                .put("veterinario.crmv",    veterinario.getRegistroCRMV())
+                .build()
+        ).replace(layout);
+    }
+
+    public static String replaceWithDivsForPrescricao(String layout, List<Prescricao> prescricoes) {
+        return new StringSubstitutor(
+                Map.of("prontuario.prescricoes", PrescricaoDocumento.getDivLayout(prescricoes)))
+                .replace(layout);
+    }
 }

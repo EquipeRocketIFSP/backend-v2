@@ -67,8 +67,14 @@ public class PrescricaoController extends BaseController {
     ){
         final int version = null == v ? 1 : v;
         Prontuario prontuario = findProntuario(prontuarioCodigo);
+        Optional<byte[]> pdf;
+        try {
+            pdf = pdfService.writePrescricao(prontuario);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-        Optional<byte[]> pdf = pdfService.getPrescricaoPdf(prontuario, version);
+//        Optional<byte[]> pdf = pdfService.getPrescricaoPdf(prontuario, version);
         return pdf.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.noContent().build());
     }
@@ -84,16 +90,11 @@ public class PrescricaoController extends BaseController {
                 .stream()
                 .map(medicacaoPrescrita -> new MedicacaoPrescritaDTO().translate(prontuario))
                 .forEach(prescricao -> {
-                    var p = prontuario.getPrescricoes();
+                    List<Prescricao> p = prontuario.getPrescricoes();
                     if(p.contains(prescricao)) p.set(p.indexOf(prescricao), p.get(p.indexOf(prescricao)).increaseVersion());
                     else p.add(prescricao.firstVersion());
                 });
         Prontuario savedProntuario = prontuarioService.save(prontuario);
-        try {
-            Optional<byte[]> pdf = pdfService.writePrescricao(prontuario);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
         return ResponseEntity.created(
                 URI.create("/api/prontuario/prescricao/" + prontuarioCodigo))
                 .header("version", savedProntuario.prescricaoLatestVersion())
