@@ -5,24 +5,21 @@ import br.vet.certvet.exceptions.DocumentoNotPersistedException;
 import br.vet.certvet.exceptions.PdfNaoReconhecidoException;
 import br.vet.certvet.helpers.Https;
 import br.vet.certvet.models.Documento;
-import br.vet.certvet.models.Estoque;
-import br.vet.certvet.models.Procedimento;
 import br.vet.certvet.models.Prontuario;
 import br.vet.certvet.models.especializacoes.Doc;
 import br.vet.certvet.repositories.ClinicaRepository;
 import br.vet.certvet.repositories.DocumentoRepository;
 import br.vet.certvet.repositories.PdfRepository;
 import br.vet.certvet.services.PdfService;
+import br.vet.certvet.services.implementation.helper.ProntuarioPdfHelper;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableMap;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfStamper;
 import com.lowagie.text.pdf.PdfWriter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.text.StringSubstitutor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,19 +55,10 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
 
     @Override
     public byte[] writeProntuario(Prontuario prontuario) throws Exception {
-
-        String from = "src/main/resources/documents/prontuario/ProntuarioLayout.html";
-        String fileName = prontuario.getCodigo() + ".pdf";
-        String layout = Files.readString(Path.of(from));
-        Map<String, String> parameters = Map.of(
-                "animal.nome", prontuario.getAnimal().getNome(),
-                "veterinario.nome", prontuario.getVeterinario().getNome(),
-                "veterinario.crmv", prontuario.getVeterinario().getRegistroCRMV(),
-                "clinica.razaoSocial", prontuario.getClinica().getRazaoSocial(),
-                "clinica.telefone", prontuario.getClinica().getTelefone(),
-                "prontuario.codigo", prontuario.getCodigo()
-        );
-        layout = new StringSubstitutor(getFieldsToBeLoaded(prontuario)).replace(layout);
+        final String layoutFile = "src/main/resources/documents/prontuario/ProntuarioLayout.html";
+//        String fileName = prontuario.getCodigo() + ".pdf";
+        String layout = Files.readString(Path.of(layoutFile));
+        layout = ProntuarioPdfHelper.fillLayoutFields(prontuario, layout);
         return transformTxtToXmlToPdf(layout);
     }
 
@@ -86,9 +74,8 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
         String layout = Files.readString(Path.of(from));
 
         documentoRepository.save(documentoTipo.getDocumento());
-        layout = new StringSubstitutor(getDivsToBeLoaded(documentoTipo)).replace(layout);
-
-        layout = new StringSubstitutor(getFieldsToBeLoaded(prontuario)).replace(layout);
+        layout = ProntuarioPdfHelper.replaceWithDivs(documentoTipo, layout);
+        layout = ProntuarioPdfHelper.fillLayoutFields(prontuario, layout);
         return transformTxtToXmlToPdf(layout);
     }
 
@@ -96,112 +83,6 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
         Document document = Jsoup.parse(htmlBase, "UTF-8");
         document.outputSettings().syntax(Document.OutputSettings.Syntax.xml);
         return generatePdfFromHtml(document);
-    }
-
-    private static ImmutableMap<String, String> getFieldsToBeLoaded(Prontuario prontuario) {
-        return ImmutableMap.<String, String>builder()
-                .put("animal.nome",                         prontuario.getAnimal().getNome())
-                .put("veterinario.nome",                    prontuario.getVeterinario().getNome())
-//                .put("veterinario.crmv",                  prontuario.getVeterinario().getRegistroCRMV())
-                .put("clinica.razaoSocial",                 prontuario.getClinica().getRazaoSocial())
-                .put("clinica.telefone",                    prontuario.getClinica().getTelefone())
-                .put("prontuario.codigo",                   prontuario.getCodigo())
-                .put("animal.especie",                      prontuario.getAnimal().getEspecie())
-                .put("animal.raca",                         prontuario.getAnimal().getRaca())
-                .put("animal.sexo",                         prontuario.getAnimal().getSexo().name().toLowerCase())
-                .put("animal.idade",                        String.valueOf(prontuario.getAnimal().getIdade()))
-                .put("animal.pelagem",                      prontuario.getAnimal().getPelagem())
-                .put("documento.observacaoVet",             "observacaoVet") //TODO: Substituir pela observacao do documento
-                .put("documento.observacaoTutor",           "observacaoTutor") //TODO: Substituir pela observacao do documento
-                .put("documento.causaMortis",               "causaMortis") //TODO: Substituir pela observacao do documento
-                .put("documento.orientaDestinoCorpo",       "orientaDestinoCorpo") //TODO: Substituir pela observacao do documento
-                .put("tutor.nome",                          prontuario.getTutor().getNome())
-                .put("tutor.cpf",                           prontuario.getTutor().getCpf())
-                .put("tutor.endereco",                      prontuario.getTutor().getEnderecoCompleto())
-                .put("tutor.telefone",                      prontuario.getTutor().getTelefone())
-                .put("documento.outrasObservacoes",         "outrasObservacoes") //TODO: Substituir pela observacao do documento
-                .put("cidade",                              prontuario.getClinica().getCidade())
-                .put("data.dia",                            String.valueOf(prontuario.getDataAtendimento().getDayOfMonth()))
-                .put("data.mes",                            prontuario.getMonthAtendimento())
-                .put("data.ano",                            String.valueOf(prontuario.getDataAtendimento().getYear()))
-                .put("prontuario.obito.local",              "prontuario.obito.local") //TODO: Substituir pela observacao do documento
-                .put("prontuario.obito.horas",              "prontuario.obito.horas") //TODO: Substituir pela observacao do documento
-                .put("prontuario.obito.data",               "prontuario.obito.data") //TODO: Substituir pela observacao do documento
-                .put("prontuario.obito.causa",              "prontuario.obito.causa")  //TODO: Substituir pela observacao do documento
-                .put("prontuario.exames",                   String.valueOf(prontuario.getExames()))
-                .put("prontuario.terapias",                 "prontuario.terapia") //TODO: Identificar como ficarão registradas as terapias
-                .put("prontuario.cirurgia",                 String.valueOf(prontuario.getCirurgia()))
-                .put("prontuario.anestesia",                "prontuario.anestesia") //TODO: Identificar como ficarão registradas as anestesias
-                .put("prontuario.fc",                       String.valueOf(prontuario.getFrequenciaCardiaca()))
-                .put("prontuario.temp",                     String.valueOf(prontuario.getTemperatura()))
-                .put("prontuario.fr",                       String.valueOf(prontuario.getFrequenciaRespiratoria()))
-                .put("prontuario.desidratacao",             prontuario.getHidratacao())
-                .put("prontuario.manifestacoes.nomes[]",    "manifestacoesClinicas")
-                .put("prontuario.areasDor[]",               "areasDor")
-                .put("prontuario.linfonodo",                prontuario.getLinfonodos())
-                .put("prontuario.manifestacoes.outros",     "manifestacoes.outros")
-                //TODO: Ajustar forma de inserir a listagem de medicação aplicada
-                .put("prontuario.histVacina[0].nome",       prontuario.getProcedimentos()
-                        .stream()
-                        .filter(procedimento -> procedimento.getDescricao()
-                                .equals("vacinação"))
-                        .flatMap(vacina -> vacina.getMedicamentosConsumidos()
-                                .stream()
-                                .map(estoque -> estoque.getMedicamento().getNome()))
-                        .toList()
-                        .toString())
-                .put("prontuario.histVacina[0].data",       prontuario.getProcedimentos()
-                        .stream()
-                        .filter(procedimento -> procedimento.getDescricao()
-                                .equals("vacinação"))
-                        .map(Procedimento::getDataAplicacao)
-                        .toList()
-                        .toString())
-                .put("prontuario.histVacina[1].nome",       "histVacina[1].nome")
-                .put("prontuario.histVacina[1].data",       "histVacina[1].data")
-                .put("prontuario.histCirur[0].nome",        "histCirur[0].nome")
-                .put("prontuario.histCirur[0].data",        "histCirur[0].data")
-                .put("prontuario.histMedic[0].nome",        "histMedic[0].nome")
-                .put("prontuario.histMedic[0].data",        "histMedic[0].data")
-                .put("prontuario.suspeita[0]",              "suspeita[0]")
-                .put("prontuario.suspeita[1]",              "suspeita[1]")
-                .put("prontuario.suspeita[2]",              "suspeita[2]")
-                .put("prontuario.observacoes",              "observacoes")
-                .build();
-    }
-
-    private static ImmutableMap<String, String> getDivsToBeLoaded(Doc documento) {
-        return ImmutableMap.<String, String>builder()
-                .put("documento.titulo", documento.getTitulo())
-                .put("documento.declara_consentimento", documento.getDeclaraConsentimento())
-                .put("documento.declara_ciencia_riscos", documento.getDeclaraCienciaRiscos() == null
-                        ? ""
-                        : documento.getDeclaraCienciaRiscos())
-                .put("documento.observacoes_veterinario", documento.getObservacoesVeterinario() == null
-                        ? ""
-                        : documento.getObservacoesVeterinario())
-                .put("documento.observacoes_responsavel", documento.getObservacoesResponsavel() == null
-                        ? ""
-                        : documento.getObservacoesResponsavel())
-                .put("documento.causaMortis", documento.getCausaMortis() == null
-                        ? ""
-                        : documento.getCausaMortis())
-                .put("documento.orientaDestinoCorpo", documento.getOrientaDestinoCorpo() == null
-                        ? ""
-                        : documento.getOrientaDestinoCorpo())
-                .put("documento.outrasObservacoes", documento.getOutrasObservacoes() == null
-                        ? ""
-                        : documento.getOutrasObservacoes())
-                .put("documento.assinatura_responsavel", documento.getAssinaturaResponsavel() == null
-                        ? ""
-                        : documento.getAssinaturaResponsavel())
-                .put("documento.assinatura_vet", documento.getAssinaturaVet() == null
-                        ? ""
-                        : documento.getAssinaturaVet())
-                .put("documento.explica_duas_vias", documento.getExplicaDuasVias() == null
-                        ? ""
-                        : documento.getExplicaDuasVias())
-                .build();
     }
 
     private static byte[] generatePdfFromHtml(Document document) throws IOException {
