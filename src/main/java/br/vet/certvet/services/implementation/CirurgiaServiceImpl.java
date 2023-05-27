@@ -49,8 +49,8 @@ public class CirurgiaServiceImpl implements CirurgiaService {
             cirurgia.getMedicamentosConsumidos().add(cirurgiaEstoqueMedicamento);
         });
 
-        this.cirurgiaRepository.saveAndFlush(cirurgia);
+        prontuario.setCirurgia(cirurgia);
 
-        return cirurgia;
+        return this.cirurgiaRepository.saveAndFlush(cirurgia);
     }
 }

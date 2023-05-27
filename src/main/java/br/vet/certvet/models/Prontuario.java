@@ -127,6 +127,7 @@ public class Prontuario {
     @JoinColumn(name = "usuario_id")
     private Usuario veterinario;
 
+    @Setter
     @OneToOne(mappedBy = "prontuario")
     private Cirurgia cirurgia;
 
