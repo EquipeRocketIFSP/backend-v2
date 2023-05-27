@@ -7,7 +7,6 @@ import org.apache.commons.text.StringSubstitutor;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Stream;
 
 public class ProntuarioPdfHelper {
 
@@ -29,10 +28,10 @@ public class ProntuarioPdfHelper {
                 .put("clinica.razaoSocial",             clinica.getRazaoSocial())
                 .put("clinica.telefone",                clinica.getTelefone())
                 .put("cidade",                          clinica.getCidade())
-                .put("documento.observacaoVet",         documentos.stream().filter(Objects::nonNull).map(Documento::getObservacaoVet).toString())
-                .put("documento.observacaoTutor",       documentos.stream().filter(Objects::nonNull).map(Documento::getObservacaoTutor).toString())
-                .put("prontuario.anestesia",            documentos.stream().filter(Objects::nonNull).filter(documento -> documento.getTipo().equals("anestesia")).toString())
-                .put("prontuario.terapias",             documentos.stream().filter(Objects::nonNull).filter(documento -> documento.getTipo().equals("terapeutico")).toString())
+                .put("documento.observacaoVet",         getObservacaoVet(documentos))
+                .put("documento.observacaoTutor",       getObservacaoTutor(documentos))
+                .put("prontuario.anestesia",            getDocumentoTipo(documentos, "anestesia"))
+                .put("prontuario.terapias",             getDocumentoTipo(documentos, "terapeutico"))
                 .put("prontuario.obito.causa",          obito.getCausaMortis())
                 .put("documento.causaMortis",           obito.getCausaMortisDescription())
                 .put("documento.orientaDestinoCorpo",   obito.getOrientaDestinoCorpo())
@@ -53,6 +52,27 @@ public class ProntuarioPdfHelper {
                 .put("veterinario.crmv",                veterinario.getRegistroCRMV())
                 .build()
         ).replace(layout);
+    }
+
+    private static String getObservacaoTutor(List<Documento> documentos) {
+        return documentos.stream()
+                .filter(Objects::nonNull)
+                .map(Documento::getObservacaoTutor)
+                .toString();
+    }
+
+    private static String getObservacaoVet(List<Documento> documentos) {
+        return documentos.stream()
+                .filter(Objects::nonNull)
+                .map(Documento::getObservacaoVet)
+                .toString();
+    }
+
+    private static String getDocumentoTipo(List<Documento> documentos, String tipo) {
+        return documentos.stream()
+                .filter(Objects::nonNull)
+                .filter(documento -> documento.getTipo().equals(tipo))
+                .toString();
     }
 
     private static Documento getObito(Prontuario prontuario) {
