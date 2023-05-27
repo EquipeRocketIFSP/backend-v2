@@ -4,7 +4,6 @@ import br.vet.certvet.dto.requests.prontuario.*;
 import br.vet.certvet.dto.responses.*;
 import br.vet.certvet.models.*;
 import br.vet.certvet.services.*;
-import br.vet.certvet.dto.ProntuarioRequest;
 import br.vet.certvet.exceptions.ProntuarioNotFoundException;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.extern.slf4j.Slf4j;
@@ -141,13 +140,5 @@ public class ProntuarioController extends BaseController {
         PaginatedResponse<ProntuarioResponseDTO> response = this.prontuarioService.findAll(page, search, request.getRequestURL().toString(), animal);
 
         return ResponseEntity.ok(response);
-    }
-
-    @PostMapping("/prontuario/{prontuarioId}")
-    public ResponseEntity<Documento> addDocument(
-            @PathVariable Long prontuarioId,
-            @RequestBody ProntuarioRequest prontuarioDto
-    ) {
-        return null;
     }
 }
