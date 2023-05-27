@@ -187,6 +187,15 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
         return Optional.empty();
     }
 
+    @Override
+    public Optional<byte[]> writePrescricao(Prontuario prontuario) throws IOException {
+        final String layoutFile = "src/main/resources/documents/prontuario/PrescricaoLayout.html";
+//        String fileName = prontuario.getCodigo() + ".pdf";
+        String layout = Files.readString(Path.of(layoutFile));
+        layout = ProntuarioPdfHelper.fillLayoutFields(prontuario, layout);
+        return Optional.of(transformTxtToXmlToPdf(layout));
+    }
+
     private static String getSignValidationUrl(String bucket, String fileName) {
         return new StringBuilder().append("https://validar.iti.gov.br/validar?signature_files=https://")
                 .append("s3.sa-east-1.amazonaws.com/")

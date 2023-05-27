@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.*;
@@ -76,7 +77,7 @@ public class PrescricaoController extends BaseController {
     public ResponseEntity<MedicacaoPrescritaListDTO> setPrescricao(
             @PathVariable("prontuario") String prontuarioCodigo,
             @RequestBody MedicacaoPrescritaListDTO medicacaoPrescritaList
-    ) throws Exception {
+    ) {
         //TODO: testar ser versionamento esta correspondendo a expectativa
         final Prontuario prontuario = findProntuario(prontuarioCodigo);
         medicacaoPrescritaList.getMedicacoesUtilizadas()
@@ -88,7 +89,11 @@ public class PrescricaoController extends BaseController {
                     else p.add(prescricao.firstVersion());
                 });
         Prontuario savedProntuario = prontuarioService.save(prontuario);
-        var pdf = pdfService.writeProntuario(prontuario);
+        try {
+            Optional<byte[]> pdf = pdfService.writePrescricao(prontuario);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         return ResponseEntity.created(
                 URI.create("/api/prontuario/prescricao/" + prontuarioCodigo))
                 .header("version", savedProntuario.prescricaoLatestVersion())
