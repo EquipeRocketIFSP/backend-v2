@@ -1,11 +1,18 @@
 package br.vet.certvet.controllers;
 
+import br.vet.certvet.contracts.apis.ipcBr.IcpResponse;
 import br.vet.certvet.dto.requests.prontuario.MedicacaoPrescritaDTO;
 import br.vet.certvet.dto.requests.prontuario.MedicacaoPrescritaListDTO;
+import br.vet.certvet.exceptions.InvalidSignedDocumentoException;
 import br.vet.certvet.models.Prescricao;
 import br.vet.certvet.models.Prontuario;
+import br.vet.certvet.models.Usuario;
 import br.vet.certvet.services.PdfService;
 import br.vet.certvet.services.ProntuarioService;
+import br.vet.certvet.services.implementation.PdfFromHtmlPdfServiceImpl;
+import br.vet.certvet.services.implementation.ProntuarioServiceImpl;
+import br.vet.certvet.services.implementation.S3BucketServiceRepository;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -77,6 +84,44 @@ public class PrescricaoController extends BaseController {
 //        Optional<byte[]> pdf = pdfService.getPrescricaoPdf(prontuario, version);
         return pdf.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.noContent().build());
+    }
+
+    @PostMapping(
+            value = "/{prontuario}",
+            consumes = MediaType.APPLICATION_PDF_VALUE
+    )
+    public ResponseEntity<MedicacaoPrescritaListDTO> setSignedPrescricao(
+            @PathVariable("prontuario") String prontuarioCodigo,
+//            @RequestHeader(value = "versao", required = false) Integer versao,
+            @RequestBody byte[] medicacaoPrescritaPdf
+    ) throws IOException {
+        Prontuario prontuario = findProntuario(prontuarioCodigo);
+        final int version = Integer.parseInt(prontuario.prescricaoLatestVersion());
+        //Importante: passo necessário para adicionar o documento no repositório em nuvem para que o serviço icp-br possa realizar a validação do documento
+        ObjectMetadata awsResponse = pdfService.savePrescricaoPdfInBucket(prontuario, version, medicacaoPrescritaPdf);
+
+        final String bucket = S3BucketServiceRepository.getConventionedBucketName(prontuario.getClinica().getCnpj());
+        final String fileName = ProntuarioServiceImpl.writeNomeArquivoPrescricao(prontuario, version);
+        final IcpResponse icpResponse = pdfService.getIcpBrValidation(bucket, fileName);
+        if(!icpResponse.isValidDocument()) throw new InvalidSignedDocumentoException("O documento não pôde ser confirmado pelo ICP-BR");
+
+        final List<Usuario> assinadores = PdfFromHtmlPdfServiceImpl.assinadoresPresentesSistema(icpResponse);
+        Prontuario signedPrescricao = prontuarioService.save(
+                prontuario.setPrescricoes(
+                        prontuario.getPrescricoes()
+                                .stream()
+                                .map(prescricao -> {
+                                    if(prescricao.getVersao() == version)
+                                        prescricao.setAssinadores(assinadores);
+                                    return prescricao;
+                                }).toList())
+        );
+
+        return null != signedPrescricao
+                ? ResponseEntity.created(URI.create(""))
+                .header("version", prontuario.prescricaoLatestVersion())
+                .build()
+                : ResponseEntity.internalServerError().build();
     }
 
     @PostMapping("/{prontuario}")

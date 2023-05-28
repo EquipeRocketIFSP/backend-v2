@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -31,6 +32,8 @@ public class Prescricao {
     private String duracao;
     private QuandoAplicarPrescricao quandoAplicar;
     private String observacoes;
+    @Setter
+    private List<Usuario> assinadores;
 
     private LocalDate dataCriacao;
     private LocalDate dataExclusao;

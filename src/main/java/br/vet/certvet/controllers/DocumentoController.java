@@ -5,12 +5,14 @@ import br.vet.certvet.dto.responses.DocumentoResponse;
 import br.vet.certvet.exceptions.*;
 import br.vet.certvet.models.Documento;
 import br.vet.certvet.models.Prontuario;
-import br.vet.certvet.models.Usuario;
 import br.vet.certvet.repositories.AnimalRepository;
-import br.vet.certvet.repositories.UsuarioRepository;
 import br.vet.certvet.services.DocumentoService;
 import br.vet.certvet.services.PdfService;
 import br.vet.certvet.services.ProntuarioService;
+import br.vet.certvet.services.implementation.PdfFromHtmlPdfServiceImpl;
+import br.vet.certvet.services.implementation.ProntuarioServiceImpl;
+import br.vet.certvet.services.implementation.S3BucketServiceRepository;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +25,6 @@ import org.springframework.web.bind.annotation.*;
 import java.io.*;
 import java.net.URI;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -31,8 +32,6 @@ import java.util.List;
 @RequestMapping("/api/documento")
 @SecurityRequirement(name = "bearer-key")
 public class DocumentoController extends BaseController {
-    @Autowired
-    private UsuarioRepository usuarioRepository;
     @Autowired
     private AnimalRepository animalRepository;
 
@@ -50,19 +49,6 @@ public class DocumentoController extends BaseController {
                 .filter(p -> p.getClinica().getId().equals(getClinicaIdFromRequester(auth)))
                 .orElseThrow(()->new ProntuarioNotFoundException("O prontuário buscado não foi identificado na base de dados"));
     }
-
-    private List<Usuario> validaAssinadores(IcpResponse icpResponse) {
-        List<Usuario> assinadores = new ArrayList<>();
-        List<String> naoCadastrados = new ArrayList<>();
-        for(String key : icpResponse.getSigners().keySet()){
-            var a = usuarioRepository.findByCpf(icpResponse.getSigners().get(key).signerCpf());
-            if(a.isEmpty()) naoCadastrados.add(icpResponse.getSigners().get(key).signerCpf());
-            else assinadores.add(a.get());
-        }
-        if(!naoCadastrados.isEmpty()) throw new AssinadorNaoCadastradoException("Os CPF assinadores não estão cadastrados: " + naoCadastrados + ". Verifique se todos os assinadores estão cadastrados e salve o arquivo novamente.");
-        return assinadores;
-    }
-
 
     @GetMapping
     public ResponseEntity<List<Documento>> getDocumentosByTipo(
@@ -116,21 +102,29 @@ public class DocumentoController extends BaseController {
             @RequestHeader(HttpHeaders.AUTHORIZATION) String auth,
             @RequestParam("prontuario") String prontuarioCodigo,
             @RequestParam("documento") String documentoCodigo,
+            @RequestParam("versao") Integer versao,
             @RequestBody byte[] documentoPdf
     ) throws IOException, SQLException {
+        final int version = null == versao ? -1 : versao;
         Prontuario prontuario = findProntuarioEClinica(auth, prontuarioCodigo);
         Documento documento = prontuario.getDocumentos()
                 .stream()
                 .filter(p -> p.getCodigo().equals(documentoCodigo))
                 .findFirst()
                 .orElseThrow(() -> new DocumentoNotFoundException("Não foi possível identificar o id do documento na base de dados"));
-        IcpResponse icpResponse = pdfService.getIcpBrValidation(documento);
-        if(!icpResponse.isValidDocument()) throw new InvalidSignedDocumentoException("O documento não pôde ser confirmado pelo ICP-BR");
 
-        // Salva apenas se o documento for validado pelo ICP-BR
-        var awsResponse = pdfService.saveDocumentoPdfInBucket(documento, documentoPdf);
+        // Disponibiliza o arquivo na AWS para que possa ser validado pelo serviço do ICP-BR
+        ObjectMetadata awsResponse = pdfService.saveDocumentoPdfInBucket(documento, version, documentoPdf);
+        // Obtém dados convecionados para salvar o arquivo
+        final String bucket = S3BucketServiceRepository.getConventionedBucketName(documento.getClinica().getCnpj());
+        final String fileName = ProntuarioServiceImpl.writeNomeArquivo(documento, version);
+        IcpResponse icpResponse = pdfService.getIcpBrValidation(bucket, fileName);
+        if(!icpResponse.isValidDocument()) throw new InvalidSignedDocumentoException("O documento não pôde ser confirmado pelo ICP-BR");
         Documento attachedDocumento = prontuarioService.attachDocumentoAndPdfPersist(
-                documento.assinadores(validaAssinadores(icpResponse)), awsResponse);
+                documento.assinadores(PdfFromHtmlPdfServiceImpl.assinadoresPresentesSistema(icpResponse)),
+                awsResponse,
+                version
+        );
         return ResponseEntity.created(URI.create("/api/documento/" + documentoCodigo))
                 .body(new DocumentoResponse(attachedDocumento));
     }

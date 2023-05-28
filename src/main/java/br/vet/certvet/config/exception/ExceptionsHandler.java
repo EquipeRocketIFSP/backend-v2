@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 
 import javax.persistence.EntityNotFoundException;
+import java.io.IOException;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -82,8 +83,25 @@ public class ExceptionsHandler {
 
     @ExceptionHandler({AssinadorNaoCadastradoException.class})
     public ResponseEntity<String> handleNotAcceptable(RuntimeException exception) {
-        return ResponseEntity
-                .status(HttpStatus.NOT_ACCEPTABLE)
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
                 .body(exception.getLocalizedMessage());
+    }
+
+    @ExceptionHandler({
+            AwsPermissionDeniedException.class,
+            AwsS3WritingException.class
+    })
+    public ResponseEntity<String> handleServiceUnavailable(RuntimeException e){
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(e.getLocalizedMessage());
+    }
+
+    @ExceptionHandler({
+            ProcessamentoIcpBrJsonResponseException.class,
+            ProcessamentoIcpBrJsonRequestException.class
+    })
+    public ResponseEntity<String> handleInternalServerError(IOException e){
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(e.getLocalizedMessage());
     }
 }

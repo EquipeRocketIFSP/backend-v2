@@ -1,15 +1,16 @@
 package br.vet.certvet.services.implementation;
 
 import br.vet.certvet.contracts.apis.ipcBr.IcpResponse;
-import br.vet.certvet.exceptions.DocumentoNotPersistedException;
-import br.vet.certvet.exceptions.PdfNaoReconhecidoException;
+import br.vet.certvet.exceptions.*;
 import br.vet.certvet.helpers.Https;
 import br.vet.certvet.models.Documento;
 import br.vet.certvet.models.Prontuario;
+import br.vet.certvet.models.Usuario;
 import br.vet.certvet.models.especializacoes.Doc;
 import br.vet.certvet.repositories.ClinicaRepository;
 import br.vet.certvet.repositories.DocumentoRepository;
 import br.vet.certvet.repositories.PdfRepository;
+import br.vet.certvet.repositories.UsuarioRepository;
 import br.vet.certvet.services.PdfService;
 import br.vet.certvet.services.implementation.helper.ProntuarioPdfHelper;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -32,9 +33,7 @@ import org.xhtmlrenderer.pdf.ITextRenderer;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -52,6 +51,9 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
 
     @Autowired
     private ClinicaRepository clinicaRepository;
+
+    @Autowired
+    private static UsuarioRepository usuarioRepository;
 
     @Override
     public byte[] writeProntuario(Prontuario prontuario) throws Exception {
@@ -127,25 +129,25 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
     }
 
     @Override
-    public IcpResponse getIcpBrValidation(Documento documento) throws IOException, PdfNaoReconhecidoException {
-        final String bucket = S3BucketServiceRepository.getConventionedBucketName(documento.getClinica().getCnpj());
-        final String fileName = ProntuarioServiceImpl.writeNomeArquivo(documento);
+    public IcpResponse getIcpBrValidation(final String bucket, final String fileName) throws IOException, PdfNaoReconhecidoException {
         final String requestUrl = getSignValidationUrl(bucket, fileName);
 //        String requestUrl = "https://validar.iti.gov.br/validar?signature_files=https://certvet-signed.s3.us-east-1.amazonaws.com/test_documento_sanitario_assinado_assinado.pdf";
         String json = ERRO;
         try {
-            if(pdfRepository.setPublicFileReadingPermission(bucket, true)) // Libera objeto para que seja acessado publicamente na AWS
-            {
-                Thread.sleep(1000);
+            if(pdfRepository.setPublicFileReadingPermission(bucket, true)) {// Libera objeto para que seja acessado publicamente na AWS
+//                Thread.sleep(1000);
                 json = Https.get(requestUrl, Map.of("Content-Type", "*/*", "Cache-Control", "no-cache"));
+            } else {
+                throw new AwsPermissionDeniedException("A requisição para mudança de perfil de acesso foi negada pelo provedor");
             }
-        } catch (Exception e){
+        } catch (IOException e){
             log.error("Erro ao realizar liberação do arquivo para ser acessado publicamente");
             log.error(e.getLocalizedMessage());
+            throw new ProcessamentoIcpBrJsonRequestException("O sistema Icp-BR não devolveu um retorno que pudesse ser processado.");
         } finally {
             pdfRepository.setPublicFileReadingPermission(bucket, false); // Sempre trava após a conexão com o serviço de assinatura
         }
-        if(ERRO.equals(json)) throw new PdfNaoReconhecidoException("O documento pdf não foi identificado no servidor");
+        if(ERRO.equals(json)) throw new PdfNaoReconhecidoException("O documento pdf não foi identificado no servidor pelo validador Icp-BR");
         try {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
@@ -153,16 +155,15 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
             return mapper.readValue(json, IcpResponse.class);
         } catch (JsonProcessingException e){
             e.printStackTrace();
-            throw e;
+            throw new ProcessamentoIcpBrJsonResponseException("Ocorreu um erro ao realizar o processamento da resposta do serviço ICP-BR");
         }
-//        throw new ErroMapeamentoRespostaException("Não foi possível processar o documento com o ICP-BR.");
     }
 
     @Override
-    public ObjectMetadata savePdfInBucket(Documento documento, byte[] documentoPdf) {
+    public ObjectMetadata saveDocumentoPdfInBucket(final Documento documento, final int version, final byte[] documentoPdf) {
         return pdfRepository.putObject(
                 documento.getProntuario().getClinica().getCnpj(),
-                ProntuarioServiceImpl.writeNomeArquivo(documento),// fileName.substring(fileName.indexOf("/")+1),
+                ProntuarioServiceImpl.writeNomeArquivo(documento, version),// fileName.substring(fileName.indexOf("/")+1),
                 documentoPdf
         );
     }
@@ -195,6 +196,28 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
         layout = ProntuarioPdfHelper.replaceWithDivsForPrescricao(layout, prontuario.getPrescricoes());
         layout = ProntuarioPdfHelper.fillLayoutFieldsForPrescricao(prontuario, layout);
         return Optional.of(transformTxtToXmlToPdf(layout));
+    }
+
+    @Override
+    public ObjectMetadata savePrescricaoPdfInBucket(final Prontuario prontuario, final int version, final byte[] medicacaoPrescritaPdf) {
+//        List<Prescricao> prescricoes = prontuario.getPrescricoes(version);
+        return pdfRepository.putObject(
+                prontuario.getClinica().getCnpj(),
+                ProntuarioServiceImpl.writeNomeArquivoPrescricao(prontuario, version),
+                medicacaoPrescritaPdf
+        );
+    }
+
+    public static List<Usuario> assinadoresPresentesSistema(IcpResponse icpResponse) {
+        List<Usuario> assinadores = new ArrayList<>();
+        List<String> naoCadastrados = new ArrayList<>();
+        for(String key : icpResponse.getSigners().keySet()){
+            Optional<Usuario> a = usuarioRepository.findByCpf(icpResponse.getSigners().get(key).signerCpf());
+            if(a.isEmpty()) naoCadastrados.add(icpResponse.getSigners().get(key).signerCpf());
+            else assinadores.add(a.get());
+        }
+        if(!naoCadastrados.isEmpty()) throw new AssinadorNaoCadastradoException("Os CPF assinadores não estão cadastrados: " + naoCadastrados + ". Verifique se todos os assinadores estão cadastrados e salve o arquivo novamente.");
+        return assinadores;
     }
 
     private static String getSignValidationUrl(String bucket, String fileName) {
