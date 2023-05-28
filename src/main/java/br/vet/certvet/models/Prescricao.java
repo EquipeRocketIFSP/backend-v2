@@ -1,5 +1,6 @@
 package br.vet.certvet.models;
 
+import br.vet.certvet.enums.QuandoAplicarPrescricao;
 import lombok.*;
 
 import javax.persistence.*;
@@ -28,7 +29,7 @@ public class Prescricao {
     private String concentracao;
     private String frequencia;
     private String duracao;
-    private String quandoAplicar;
+    private QuandoAplicarPrescricao quandoAplicar;
     private String observacoes;
 
     private LocalDate dataCriacao;
