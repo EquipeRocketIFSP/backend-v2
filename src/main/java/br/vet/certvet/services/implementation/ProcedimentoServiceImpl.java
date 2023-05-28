@@ -3,6 +3,7 @@ package br.vet.certvet.services.implementation;
 import br.vet.certvet.dto.requests.prontuario.procedimento.ProcedimentoListDTO;
 import br.vet.certvet.models.*;
 import br.vet.certvet.models.factories.ProcedimentoFactory;
+import br.vet.certvet.repositories.ProcedimentoRepository;
 import br.vet.certvet.repositories.ProntuarioRepository;
 import br.vet.certvet.services.EstoqueService;
 import br.vet.certvet.services.MedicamentoService;
@@ -16,6 +17,11 @@ import java.util.List;
 
 @Service
 public class ProcedimentoServiceImpl implements ProcedimentoService {
+    final private ProcedimentoRepository procedimentoRepository;
+    public ProcedimentoServiceImpl(final ProcedimentoRepository procedimentoRepository){
+        this.procedimentoRepository = procedimentoRepository;
+    }
+
     @Autowired
     private ProntuarioRepository prontuarioRepository;
 
@@ -45,5 +51,10 @@ public class ProcedimentoServiceImpl implements ProcedimentoService {
         prontuario.getProcedimentos().addAll(procedimentos);
 
         return this.prontuarioRepository.saveAndFlush(prontuario).getProcedimentos();
+    }
+
+    @Override
+    public Procedimento save(Procedimento procedimento) {
+        return procedimentoRepository.save(procedimento);
     }
 }

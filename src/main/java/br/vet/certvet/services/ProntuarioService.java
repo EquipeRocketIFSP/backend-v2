@@ -42,7 +42,8 @@ public interface ProntuarioService {
 
     List<Documento> getDocumentosFromProntuarioByTipo(String prontuarioId, String tipo);
 
-    Documento attachDocumentoAndPdfPersist(Documento documento, ObjectMetadata pdf) throws SQLException;
+    Documento attachDocumentoAndPdfPersist(Documento documento, ObjectMetadata pdf, int version) throws SQLException;
 
     Optional<Prontuario> findByCodigo(String codigo);
+
 }

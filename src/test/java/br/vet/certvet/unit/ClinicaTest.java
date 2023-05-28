@@ -182,7 +182,7 @@ public class ClinicaTest {
         usuarioDto.setCidade(dto.donoCidade());
         usuarioDto.setEstado(dto.donoEstado());
         usuarioDto.setSenha(dto.donoSenha());
-        usuarioDto.is_admin = true;
+        usuarioDto.setAdmin(true);
 
         return usuarioDto;
     }

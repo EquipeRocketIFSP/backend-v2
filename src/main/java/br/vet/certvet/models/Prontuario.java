@@ -151,6 +151,16 @@ public class Prontuario {
     private List<Documento> documentos = new ArrayList<>();
     private Date criadoEm;
 
+    @OneToMany
+    @JoinTable(
+            name = "prontuario_prescricoes",
+            joinColumns = @JoinColumn(name = "prontuario_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "prescricao_id", referencedColumnName = "id")
+    )
+    @ToString.Exclude
+    @Setter
+    private List<Prescricao> prescricoes;
+
     public void setDocumentos(List<Documento> documentos) {
         this.documentos = documentos;
     }
@@ -162,6 +172,12 @@ public class Prontuario {
     public static String createCodigo(LocalDateTime now) {
         // exemplo: VT-P-2022_12_03_02_19_20.pdf
         return "VT-P-" + now.format(DateTimeFormatter.ofPattern("yyyy_MM_dd_hh_mm_ss"));
+    }
+
+    public List<Prescricao> getPrescricoes(int versao) {
+        return prescricoes.stream()
+                .filter(prescricao -> prescricao.getVersao() == versao)
+                .toList();
     }
 
     final public String getMonthAtendimento() {
@@ -232,18 +248,28 @@ public class Prontuario {
         if (lesoesNodulos != that.lesoesNodulos) return false;
         if (regiaoCabeca != that.regiaoCabeca) return false;
         if (regiaoTorax != that.regiaoTorax) return false;
-        if (!id.equals(that.id)) return false;
-        if (!Objects.equals(versao, that.versao)) return false;
-        if (!Objects.equals(hidratacao, that.hidratacao)) return false;
-        if (!Objects.equals(tpc, that.tpc)) return false;
-        if (!Objects.equals(mucosa, that.mucosa)) return false;
-        if (!Objects.equals(conciencia, that.conciencia)) return false;
+        if (!Objects.equals(versao, that.versao))
+            return false;
+        if (!Objects.equals(clinica, that.clinica))
+            return false;
+        if (!Objects.equals(peso, that.peso))
+            return false;
+        if (!Objects.equals(hidratacao, that.hidratacao))
+            return false;
+        if (!Objects.equals(tpc, that.tpc))
+            return false;
+        if (!Objects.equals(mucosa, that.mucosa))
+            return false;
+        if (!Objects.equals(conciencia, that.conciencia))
+            return false;
         if (!Objects.equals(escoreCorporal, that.escoreCorporal))
             return false;
         if (!Objects.equals(supeitaDiagnostica, that.supeitaDiagnostica))
             return false;
-        if (!Objects.equals(apetite, that.apetite)) return false;
-        if (!Objects.equals(linfonodos, that.linfonodos)) return false;
+        if (!Objects.equals(apetite, that.apetite))
+            return false;
+        if (!Objects.equals(linfonodos, that.linfonodos))
+            return false;
         if (!Objects.equals(linfonodosObs, that.linfonodosObs))
             return false;
         if (!Objects.equals(regiaoColuna, that.regiaoColuna))
@@ -254,22 +280,31 @@ public class Prontuario {
             return false;
         if (!Objects.equals(regiaoMPelvicos, that.regiaoMPelvicos))
             return false;
+        if (!Objects.equals(regioesObs, that.regioesObs))
+            return false;
         if (!Objects.equals(dataAtendimento, that.dataAtendimento))
             return false;
-        if (!Objects.equals(animal, that.animal)) return false;
-        if (!Objects.equals(veterinario, that.veterinario)) return false;
-        if (!Objects.equals(cirurgia, that.cirurgia)) return false;
-        if (!Objects.equals(codigo, that.codigo)) return false;
-        return Objects.equals(criadoEm, that.criadoEm);
+        if (!Objects.equals(animal, that.animal))
+            return false;
+        if (!Objects.equals(veterinario, that.veterinario))
+            return false;
+        if (!Objects.equals(cirurgia, that.cirurgia))
+            return false;
+        if (!Objects.equals(codigo, that.codigo))
+            return false;
+        if (!Objects.equals(criadoEm, that.criadoEm))
+            return false;
+        return status == that.status;
     }
 
     @Override
     public int hashCode() {
-        int result = id.hashCode();
-        result = 31 * result + (versao != null ? versao.hashCode() : 0);
+        int result = versao != null ? versao.hashCode() : 0;
+        result = 31 * result + (clinica != null ? clinica.hashCode() : 0);
         result = 31 * result + frequenciaCardiaca;
         result = 31 * result + frequenciaRespiratoria;
         result = 31 * result + temperatura;
+        result = 31 * result + (peso != null ? peso.hashCode() : 0);
         result = 31 * result + (hidratacao != null ? hidratacao.hashCode() : 0);
         result = 31 * result + (tpc != null ? tpc.hashCode() : 0);
         result = 31 * result + (mucosa != null ? mucosa.hashCode() : 0);
@@ -293,12 +328,14 @@ public class Prontuario {
         result = 31 * result + (regiaoMPelvicos != null ? regiaoMPelvicos.hashCode() : 0);
         result = 31 * result + (regiaoCabeca ? 1 : 0);
         result = 31 * result + (regiaoTorax ? 1 : 0);
+        result = 31 * result + (regioesObs != null ? regioesObs.hashCode() : 0);
         result = 31 * result + (dataAtendimento != null ? dataAtendimento.hashCode() : 0);
         result = 31 * result + (animal != null ? animal.hashCode() : 0);
         result = 31 * result + (veterinario != null ? veterinario.hashCode() : 0);
         result = 31 * result + (cirurgia != null ? cirurgia.hashCode() : 0);
         result = 31 * result + (codigo != null ? codigo.hashCode() : 0);
         result = 31 * result + (criadoEm != null ? criadoEm.hashCode() : 0);
+        result = 31 * result + (status != null ? status.hashCode() : 0);
         return result;
     }
 
@@ -310,5 +347,17 @@ public class Prontuario {
     public Prontuario setCodigo(LocalDateTime now) {
         this.codigo = "VT-P-" + now.format(DateTimeFormatter.ofPattern("yyyy_MM_dd_hh_mm_ss"));
         return this;
+    }
+
+    public String getPrescricaoCodigo() {
+        return codigo + "-prescricao";
+    }
+
+    public String prescricaoLatestVersion() {
+        return String.valueOf(
+                prescricoes.stream()
+                .mapToInt(Prescricao::getVersao)
+                .max()
+                .orElse(1));
     }
 }

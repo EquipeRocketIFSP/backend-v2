@@ -3,6 +3,7 @@ package br.vet.certvet.models;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -32,6 +33,17 @@ public class Documento {
     private Integer versao;
     private Date criadoEm;
 
+    private String observacaoVet;
+    private String observacaoTutor;
+    private String causaMortis;
+    private String causaMortisDescription;
+    private String orientaDestinoCorpo;
+    private String local;
+    private LocalDateTime dataHoraObito;
+    private String terapia;
+    private String anestesia;
+    private String observacoes;
+
     @ManyToOne
     @JoinColumn(name = "veterinario_id")
     private Usuario veterinario;
@@ -41,6 +53,25 @@ public class Documento {
     @ToString.Exclude
     private Clinica clinica;
     private String caminhoArquivo;
+    public static Documento empty(){
+        return Documento.builder()
+                .tipo("")
+                .codigo("")
+                .versao(-1)
+                .criadoEm(Date.from(Instant.MIN))
+                .observacaoVet("")
+                .observacaoTutor("")
+                .causaMortis("")
+                .causaMortisDescription("")
+                .orientaDestinoCorpo("")
+                .local("")
+                .dataHoraObito(LocalDateTime.of(1,1,1,1,1,1))
+                .terapia("")
+                .anestesia("")
+                .observacoes("")
+                .build();
+    }
+
     protected String md5 = null;
     protected String etag = null;
     protected String algorithm = null;

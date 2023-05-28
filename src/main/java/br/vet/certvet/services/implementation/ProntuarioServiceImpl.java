@@ -232,12 +232,13 @@ public class ProntuarioServiceImpl implements ProntuarioService {
 
     @Override
     public Documento attachDocumentoAndPdfPersist(
-            Documento documento,
-            ObjectMetadata awsResponse
+            final Documento documento,
+            final ObjectMetadata awsResponse,
+            final int version
     ) throws ProntuarioNotFoundException,
             DocumentoNotFoundException,
             OptimisticLockingFailureException {
-        final String fileName = writeNomeArquivo(documento);
+        final String fileName = writeNomeArquivo(documento, version);
         log.info("Iniciando persistência no serviço AWS S3");
 
         if (awsResponse.getETag() == null)
@@ -253,13 +254,26 @@ public class ProntuarioServiceImpl implements ProntuarioService {
         }
     }
 
-    public static String writeNomeArquivo(Documento documento) {
+    public static String writeNomeArquivo(Documento documento, int version) {
+        //TODO: Verificar se como tornar dinâmico para versionamento
         return new StringBuilder()
                 .append(documento.getProntuario().getCodigo())
                 .append("-doc-")
                 .append(documento.getTipo())
                 .append("-")
                 .append(documento.getCodigo())
+                .append("-v")
+                .append(version)
+                .append(".pdf")
+                .toString();
+    }
+
+    public static String writeNomeArquivoPrescricao(Prontuario prontuario, int version) {
+        return new StringBuilder()
+                .append(prontuario.getCodigo())
+                .append("-pres-")
+                .append("v")
+                .append(version)
                 .append(".pdf")
                 .toString();
     }
