@@ -30,6 +30,7 @@ public class Procedimento {
 
     @OneToOne
     @JoinColumn(name = "estoque_id")
+    //TODO: Adicionar tabela de relacionamento
     private Estoque medicamentoConsumido;
 
     private BigDecimal doseMedicamento;
