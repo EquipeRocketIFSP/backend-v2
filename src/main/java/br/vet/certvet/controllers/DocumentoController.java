@@ -11,7 +11,6 @@ import br.vet.certvet.repositories.UsuarioRepository;
 import br.vet.certvet.services.DocumentoService;
 import br.vet.certvet.services.PdfService;
 import br.vet.certvet.services.ProntuarioService;
-import com.amazonaws.services.s3.model.ObjectMetadata;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -125,9 +124,11 @@ public class DocumentoController extends BaseController {
                 .filter(p -> p.getCodigo().equals(documentoCodigo))
                 .findFirst()
                 .orElseThrow(() -> new DocumentoNotFoundException("Não foi possível identificar o id do documento na base de dados"));
-        var awsResponse = pdfService.savePdfInBucket(documento, documentoPdf);
         IcpResponse icpResponse = pdfService.getIcpBrValidation(documento);
         if(!icpResponse.isValidDocument()) throw new InvalidSignedDocumentoException("O documento não pôde ser confirmado pelo ICP-BR");
+
+        // Salva apenas se o documento for validado pelo ICP-BR
+        var awsResponse = pdfService.saveDocumentoPdfInBucket(documento, documentoPdf);
         Documento attachedDocumento = prontuarioService.attachDocumentoAndPdfPersist(
                 documento.assinadores(validaAssinadores(icpResponse)), awsResponse);
         return ResponseEntity.created(URI.create("/api/documento/" + documentoCodigo))
