@@ -1,20 +1,19 @@
 package br.vet.certvet.models;
 
 
+import br.vet.certvet.enums.ProntuarioStatus;
 import lombok.*;
-import org.hibernate.Hibernate;
+import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import java.text.DateFormatSymbols;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
 @Getter
+@Accessors(chain = true)
 @ToString
 @Builder
 @NoArgsConstructor
@@ -25,110 +24,135 @@ public class Prontuario {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    private Integer versao;
+    private Integer versao = 0;
 
     @ManyToOne
     private Clinica clinica;
 
-    @Column(nullable = false)
+    @Setter
     private int frequenciaCardiaca;
 
-    @Column(nullable = false)
+    @Setter
     private int frequenciaRespiratoria;
 
-    @Column(nullable = false)
+    @Setter
     private int temperatura;
 
-    @Column(nullable = false)
+    @Setter
+    private String peso;
+
+    @Setter
     private String hidratacao;
 
-    @Column(nullable = false)
+    @Setter
     private String tpc;
 
-    @Column(nullable = false)
+    @Setter
     private String mucosa;
 
-    @Column(nullable = false)
+    @Setter
     private String conciencia;
 
-    @Column(nullable = false)
+    @Setter
     private String escoreCorporal;
 
+    @Setter
     @Column(length = 2000)
     private String supeitaDiagnostica;
 
-    @Column(nullable = false)
+    @Setter
     private boolean prostracao;
 
-    @Column(nullable = false)
+    @Setter
     private boolean febre;
 
-    @Column(nullable = false)
+    @Setter
     private boolean vomito;
 
-    @Column(nullable = false)
+    @Setter
     private boolean diarreia;
 
-    @Column(nullable = false)
+    @Setter
     private boolean espasmosConvulsao;
 
-    @Column(nullable = false)
+    @Setter
     private boolean deambulacao;
 
-    @Column(nullable = false)
+    @Setter
     private boolean sensibilidadeDor;
 
-    @Column(nullable = false)
+    @Setter
     private boolean lesoesNodulos;
 
+    @Setter
     private String apetite;
+
+    @Setter
     private String linfonodos;
+
+    @Setter
     private String linfonodosObs;
-    private String regiaoCervical;
+
+    @Setter
+    private String regiaoColuna;
+
+    @Setter
     private String regiaoAbdomen;
+
+    @Setter
     private String regiaoMToracicos;
+
+    @Setter
     private String regiaoMPelvicos;
 
+    @Setter
     private boolean regiaoCabeca;
+
+    @Setter
     private boolean regiaoTorax;
 
+    @Setter
+    private String regioesObs;
+
+    @Setter
     private LocalDateTime dataAtendimento;
 
+    @Setter
     @ManyToOne(optional = false)
     @JoinColumn(name = "animal_id", nullable = false)
     private Animal animal;
 
+    @Setter
     @ManyToOne
     @JoinColumn(name = "usuario_id")
     private Usuario veterinario;
 
-    @OneToOne
+    @Setter
+    @OneToOne(mappedBy = "prontuario")
     private Cirurgia cirurgia;
 
-    @OneToMany(mappedBy = "prontuario")
+    @OneToMany(mappedBy = "prontuario", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
-    private List<Procedimento> procedimentos;
+    private List<Procedimento> procedimentos = new ArrayList<>();
 
-    @OneToMany(mappedBy = "prontuario")
+    @OneToMany(mappedBy = "prontuario", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
-    private List<Exame> exames;
+    private List<Exame> exames = new ArrayList<>();
     private String codigo;
 
+    @Setter
     @ManyToOne
+    @Accessors(chain = true)
     @JoinColumn(name = "tutor_id")
     private Usuario tutor;
 
     @OneToMany(mappedBy = "id")
     @ToString.Exclude
-    private List<Documento> documentos;
+    private List<Documento> documentos = new ArrayList<>();
     private Date criadoEm;
 
     public void setDocumentos(List<Documento> documentos) {
         this.documentos = documentos;
-    }
-
-    public void setExames(List<Exame> exames) {
-        this.exames = exames;
     }
 
     public void setProcedimentos(List<Procedimento> procedimentos) {
@@ -137,21 +161,13 @@ public class Prontuario {
 
     public static String createCodigo(LocalDateTime now) {
         // exemplo: VT-P-2022_12_03_02_19_20.pdf
-        return "VT-P-"+now.format(DateTimeFormatter.ofPattern("yyyy_MM_dd_hh_mm_ss"));
+        return "VT-P-" + now.format(DateTimeFormatter.ofPattern("yyyy_MM_dd_hh_mm_ss"));
     }
 
-    public void setTutor(Usuario tutor) {
-        this.tutor = tutor;
-    }
-
-    public String getCodigo() {
-        return this.codigo;
-    }
-
-    final public String getMonthAtendimento(){
+    final public String getMonthAtendimento() {
         final var month = new DateFormatSymbols().getMonths()[
                 dataAtendimento.getMonth()
-                        .getValue()-1
+                        .getValue() - 1
                 ]
                 .toLowerCase();
         return month.substring(0, 1)
@@ -163,17 +179,19 @@ public class Prontuario {
         documentos = Arrays.asList(documento);
         return this;
     }
-    public Prontuario setDocumentoDetails(Documento documento){
+
+    public Prontuario setDocumentoDetails(Documento documento) {
         return addDocumentoPdf(documento)
                 .setCodigo(documento.getCodigo())
                 .setVersao(documento.getVersao())
                 .setCriadoEm(documento.getCriadoEm());
     }
-    
+
     private Prontuario setCriadoEm(Date criadoEm) {
         this.criadoEm = criadoEm;
         return this;
     }
+
     public Prontuario setVersao(int versao) {
         this.versao = versao;
         return this;
@@ -183,20 +201,16 @@ public class Prontuario {
         this.codigo = codigo;
         return this;
     }
+
     public Prontuario setClinica(Clinica clinica) {
         this.clinica = clinica;
         return this;
     }
 
-    public Prontuario setVeterinario(Usuario veterinario) {
-        this.veterinario = veterinario;
-        return this;
-    }
-
-    public Prontuario setAnimal(Animal animal) {
-        this.animal = animal;
-        return this;
-    }
+    @Setter
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ProntuarioStatus status = ProntuarioStatus.PENDING;
 
     @Override
     public boolean equals(Object o) {
@@ -232,7 +246,7 @@ public class Prontuario {
         if (!Objects.equals(linfonodos, that.linfonodos)) return false;
         if (!Objects.equals(linfonodosObs, that.linfonodosObs))
             return false;
-        if (!Objects.equals(regiaoCervical, that.regiaoCervical))
+        if (!Objects.equals(regiaoColuna, that.regiaoColuna))
             return false;
         if (!Objects.equals(regiaoAbdomen, that.regiaoAbdomen))
             return false;
@@ -273,7 +287,7 @@ public class Prontuario {
         result = 31 * result + (apetite != null ? apetite.hashCode() : 0);
         result = 31 * result + (linfonodos != null ? linfonodos.hashCode() : 0);
         result = 31 * result + (linfonodosObs != null ? linfonodosObs.hashCode() : 0);
-        result = 31 * result + (regiaoCervical != null ? regiaoCervical.hashCode() : 0);
+        result = 31 * result + (regiaoColuna != null ? regiaoColuna.hashCode() : 0);
         result = 31 * result + (regiaoAbdomen != null ? regiaoAbdomen.hashCode() : 0);
         result = 31 * result + (regiaoMToracicos != null ? regiaoMToracicos.hashCode() : 0);
         result = 31 * result + (regiaoMPelvicos != null ? regiaoMPelvicos.hashCode() : 0);
@@ -286,5 +300,15 @@ public class Prontuario {
         result = 31 * result + (codigo != null ? codigo.hashCode() : 0);
         result = 31 * result + (criadoEm != null ? criadoEm.hashCode() : 0);
         return result;
+    }
+
+    public String getCodigo() {
+        return this.codigo;
+    }
+
+    @Deprecated
+    public Prontuario setCodigo(LocalDateTime now) {
+        this.codigo = "VT-P-" + now.format(DateTimeFormatter.ofPattern("yyyy_MM_dd_hh_mm_ss"));
+        return this;
     }
 }

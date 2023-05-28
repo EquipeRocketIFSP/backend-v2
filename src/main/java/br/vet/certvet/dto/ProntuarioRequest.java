@@ -27,7 +27,7 @@ public record ProntuarioRequest (
         String apetite,
         String linfonodos,
         String linfonodosObs,
-        String regiaoCervical,
+        String regiaoColuna,
         String regiaoAbdomen,
         String regiaoMToracicos,
         String regiaoMPelvicos,
@@ -66,7 +66,7 @@ public record ProntuarioRequest (
                 .apetite(apetite)
                 .linfonodos(linfonodos)
                 .linfonodosObs(linfonodosObs)
-                .regiaoCervical(regiaoCervical)
+                .regiaoColuna(regiaoColuna)
                 .regiaoAbdomen(regiaoAbdomen)
                 .regiaoMToracicos(regiaoMToracicos)
                 .regiaoMPelvicos(regiaoMPelvicos)
