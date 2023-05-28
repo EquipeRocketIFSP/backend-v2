@@ -1,5 +1,6 @@
 package br.vet.certvet.dto.responses;
 
+import br.vet.certvet.enums.ProntuarioStatus;
 import br.vet.certvet.models.Prontuario;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -108,6 +109,12 @@ public class ProntuarioResponseDTO {
     @JsonProperty("codigo")
     private String codigo;
 
+    @JsonProperty("versao")
+    private Integer versao;
+
+    @JsonProperty("status")
+    private ProntuarioStatus status;
+
     @JsonProperty("animal")
     private AnimalResponseDto animal;
 
@@ -149,6 +156,8 @@ public class ProntuarioResponseDTO {
         this.veterinario = new UsuarioResponseDto(prontuario.getVeterinario());
         this.exames = prontuario.getExames().stream().map(ExameResponseDTO::new).toList();
         this.procedimentos = prontuario.getProcedimentos().stream().map(ProcedimentoResponseDTO::new).toList();
+        this.versao = prontuario.getVersao();
+        this.status = prontuario.getStatus();
 
         if (prontuario.getCirurgia() != null)
             this.cirurgia = new CirurgiaResponseDTO(prontuario.getCirurgia());
