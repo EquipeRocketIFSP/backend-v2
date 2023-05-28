@@ -38,8 +38,6 @@ public class ProntuarioDTOMapper {
                 .setLesoesNodulos(dto.isLesoesNodulos())
                 .setRegiaoCabeca(dto.isCabeca())
                 .setRegiaoTorax(dto.isTorax())
-                .setRegiaoCervical(dto.getCervical())
-                .setRegiaoAbdomen(dto.getAbdomen())
                 .setApetite(dto.getApetite())
                 .setRegioesObs(dto.getRegioesObs())
                 .setLinfonodos(dto.getLinfonodos())
@@ -52,6 +50,14 @@ public class ProntuarioDTOMapper {
         if (dto.getMPelvicos().length != 0)
             prontuario.setRegiaoMPelvicos(String.join(";", dto.getMPelvicos()));
         else prontuario.setRegiaoMPelvicos(null);
+
+        if (dto.getColuna().length != 0)
+            prontuario.setRegiaoColuna(String.join(";", dto.getColuna()));
+        else prontuario.setRegiaoColuna(null);
+
+        if (dto.getAbdomen().length != 0)
+            prontuario.setRegiaoAbdomen(String.join(";", dto.getAbdomen()));
+        else prontuario.setRegiaoAbdomen(null);
 
         return prontuario;
     }

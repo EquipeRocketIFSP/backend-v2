@@ -10,6 +10,7 @@ import br.vet.certvet.models.Usuario;
 import br.vet.certvet.services.ClinicaService;
 import br.vet.certvet.services.PasswordResetService;
 import br.vet.certvet.services.UsuarioService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import javax.validation.Valid;
 @RequestMapping("/api")
 @CrossOrigin
 @Slf4j
+@SecurityRequirement(name = "bearer-key")
 public class AuthController {
     @Autowired
     private ClinicaService clinicaService;

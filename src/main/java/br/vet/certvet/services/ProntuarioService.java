@@ -20,6 +20,8 @@ public interface ProntuarioService {
 
     Prontuario edit(ProntuarioDTO dto, Prontuario prontuario);
 
+    Prontuario finalizeMedicalRecord(Prontuario prontuario);
+
     Prontuario findOne(Long id, Animal animal);
 
     PaginatedResponse<ProntuarioResponseDTO> findAll(int page, String search, String url, Animal animal);

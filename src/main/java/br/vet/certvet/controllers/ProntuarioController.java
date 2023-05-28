@@ -4,8 +4,8 @@ import br.vet.certvet.dto.requests.prontuario.*;
 import br.vet.certvet.dto.responses.*;
 import br.vet.certvet.models.*;
 import br.vet.certvet.services.*;
-import br.vet.certvet.dto.ProntuarioRequest;
 import br.vet.certvet.exceptions.ProntuarioNotFoundException;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -23,6 +23,7 @@ import java.util.Optional;
 @CrossOrigin
 @RequestMapping("/api")
 @Slf4j
+@SecurityRequirement(name = "bearer-key")
 public class ProntuarioController extends BaseController {
 
     @Autowired
@@ -37,7 +38,7 @@ public class ProntuarioController extends BaseController {
     @Autowired
     private PdfService pdfService;
 
-    @PostMapping
+    @PostMapping("/prontuario")
     public ResponseEntity<ProntuarioResponseDTO> create(
             @RequestHeader(AUTHORIZATION) String token,
             @RequestBody @Valid SinaisVitaisDTO dto
@@ -78,6 +79,21 @@ public class ProntuarioController extends BaseController {
         Animal animal = this.animalService.findOne(dto.getAnimal(), tutor);
         Prontuario prontuario = this.prontuarioService.findOne(id, animal);
         prontuario = this.prontuarioService.edit(dto, prontuario);
+
+        return ResponseEntity.ok(new ProntuarioResponseDTO(prontuario));
+    }
+
+    @PutMapping("/prontuario/{id}/finalizar")
+    public ResponseEntity<ProntuarioResponseDTO> edit(
+            @RequestHeader(AUTHORIZATION) String token,
+            @PathVariable("id") Long id,
+            @RequestBody @Valid ProntuarioDTO dto
+    ) {
+        Clinica clinica = this.tokenService.getClinica(token);
+        Usuario tutor = this.usuarioService.findOne(dto.getTutor(), clinica);
+        Animal animal = this.animalService.findOne(dto.getAnimal(), tutor);
+        Prontuario prontuario = this.prontuarioService.findOne(id, animal);
+        prontuario = this.prontuarioService.finalizeMedicalRecord(prontuario);
 
         return ResponseEntity.ok(new ProntuarioResponseDTO(prontuario));
     }
@@ -139,13 +155,5 @@ public class ProntuarioController extends BaseController {
         PaginatedResponse<ProntuarioResponseDTO> response = this.prontuarioService.findAll(page, search, request.getRequestURL().toString(), animal);
 
         return ResponseEntity.ok(response);
-    }
-
-    @PostMapping("/prontuario/{prontuarioId}")
-    public ResponseEntity<Documento> addDocument(
-            @PathVariable Long prontuarioId,
-            @RequestBody ProntuarioRequest prontuarioDto
-    ) {
-        return null;
     }
 }

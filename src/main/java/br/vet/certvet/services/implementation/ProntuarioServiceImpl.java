@@ -1,6 +1,7 @@
 package br.vet.certvet.services.implementation;
 
 import br.vet.certvet.dto.responses.*;
+import br.vet.certvet.enums.ProntuarioStatus;
 import br.vet.certvet.exceptions.*;
 import br.vet.certvet.models.*;
 import br.vet.certvet.repositories.*;
@@ -17,7 +18,9 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -53,6 +56,9 @@ public class ProntuarioServiceImpl implements ProntuarioService {
 
     @Autowired
     private DocumentoService documentoService;
+
+    @Autowired
+    private EstoqueService estoqueService;
 
     private static final int RESPONSE_LIMIT = 30;
 
@@ -145,6 +151,28 @@ public class ProntuarioServiceImpl implements ProntuarioService {
     @Override
     public Prontuario edit(ProntuarioDTO dto, Prontuario prontuario) {
         ProntuarioDTOMapper.assignToModel(dto, prontuario);
+
+        return this.prontuarioRepository.saveAndFlush(prontuario);
+    }
+
+    @Override
+    @Transactional(rollbackFor = {SQLException.class, RuntimeException.class})
+    public Prontuario finalizeMedicalRecord(Prontuario prontuario) {
+        int version = prontuario.getVersao();
+
+        if (prontuario.getStatus() != ProntuarioStatus.PENDING) {
+            return prontuario;
+        }
+
+        Cirurgia cirurgia = prontuario.getCirurgia();
+        List<Procedimento> procedimentos = prontuario.getProcedimentos();
+
+        if (cirurgia != null)
+            this.handleCirurgia(cirurgia, prontuario);
+
+        procedimentos.forEach((procedimento) -> this.handleProcedimento(procedimento, prontuario));
+
+        prontuario.setDataAtendimento(LocalDateTime.now()).setVersao(++version).setStatus(ProntuarioStatus.COMPLETED);
 
         return this.prontuarioRepository.saveAndFlush(prontuario);
     }
@@ -244,5 +272,39 @@ public class ProntuarioServiceImpl implements ProntuarioService {
                 .caminhoArquivo(fileName)
 //                .setProntuario(prontuario)
                 ;
+    }
+
+    private void handleCirurgia(Cirurgia cirurgia, Prontuario prontuario) {
+        cirurgia.getMedicamentosConsumidos().forEach((cirurgiaEstoqueMedicamento) -> {
+            final BigDecimal dose = cirurgiaEstoqueMedicamento.getDose();
+            final Usuario veterinario = prontuario.getVeterinario();
+            final Estoque estoque = cirurgiaEstoqueMedicamento.getEstoque();
+            final String reason = new StringBuilder("Usado na cirurgia ")
+                    .append(cirurgia.getDescricao())
+                    .append(" no prontuário ")
+                    .append(prontuario.getCodigo())
+                    .append(" do animal ")
+                    .append(prontuario.getAnimal().getNome()).toString();
+
+            this.estoqueService.subtract(dose, reason, estoque, veterinario);
+        });
+    }
+
+    private void handleProcedimento(Procedimento procedimento, Prontuario prontuario) {
+        final BigDecimal dose = procedimento.getDoseMedicamento();
+        final Usuario veterinario = prontuario.getVeterinario();
+        final Estoque estoque = procedimento.getMedicamentoConsumido();
+
+        if (dose == null || estoque == null)
+            return;
+
+        final String reason = new StringBuilder("Usado no procedimento ")
+                .append(procedimento.getDescricao())
+                .append(" no prontuário ")
+                .append(prontuario.getCodigo())
+                .append(" do animal ")
+                .append(prontuario.getAnimal().getNome()).toString();
+
+        this.estoqueService.subtract(dose, reason, estoque, veterinario);
     }
 }

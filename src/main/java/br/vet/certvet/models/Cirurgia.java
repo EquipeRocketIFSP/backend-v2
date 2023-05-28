@@ -1,13 +1,18 @@
 package br.vet.certvet.models;
 
 import lombok.*;
+import lombok.experimental.Accessors;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 @Entity
+@Accessors(chain = true)
+@Setter
 @Getter
 @ToString
 @Builder
@@ -16,6 +21,7 @@ import java.util.Objects;
 public class Cirurgia {
 
     @Id
+    @Setter(AccessLevel.NONE)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
@@ -23,25 +29,18 @@ public class Cirurgia {
     @Column(nullable = false)
     private String descricao;
 
-    private TipoCirugia tipo;
+    @Column(nullable = false)
+    private LocalDateTime data;
 
     @OneToOne
     private Prontuario prontuario;
 
-    @OneToMany(mappedBy = "cirurgia")
+    @OneToMany(mappedBy = "cirurgia", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
-    private List<Estoque> medicamentosConsumidos;
+    private List<CirurgiaEstoqueMedicamento> medicamentosConsumidos = new ArrayList<>();
 
-//    @ManyToMany
-//    @JoinTable(name = "cirurgia_medicamentos",
-//            joinColumns = @JoinColumn(name = "cirurgia_id", referencedColumnName = "id"),
-//            inverseJoinColumns = @JoinColumn(name = "medicamentos_id", referencedColumnName = "id")
-//    )
-//    @ToString.Exclude
-//    private List<Medicamento> medicamentos;
-
-    public void setMedicamentosConsumidos(List<Estoque> medicamentosConsumidos) {
-        this.medicamentosConsumidos = medicamentosConsumidos;
+    public Cirurgia(Prontuario prontuario) {
+        this.prontuario = prontuario;
     }
 
     @Override

@@ -9,10 +9,7 @@ import javax.persistence.*;
 import java.text.DateFormatSymbols;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
 @Getter
@@ -27,7 +24,7 @@ public class Prontuario {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    private Integer versao;
+    private Integer versao = 0;
 
     @ManyToOne
     private Clinica clinica;
@@ -97,7 +94,7 @@ public class Prontuario {
     private String linfonodosObs;
 
     @Setter
-    private String regiaoCervical;
+    private String regiaoColuna;
 
     @Setter
     private String regiaoAbdomen;
@@ -130,16 +127,17 @@ public class Prontuario {
     @JoinColumn(name = "usuario_id")
     private Usuario veterinario;
 
-    @OneToOne
+    @Setter
+    @OneToOne(mappedBy = "prontuario")
     private Cirurgia cirurgia;
-
-    @OneToMany(mappedBy = "prontuario")
-    @ToString.Exclude
-    private List<Procedimento> procedimentos;
 
     @OneToMany(mappedBy = "prontuario", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
-    private List<Exame> exames;
+    private List<Procedimento> procedimentos = new ArrayList<>();
+
+    @OneToMany(mappedBy = "prontuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
+    private List<Exame> exames = new ArrayList<>();
     private String codigo;
 
     @Setter
@@ -150,7 +148,7 @@ public class Prontuario {
 
     @OneToMany(mappedBy = "id")
     @ToString.Exclude
-    private List<Documento> documentos;
+    private List<Documento> documentos = new ArrayList<>();
     private Date criadoEm;
 
     @OneToMany
@@ -225,6 +223,7 @@ public class Prontuario {
         return this;
     }
 
+    @Setter
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ProntuarioStatus status = ProntuarioStatus.PENDING;
@@ -273,7 +272,7 @@ public class Prontuario {
             return false;
         if (!Objects.equals(linfonodosObs, that.linfonodosObs))
             return false;
-        if (!Objects.equals(regiaoCervical, that.regiaoCervical))
+        if (!Objects.equals(regiaoColuna, that.regiaoColuna))
             return false;
         if (!Objects.equals(regiaoAbdomen, that.regiaoAbdomen))
             return false;
@@ -323,7 +322,7 @@ public class Prontuario {
         result = 31 * result + (apetite != null ? apetite.hashCode() : 0);
         result = 31 * result + (linfonodos != null ? linfonodos.hashCode() : 0);
         result = 31 * result + (linfonodosObs != null ? linfonodosObs.hashCode() : 0);
-        result = 31 * result + (regiaoCervical != null ? regiaoCervical.hashCode() : 0);
+        result = 31 * result + (regiaoColuna != null ? regiaoColuna.hashCode() : 0);
         result = 31 * result + (regiaoAbdomen != null ? regiaoAbdomen.hashCode() : 0);
         result = 31 * result + (regiaoMToracicos != null ? regiaoMToracicos.hashCode() : 0);
         result = 31 * result + (regiaoMPelvicos != null ? regiaoMPelvicos.hashCode() : 0);

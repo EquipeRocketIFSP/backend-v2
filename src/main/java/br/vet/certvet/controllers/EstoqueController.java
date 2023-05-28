@@ -11,6 +11,7 @@ import br.vet.certvet.models.Medicamento;
 import br.vet.certvet.models.Usuario;
 import br.vet.certvet.services.EstoqueService;
 import br.vet.certvet.services.MedicamentoService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @RestController
 @CrossOrigin
 @RequestMapping("/api/medicamento/{medicamento_id}/estoque")
+@SecurityRequirement(name = "bearer-key")
 public class EstoqueController {
     @Autowired
     private MedicamentoService medicamentoService;
