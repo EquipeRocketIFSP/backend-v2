@@ -80,7 +80,7 @@ public class AgendamentoServiceImpl implements AgendamentoService {
         LocalTime defaultTime = LocalTime.parse("00:00:00");
 
         LocalDateTime start = LocalDateTime.of(date.withDayOfMonth(1), defaultTime);
-        LocalDateTime end = LocalDateTime.of(date.withDayOfMonth(date.lengthOfMonth()), defaultTime);
+        LocalDateTime end = LocalDateTime.of(date.withDayOfMonth(date.lengthOfMonth()), LocalTime.parse("23:59:59"));
 
         return this.agendamentoRepository.findAllByClinicaAndDataConsultaBetween(clinica, start, end);
     }
