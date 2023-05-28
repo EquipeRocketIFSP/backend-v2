@@ -34,14 +34,6 @@ public class ProcedimentoServiceImpl implements ProcedimentoService {
                     if (procedimentoDTO.getMedicamento() != null) {
                         final Medicamento medicamento = this.medicamentoService.findOne(procedimentoDTO.getMedicamento(), clinica);
                         final Estoque estoque = this.estoqueService.findOne(procedimentoDTO.getLote(), medicamento);
-                        /*final String reason = new StringBuilder("Usado no procedimento ")
-                                .append(procedimentoDTO.getProcedimento())
-                                .append(" no prontuário ")
-                                .append(prontuario.getCodigo())
-                                .append(" do animal ")
-                                .append(prontuario.getAnimal().getNome()).toString();*/
-
-                        //this.estoqueService.subtract(procedimentoDTO.getDose(), reason, estoque, prontuario.getVeterinario());
 
                         return ProcedimentoFactory.factory(procedimentoDTO, estoque, prontuario);
                     }

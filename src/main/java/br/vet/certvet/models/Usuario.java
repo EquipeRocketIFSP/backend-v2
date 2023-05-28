@@ -90,7 +90,6 @@ public class Usuario implements UserDetails, Fillable<UsuarioRequestDto> {
 
     @NotNull
     @ManyToOne
-    @ToString.Exclude
     @JoinColumn(name = "clinica_id", nullable = false)
     @ToString.Exclude
     private Clinica clinica;

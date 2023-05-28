@@ -83,6 +83,21 @@ public class ProntuarioController extends BaseController {
         return ResponseEntity.ok(new ProntuarioResponseDTO(prontuario));
     }
 
+    @PutMapping("/prontuario/{id}/finalizar")
+    public ResponseEntity<ProntuarioResponseDTO> edit(
+            @RequestHeader(AUTHORIZATION) String token,
+            @PathVariable("id") Long id,
+            @RequestBody @Valid ProntuarioDTO dto
+    ) {
+        Clinica clinica = this.tokenService.getClinica(token);
+        Usuario tutor = this.usuarioService.findOne(dto.getTutor(), clinica);
+        Animal animal = this.animalService.findOne(dto.getAnimal(), tutor);
+        Prontuario prontuario = this.prontuarioService.findOne(id, animal);
+        prontuario = this.prontuarioService.finalizeMedicalRecord(prontuario);
+
+        return ResponseEntity.ok(new ProntuarioResponseDTO(prontuario));
+    }
+
     @PutMapping("/prontuario/{id}/manifestacoes-clinicas")
     public ResponseEntity<ProntuarioResponseDTO> edit(
             @RequestHeader(AUTHORIZATION) String token,

@@ -24,7 +24,7 @@ public class Prontuario {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    private Integer versao;
+    private Integer versao = 0;
 
     @ManyToOne
     private Clinica clinica;
@@ -207,6 +207,7 @@ public class Prontuario {
         return this;
     }
 
+    @Setter
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ProntuarioStatus status = ProntuarioStatus.PENDING;
