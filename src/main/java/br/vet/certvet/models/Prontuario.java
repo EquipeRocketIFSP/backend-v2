@@ -120,15 +120,18 @@ public class Prontuario {
     @Setter
     @ManyToOne(optional = false)
     @JoinColumn(name = "animal_id", nullable = false)
+    @ToString.Exclude
     private Animal animal;
 
     @Setter
     @ManyToOne
     @JoinColumn(name = "usuario_id")
+    @ToString.Exclude
     private Usuario veterinario;
 
     @Setter
     @OneToOne(mappedBy = "prontuario")
+    @ToString.Exclude
     private Cirurgia cirurgia;
 
     @OneToMany(mappedBy = "prontuario", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -144,6 +147,7 @@ public class Prontuario {
     @ManyToOne
     @Accessors(chain = true)
     @JoinColumn(name = "tutor_id")
+    @ToString.Exclude
     private Usuario tutor;
 
     @OneToMany(mappedBy = "id")

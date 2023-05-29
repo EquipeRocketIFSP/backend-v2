@@ -92,6 +92,7 @@ public class Clinica implements Fillable<ClinicaRequestDto> {
 
     @Setter
     @OneToOne
+    @ToString.Exclude
     private Usuario responsavelTecnico;
 
     @OneToMany
