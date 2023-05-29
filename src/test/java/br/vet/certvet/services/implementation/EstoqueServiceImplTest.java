@@ -21,6 +21,13 @@ public class EstoqueServiceImplTest {
         //when(estoqueRepository.save(any(Estoque.class))).
         }
 
+        public void editEstoque(){}
+
+        public void findOne(){}
+
+        public void findAll(){}
+
+
 }
   //  public void createCampus() {
 //        when(campusRepository.save(any(Campus.class))).thenReturn(CampusFactoryUtils.sampleCampus());
