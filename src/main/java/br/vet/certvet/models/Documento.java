@@ -3,7 +3,6 @@ package br.vet.certvet.models;
 import lombok.*;
 
 import javax.persistence.*;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -58,7 +57,7 @@ public class Documento {
                 .tipo("")
                 .codigo("")
                 .versao(-1)
-                .criadoEm(Date.from(Instant.MIN))
+                .criadoEm(new Date())
                 .observacaoVet("")
                 .observacaoTutor("")
                 .causaMortis("")
