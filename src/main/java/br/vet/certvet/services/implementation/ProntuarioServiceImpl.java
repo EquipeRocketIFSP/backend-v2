@@ -141,6 +141,7 @@ public class ProntuarioServiceImpl implements ProntuarioService {
     public Prontuario create(ProntuarioDTO dto, Animal animal, Usuario tutor, Usuario veterinario) {
         Prontuario prontuario = ProntuarioFactory.factory(dto)
                 .setCodigo(LocalDateTime.now())
+                .setClinica(veterinario.getClinica())
                 .setAnimal(animal)
                 .setTutor(tutor)
                 .setVeterinario(veterinario);
