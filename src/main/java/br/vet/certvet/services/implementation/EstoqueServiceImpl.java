@@ -28,16 +28,15 @@ import java.util.Optional;
 @Service
 public class EstoqueServiceImpl implements EstoqueService {
 
-    @Autowired
     private EstoqueRepository estoqueRepository;
 
-    @Autowired
     private EstoqueTransacaoRepository estoqueTransacaoRepository;
 
     private static final int RESPONSE_LIMIT = 30;
 
-    public EstoqueServiceImpl (EstoqueRepository estoqueRepository){
+    public EstoqueServiceImpl (EstoqueRepository estoqueRepository, EstoqueTransacaoRepository estoqueTransacaoRepository){
         this.estoqueRepository = estoqueRepository;
+        this.estoqueTransacaoRepository = estoqueTransacaoRepository;
     }
 
 
