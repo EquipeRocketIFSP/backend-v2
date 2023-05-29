@@ -20,7 +20,7 @@ public class ProntuarioPdfHelper {
         final List<Documento> documentos = prontuario.getDocumentos();
         final Documento obito = getObito(prontuario);
 
-        return new StringSubstitutor(ImmutableMap.<String, String>builder()
+        ImmutableMap.Builder<String, String> builder = ImmutableMap.<String, String>builder()
                 .put("animal.nome",                     animal.getNome())
                 .put("animal.especie",                  animal.getEspecie())
                 .put("animal.raca",                     animal.getRaca())
@@ -45,15 +45,18 @@ public class ProntuarioPdfHelper {
                 .put("data.dia",                        String.valueOf(prontuario.getDataAtendimento().getDayOfMonth()))
                 .put("data.mes",                        prontuario.getMonthAtendimento())
                 .put("data.ano",                        String.valueOf(prontuario.getDataAtendimento().getYear()))
-                .put("prontuario.exames",               prontuario.getExames().toString())
-                .put("prontuario.cirurgia",             prontuario.getCirurgia().toString())
                 .put("tutor.nome",                      tutor.getNome())
                 .put("tutor.cpf",                       tutor.getCpf())
                 .put("tutor.endereco",                  tutor.getEnderecoCompleto())
                 .put("veterinario.nome",                veterinario.getNome())
-                .put("veterinario.crmv",                veterinario.getRegistroCRMV())
-                .build()
-        ).replace(layout);
+                .put("veterinario.crmv",                veterinario.getRegistroCRMV());
+
+        if(prontuario.getExames()!=null)
+            builder.put("prontuario.exames",               prontuario.getExames().toString());
+        if(prontuario.getCirurgia()!=null)
+            builder.put("prontuario.cirurgia",             prontuario.getCirurgia().toString());
+
+        return new StringSubstitutor(builder.build()).replace(layout);
     }
 
     private static String getObservacaoTutor(List<Documento> documentos) {
