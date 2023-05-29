@@ -29,6 +29,7 @@ import java.util.List;
 
 @RestController
 @Slf4j
+@CrossOrigin
 @RequestMapping("/api/documento")
 @SecurityRequirement(name = "bearer-key")
 public class DocumentoController extends BaseController {
