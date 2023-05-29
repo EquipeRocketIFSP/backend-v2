@@ -27,6 +27,7 @@ import java.util.Optional;
 
 @Service
 public class EstoqueServiceImpl implements EstoqueService {
+
     @Autowired
     private EstoqueRepository estoqueRepository;
 
@@ -34,6 +35,11 @@ public class EstoqueServiceImpl implements EstoqueService {
     private EstoqueTransacaoRepository estoqueTransacaoRepository;
 
     private static final int RESPONSE_LIMIT = 30;
+
+    public EstoqueServiceImpl (EstoqueRepository estoqueRepository){
+        this.estoqueRepository = estoqueRepository;
+    }
+
 
     @Override
     @Transactional(rollbackFor = {SQLException.class, RuntimeException.class})
