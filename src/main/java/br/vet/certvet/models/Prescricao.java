@@ -30,10 +30,14 @@ public class Prescricao {
     private String concentracao;
     private String frequencia;
     private String duracao;
-    private QuandoAplicarPrescricao quandoAplicar;
+    private String quandoAplicar;
     private String observacoes;
-    @Setter
-    private List<Usuario> assinadores;
+
+
+    //TODO: Corrigir associação
+    /*@Setter
+    @ManyToOne()
+    private List<Usuario> assinadores;*/
 
     private LocalDate dataCriacao;
     private LocalDate dataExclusao;

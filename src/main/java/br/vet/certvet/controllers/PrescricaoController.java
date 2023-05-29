@@ -111,8 +111,10 @@ public class PrescricaoController extends BaseController {
                         prontuario.getPrescricoes()
                                 .stream()
                                 .map(prescricao -> {
-                                    if(prescricao.getVersao() == version)
-                                        prescricao.setAssinadores(assinadores);
+                                    if(prescricao.getVersao() == version) {
+                                        //TODO: Corrigir associação
+                                        //prescricao.setAssinadores(assinadores);
+                                    }
                                     return prescricao;
                                 }).toList())
         );
