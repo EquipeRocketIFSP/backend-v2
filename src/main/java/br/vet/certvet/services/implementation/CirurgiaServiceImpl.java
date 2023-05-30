@@ -98,7 +98,7 @@ public class CirurgiaServiceImpl implements CirurgiaService {
         final String reason = new StringBuilder("Usado na cirurgia ").append(prontuario.getCirurgia().getDescricao())
                 .append(" no prontuário ").append(prontuario.getCodigo())
                 .append(" do animal ").append(prontuario.getAnimal().getNome()).append(". ")
-                .append("Quantidade atualizada no prontuário: ").append(currentDose)
+                .append("Quantidade atualizada no prontuário: ").append(currentDose).append(" ")
                 .append("Quantidade anterior no prontuário: ").append(previousDose).append(". ")
                 .toString();
 
