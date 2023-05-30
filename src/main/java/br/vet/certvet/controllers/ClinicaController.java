@@ -2,8 +2,11 @@ package br.vet.certvet.controllers;
 
 import br.vet.certvet.dto.requests.ClinicaInicialRequestDto;
 import br.vet.certvet.dto.requests.ClinicaRequestDto;
+import br.vet.certvet.dto.requests.ResponsavelTecnicoRequestDTO;
 import br.vet.certvet.dto.responses.ClinicaResponseDto;
+import br.vet.certvet.dto.responses.UsuarioResponseDto;
 import br.vet.certvet.exceptions.ForbiddenException;
+import br.vet.certvet.exceptions.NotFoundException;
 import br.vet.certvet.models.Clinica;
 import br.vet.certvet.models.Usuario;
 import br.vet.certvet.services.ClinicaService;
@@ -59,5 +62,34 @@ public class ClinicaController extends BaseController {
         Clinica clinica = this.tokenService.getClinica(token);
 
         return ResponseEntity.ok(new ClinicaResponseDto(clinica));
+    }
+
+    @GetMapping("/clinica/responsavel-tecnico")
+    @SecurityRequirement(name = "bearer-key")
+    public ResponseEntity<UsuarioResponseDto> findTechinialResponsible(@RequestHeader(AUTHORIZATION) String token) {
+        Clinica clinica = this.tokenService.getClinica(token);
+        Usuario responsavelTecnico = clinica.getResponsavelTecnico();
+
+        if (responsavelTecnico == null)
+            throw new NotFoundException("Responsável técnico não definido");
+
+        return ResponseEntity.ok(new UsuarioResponseDto(responsavelTecnico));
+    }
+
+    @PutMapping("/clinica/responsavel-tecnico")
+    @SecurityRequirement(name = "bearer-key")
+    public ResponseEntity<UsuarioResponseDto> setTechinialResponsible(
+            @RequestHeader(AUTHORIZATION) String token,
+            @RequestBody @Valid ResponsavelTecnicoRequestDTO dto
+    ) {
+        Clinica clinica = this.tokenService.getClinica(token);
+        Usuario responsavelTecnico = this.tokenService.getUsuario(token);
+
+        responsavelTecnico.setCrmv(dto.getCrmv());
+        clinica.setResponsavelTecnico(responsavelTecnico);
+
+        this.clinicaService.edit(clinica);
+
+        return ResponseEntity.ok(new UsuarioResponseDto(responsavelTecnico));
     }
 }
