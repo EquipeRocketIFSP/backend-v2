@@ -20,7 +20,6 @@ import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -169,10 +168,6 @@ public class ProntuarioServiceImpl implements ProntuarioService {
         else if (status == ProntuarioStatus.PENDING)
             prontuario.setDataAtendimento(LocalDateTime.now());
 
-        List<Procedimento> procedimentos = prontuario.getProcedimentos();
-
-        //procedimentos.forEach((procedimento) -> this.commitProcedimento(procedimento, prontuario));
-
         prontuario.setStatus(ProntuarioStatus.COMPLETED);
 
         return this.prontuarioRepository.saveAndFlush(prontuario);
@@ -287,23 +282,5 @@ public class ProntuarioServiceImpl implements ProntuarioService {
                 .caminhoArquivo(fileName)
 //                .setProntuario(prontuario)
                 ;
-    }
-
-    private void commitProcedimento(Procedimento procedimento, Prontuario prontuario) {
-        final BigDecimal dose = procedimento.getDoseMedicamento();
-        final Usuario veterinario = prontuario.getVeterinario();
-        final Estoque estoque = procedimento.getMedicamentoConsumido();
-
-        if (dose == null || estoque == null)
-            return;
-
-        final String reason = new StringBuilder("Usado no procedimento ")
-                .append(procedimento.getDescricao())
-                .append(" no prontuário ")
-                .append(prontuario.getCodigo())
-                .append(" do animal ")
-                .append(prontuario.getAnimal().getNome()).toString();
-
-        this.estoqueService.subtract(dose, reason, estoque, veterinario);
     }
 }

@@ -1,6 +1,7 @@
 package br.vet.certvet.services.implementation;
 
 import br.vet.certvet.dto.requests.prontuario.procedimento.ProcedimentoListDTO;
+import br.vet.certvet.enums.ProntuarioStatus;
 import br.vet.certvet.models.*;
 import br.vet.certvet.models.factories.ProcedimentoFactory;
 import br.vet.certvet.repositories.ProcedimentoRepository;
@@ -36,6 +37,9 @@ public class ProcedimentoServiceImpl implements ProcedimentoService {
     @Override
     @Transactional(rollbackFor = {SQLException.class, RuntimeException.class})
     public List<Procedimento> assignToProntuario(ProcedimentoListDTO dto, Clinica clinica, Prontuario prontuario) {
+        if (prontuario.getStatus() == ProntuarioStatus.COMPLETED)
+            prontuario.setStatus(ProntuarioStatus.UPDATING);
+
         List<Procedimento> procedimentos = dto.getProcedimentos()
                 .stream()
                 .map((procedimentoDTO) -> {

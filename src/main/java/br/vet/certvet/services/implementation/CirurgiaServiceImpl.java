@@ -1,6 +1,7 @@
 package br.vet.certvet.services.implementation;
 
 import br.vet.certvet.dto.requests.prontuario.cirurgia.*;
+import br.vet.certvet.enums.ProntuarioStatus;
 import br.vet.certvet.models.*;
 import br.vet.certvet.models.factories.CirurgiaFactory;
 import br.vet.certvet.models.mappers.CirurgiaDTOMapper;
@@ -32,6 +33,9 @@ public class CirurgiaServiceImpl implements CirurgiaService {
     @Override
     @Transactional(rollbackFor = {SQLException.class, RuntimeException.class})
     public Cirurgia assignToProntuario(CirurgiaDTO dto, Clinica clinica, Prontuario prontuario) {
+        if (prontuario.getStatus() == ProntuarioStatus.COMPLETED)
+            prontuario.setStatus(ProntuarioStatus.UPDATING);
+
         final Cirurgia cirurgia = prontuario.getCirurgia() != null ?
                 CirurgiaDTOMapper.assignToModel(dto, prontuario.getCirurgia()) :
                 CirurgiaFactory.factory(dto, prontuario);
