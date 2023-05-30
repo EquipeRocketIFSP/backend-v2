@@ -27,7 +27,7 @@ public class EstoqueServiceImpl implements EstoqueService {
 
     private static final int RESPONSE_LIMIT = 30;
 
-    public EstoqueServiceImpl (EstoqueRepository estoqueRepository){
+    public EstoqueServiceImpl(EstoqueRepository estoqueRepository) {
         this.estoqueRepository = estoqueRepository;
     }
 
@@ -81,6 +81,19 @@ public class EstoqueServiceImpl implements EstoqueService {
 
         estoque.fill(dto);
 
+        return this.estoqueRepository.saveAndFlush(estoque);
+    }
+
+    @Override
+    @Transactional(rollbackFor = {SQLException.class, RuntimeException.class})
+    public Estoque add(BigDecimal dose, String reason, Estoque estoque, Usuario responsavel) {
+        final EstoqueTransacao transacao = new EstoqueTransacao(estoque, responsavel).setMotivo(reason).setStatus(TransacaoStatus.ENTRY);
+        final BigDecimal quantity = estoque.getQuantidade().add(dose);
+
+        estoque.setQuantidade(quantity);
+        transacao.setQuantidade(dose);
+
+        this.estoqueTransacaoRepository.saveAndFlush(transacao);
         return this.estoqueRepository.saveAndFlush(estoque);
     }
 
