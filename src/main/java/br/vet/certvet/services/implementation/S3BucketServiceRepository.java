@@ -1,5 +1,7 @@
 package br.vet.certvet.services.implementation;
 
+import br.vet.certvet.exceptions.AwsS3ReadException;
+import br.vet.certvet.exceptions.AwsS3WritingException;
 import br.vet.certvet.repositories.PdfRepository;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.regions.Regions;
@@ -21,14 +23,14 @@ import java.util.Optional;
 public class S3BucketServiceRepository implements PdfRepository {
 final static private String OPEN_POLICY = """
 {
-    \"Version\": \"2012-10-17\",
-    \"Statement\": [
+    "Version": "2012-10-17",
+    "Statement": [
         {
-            \"Sid\": \"PublicReadGetObject\",
-            \"Effect\": \"Allow\",
-            \"Principal\": \"*\",
-            \"Action\": [\"s3:GetObject\"],
-            \"Resource\": [\"arn:aws:s3:::${bucketName}/*\"]
+            "Sid": "PublicReadGetObject",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": ["s3:GetObject"],
+            "Resource": ["arn:aws:s3:::${bucketName}/*"]
         }
     ]
 }
@@ -54,7 +56,7 @@ final static private String OPEN_POLICY = """
                     .getObjectContent()
                     .readAllBytes();
         } catch (AmazonS3Exception e) {
-            log.error(e.getLocalizedMessage());
+            logAmazonError(e);
         }
 //        log.error("Nenhum arquivo identificado para o nome: " + keyName);
         return Optional.ofNullable(arr);
@@ -71,7 +73,7 @@ final static private String OPEN_POLICY = """
             }
             return Boolean.TRUE;
         } catch (AmazonS3Exception e) {
-            log.error(e.getLocalizedMessage());
+            logAmazonError(e);
         }
         return Boolean.FALSE;
     }
@@ -98,13 +100,9 @@ final static private String OPEN_POLICY = """
                 delete.setBucketName(bucketName);
                 s3.deletePublicAccessBlock(delete);
             }
-        } catch (AmazonS3Exception e) {
+        } catch (AmazonServiceException e) {
             log.error("Erro na criação do Bucket");
-            log.error("Error Message:    " + e.getMessage());
-            log.error("HTTP Status Code: " + e.getStatusCode());
-            log.error("AWS Error Code:   " + e.getErrorCode());
-            log.error("Error Type:       " + e.getErrorType());
-            log.error("Request ID:       " + e.getRequestId());
+            logAmazonError(e);
         }
 
         try {
@@ -115,26 +113,32 @@ final static private String OPEN_POLICY = """
                 log.debug("s3.getObject(bucketName, keyName): " + s3.getObject(bucketName, keyName));
                 return s3.getObject(bucketName, keyName).getObjectMetadata();
             }
-        } catch (AmazonS3Exception e) {
+        } catch (AmazonServiceException e) {
             log.warn("Arquivo não identificado. Gravando...");
-            log.error("Error Message:    " + e.getMessage());
-            log.error("HTTP Status Code: " + e.getStatusCode());
-            log.error("AWS Error Code:   " + e.getErrorCode());
-            log.error("Error Type:       " + e.getErrorType());
-            log.error("Request ID:       " + e.getRequestId());
+            logAmazonError(e);
+            throw new AwsS3ReadException(e.getLocalizedMessage(), e);
         } finally {
             setPublicFileReadingPermission(bucketName, false);
         }
         try {
             log.debug("Persistindo o arquivo pdf");
             return s3.putObject(bucketName, keyName, new ByteArrayInputStream(fileBinary), getObjectMetadata(fileBinary)).getMetadata();
-        } catch (AmazonServiceException | IOException e) {
+        } catch (AmazonServiceException  e) {
             log.error(e.getLocalizedMessage());
+            logAmazonError(e);
+            throw new AwsS3WritingException(e.getLocalizedMessage(), e);
         }
-        return null;
     }
 
-    private static ObjectMetadata getObjectMetadata(byte[] storedFile) throws IOException {
+    private static void logAmazonError(AmazonServiceException e) {
+        log.error("Error Message:    " + e.getMessage());
+        log.error("HTTP Status Code: " + e.getStatusCode());
+        log.error("AWS Error Code:   " + e.getErrorCode());
+        log.error("Error Type:       " + e.getErrorType());
+        log.error("Request ID:       " + e.getRequestId());
+    }
+
+    private static ObjectMetadata getObjectMetadata(byte[] storedFile) {
         ObjectMetadata o = new ObjectMetadata();
         o.setContentType("application/pdf");
         o.setContentLength((long) storedFile.length);

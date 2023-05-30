@@ -7,6 +7,7 @@ import br.vet.certvet.dto.responses.PaginatedResponse;
 import br.vet.certvet.models.Clinica;
 import br.vet.certvet.models.Medicamento;
 import br.vet.certvet.services.MedicamentoService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @RestController
 @CrossOrigin
 @RequestMapping("/api/medicamento")
+@SecurityRequirement(name = "bearer-key")
 public class MedicamentoController extends BaseController {
     @Autowired
     private TokenService tokenService;

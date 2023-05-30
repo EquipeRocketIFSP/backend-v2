@@ -233,7 +233,7 @@ public class UsuarioTest {
     @Test
     public void getUnexistentTutor() {
         assertThrowsExactly(NotFoundException.class, () -> {
-            this.usuarioService.findOne(Long.getLong("999999999"), UsuarioTest.clinica);
+            this.usuarioService.findOne(999999999L, UsuarioTest.clinica);
         });
     }
 
@@ -333,7 +333,7 @@ public class UsuarioTest {
         dto.setTelefone("(11) 2211-1111");
         dto.setEmail("camaeon@teste.com");
         dto.setSenha("1234");
-        dto.is_admin = true;
+        dto.setAdmin(true);
 
         return dto;
     }
@@ -354,7 +354,7 @@ public class UsuarioTest {
         dto.setTelefone("(11) 22333-1111");
         dto.setEmail("liero@teste.com");
         dto.setSenha("1234");
-        dto.is_admin = false;
+        dto.setAdmin(false);
 
         return dto;
     }
@@ -375,7 +375,7 @@ public class UsuarioTest {
         dto.setTelefone("(11) 22334-1211");
         dto.setEmail("buior@teste.com");
         dto.setSenha("1234");
-        dto.is_admin = false;
+        dto.setAdmin(false);
         dto.setCrmv("SP-1234");
 
         return dto;
@@ -383,14 +383,14 @@ public class UsuarioTest {
 
     public static void updateUsuarioDto(UsuarioRequestDto dto) {
         dto.setNome("Nome Teste");
-        dto.setEmail("teste@teste.com");
-        dto.setCep("11111-000");
-        dto.setBairro("Bairro Teste");
+        dto.setCpf("teste@teste.com");
+        dto.setRg("11111-000");
+        dto.setCep("Bairro Teste");
         dto.setLogradouro("Logradouro Teste");
-        dto.setCidade("Cidade Teste");
-        dto.setEstado("SP");
-        dto.setCpf("111.111.111-11");
-        dto.setRg("11.111.111-1");
+        dto.setNumero("Cidade Teste");
+        dto.setBairro("SP");
+        dto.setCidade("111.111.111-11");
+        dto.setEstado("11.111.111-1");
         dto.setCelular("(11) 90000-1111");
         dto.setTelefone("(11) 0000-1111");
     }
