@@ -1,11 +1,10 @@
 package br.vet.certvet.models;
 
-import br.vet.certvet.enums.QuandoAplicarPrescricao;
 import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.List;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
@@ -35,18 +34,20 @@ public class Prescricao {
 
 
     //TODO: Corrigir associação
-    /*@Setter
-    @ManyToOne()
-    private List<Usuario> assinadores;*/
+    @Setter
+    @ManyToOne
+    @ToString.Exclude
+    private Usuario assinador;
 
-    private LocalDate dataCriacao;
-    private LocalDate dataExclusao;
+    private LocalDateTime dataCriacao;
+    private LocalDateTime dataExclusao;
 
     public boolean isDeleted(){
         return dataExclusao != null;
     }
 
     @ManyToOne
+    @ToString.Exclude
     private Prontuario prontuario;
 
     @Override
@@ -56,46 +57,69 @@ public class Prescricao {
 
         Prescricao that = (Prescricao) o;
 
-        if (!uso.equals(that.uso)) return false;
-        if (!dataCriacao.equals(that.dataCriacao)) return false;
-        if (!nome.equals(that.nome)) return false;
-        if (!dose.equals(that.dose)) return false;
-        if (!formaFarmaceutica.equals(that.formaFarmaceutica)) return false;
-        if (!concentracao.equals(that.concentracao)) return false;
-        if (!frequencia.equals(that.frequencia)) return false;
-        if (!duracao.equals(that.duracao)) return false;
-        if (!quandoAplicar.equals(that.quandoAplicar)) return false;
-        if (!Objects.equals(observacoes, that.observacoes)) return false;
-        return prontuario.equals(that.prontuario);
+        if (versao != that.versao) return false;
+        if (!Objects.equals(codigo, that.codigo)) return false;
+        if (!Objects.equals(uso, that.uso)) return false;
+        if (!Objects.equals(nome, that.nome)) return false;
+        if (!Objects.equals(dose, that.dose)) return false;
+        if (!Objects.equals(formaFarmaceutica, that.formaFarmaceutica))
+            return false;
+        if (!Objects.equals(concentracao, that.concentracao)) return false;
+        if (!Objects.equals(frequencia, that.frequencia)) return false;
+        if (!Objects.equals(duracao, that.duracao)) return false;
+        if (!Objects.equals(quandoAplicar, that.quandoAplicar))
+            return false;
+        return Objects.equals(observacoes, that.observacoes);
     }
 
     @Override
     public int hashCode() {
-        int result = uso.hashCode();
-        result = 31 * result + dataCriacao.hashCode();
-        result = 31 * result + nome.hashCode();
-        result = 31 * result + dose.hashCode();
-        result = 31 * result + formaFarmaceutica.hashCode();
-        result = 31 * result + concentracao.hashCode();
-        result = 31 * result + frequencia.hashCode();
-        result = 31 * result + duracao.hashCode();
-        result = 31 * result + quandoAplicar.hashCode();
+        int result = versao;
+        result = 31 * result + (codigo != null ? codigo.hashCode() : 0);
+        result = 31 * result + (uso != null ? uso.hashCode() : 0);
+        result = 31 * result + (nome != null ? nome.hashCode() : 0);
+        result = 31 * result + (dose != null ? dose.hashCode() : 0);
+        result = 31 * result + (formaFarmaceutica != null ? formaFarmaceutica.hashCode() : 0);
+        result = 31 * result + (concentracao != null ? concentracao.hashCode() : 0);
+        result = 31 * result + (frequencia != null ? frequencia.hashCode() : 0);
+        result = 31 * result + (duracao != null ? duracao.hashCode() : 0);
+        result = 31 * result + (quandoAplicar != null ? quandoAplicar.hashCode() : 0);
         result = 31 * result + (observacoes != null ? observacoes.hashCode() : 0);
-        result = 31 * result + prontuario.hashCode();
+        result = 31 * result + (dataCriacao != null ? dataCriacao.hashCode() : 0);
+        result = 31 * result + (dataExclusao != null ? dataExclusao.hashCode() : 0);
         return result;
     }
 
-    public void delete() {
-        this.dataExclusao = LocalDate.now();
+    public Prescricao delete() {
+        this.dataExclusao = LocalDateTime.now();
+        return this;
     }
 
     public Prescricao firstVersion() {
         this.versao = 1;
+        this.dataCriacao = LocalDateTime.now();
         return this;
     }
 
     public Prescricao increaseVersion() {
         this.versao += 1;
+        this.dataCriacao = LocalDateTime.now();
+        return this;
+    }
+
+    public Prescricao setProntuario(Prontuario prontuario) {
+        this.prontuario = prontuario;
+        return this;
+    }
+
+    public Prescricao setDataCriacao() {
+        this.versao = 1;
+        this.dataCriacao = LocalDateTime.now();
+        return this;
+    }
+
+    public Prescricao setVersao(int versao){
+        this.versao = versao;
         return this;
     }
 }

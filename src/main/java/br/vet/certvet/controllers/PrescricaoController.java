@@ -3,8 +3,10 @@ package br.vet.certvet.controllers;
 import br.vet.certvet.contracts.apis.ipcBr.IcpResponse;
 import br.vet.certvet.dto.requests.prontuario.MedicacaoPrescritaDTO;
 import br.vet.certvet.dto.requests.prontuario.MedicacaoPrescritaListDTO;
+import br.vet.certvet.exceptions.AssinadorNaoCadastradoException;
 import br.vet.certvet.exceptions.InvalidSignedDocumentoException;
 import br.vet.certvet.models.Prescricao;
+import br.vet.certvet.models.PrescricaoRepository;
 import br.vet.certvet.models.Prontuario;
 import br.vet.certvet.models.Usuario;
 import br.vet.certvet.services.PdfService;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @RestController
@@ -28,15 +31,17 @@ import java.util.*;
 @CrossOrigin
 @Slf4j
 public class PrescricaoController extends BaseController {
+    private final PrescricaoRepository prescricaoRepository;
     private final ProntuarioService prontuarioService;
     private final PdfService pdfService;
 
     public PrescricaoController(
             final ProntuarioService prontuarioService,
-            final PdfService pdfService
-    ) {
+            final PdfService pdfService,
+            PrescricaoRepository prescricaoRepository) {
         this.prontuarioService = prontuarioService;
         this.pdfService = pdfService;
+        this.prescricaoRepository = prescricaoRepository;
     }
 
     @GetMapping(
@@ -112,8 +117,11 @@ public class PrescricaoController extends BaseController {
                                 .stream()
                                 .map(prescricao -> {
                                     if(prescricao.getVersao() == version) {
-                                        //TODO: Corrigir associação
-                                        //prescricao.setAssinadores(assinadores);
+                                        prescricao.setAssinador(
+                                                assinadores.stream()
+                                                        .findFirst()
+                                                        .orElseThrow(() -> new AssinadorNaoCadastradoException("Não foi possível identificar uma a assinatura válida."))
+                                        );
                                     }
                                     return prescricao;
                                 }).toList())
@@ -133,21 +141,36 @@ public class PrescricaoController extends BaseController {
     ) {
         //TODO: testar ser versionamento esta correspondendo a expectativa
         final Prontuario prontuario = findProntuario(prontuarioCodigo);
-        medicacaoPrescritaList.getMedicacoesUtilizadas()
+        final int max = prontuario.getPrescricoes()
                 .stream()
-                .map(medicacaoPrescrita -> new MedicacaoPrescritaDTO().translate(prontuario))
+                .mapToInt(Prescricao::getVersao)
+                .max()
+                .orElse(1);
+        medicacaoPrescritaList.getMedicacoesPrescritas()
+                .stream()
+                .map(medicacaoPrescrita -> medicacaoPrescrita.translate(prontuario))
+                .map(prescricao -> prescricao.setProntuario(prontuario))
                 .forEach(prescricao -> {
+                    prescricao.setVersao(max);
                     List<Prescricao> p = prontuario.getPrescricoes();
-                    if(p.contains(prescricao)) p.set(p.indexOf(prescricao), p.get(p.indexOf(prescricao)).increaseVersion());
-                    else p.add(prescricao.firstVersion());
+                    if(!p.contains(prescricao)) p.add(prescricao.setDataCriacao());
                 });
-        Prontuario savedProntuario = prontuarioService.save(prontuario);
+//        List<Prescricao> prescricoesARemover = prontuario.getPrescricoes()
+//                .stream()
+//                .map(prescricao -> new MedicacaoPrescritaDTO().of(prescricao))
+//                .filter(prescricao -> !medicacaoPrescritaList.getMedicacoesPrescritas().contains(prescricao))
+//                .map(medicacaoPrescrita -> medicacaoPrescrita.translate(prontuario))
+//                .map(prescricao -> prescricao.setProntuario(prontuario))
+//                .toList();
+//        prescricoesARemover.forEach(prescricao -> prescricaoRepository.save(prontuario.getPrescricoes().getprescricao.delete()));
+        prescricaoRepository.saveAll(prontuario.getPrescricoes());
         return ResponseEntity.created(
                 URI.create("/api/prontuario/prescricao/" + prontuarioCodigo))
-                .header("version", savedProntuario.prescricaoLatestVersion())
+                .header("version", prontuario.prescricaoLatestVersion())
                 .body(new MedicacaoPrescritaListDTO().of(
-                        savedProntuario.getPrescricoes()
+                        prontuario.getPrescricoes()
                                 .stream()
+                                .filter(prescricao -> prescricao.getVersao() == max)
                                 .map(p -> new MedicacaoPrescritaDTO().of(p))
                                 .toList()
                 ));
@@ -160,7 +183,7 @@ public class PrescricaoController extends BaseController {
     ){
         //TODO: Sempre marcar como excluído a versão do documento anterior
         Prontuario prontuario = findProntuario(prontuarioCodigo);
-        List<Prescricao> prescritoARemover = medicacaoPrescritaList.getMedicacoesUtilizadas()
+        List<Prescricao> prescritoARemover = medicacaoPrescritaList.getMedicacoesPrescritas()
                 .stream()
                 .map(medicacaoPrescrita -> new MedicacaoPrescritaDTO().translate(prontuario))
                 .toList();
@@ -174,7 +197,7 @@ public class PrescricaoController extends BaseController {
                 .getPrescricoes()
                 .stream()
                 .map(Prescricao::getDataExclusao)
-                .map(LocalDate::toString)
+                .map(LocalDateTime::toString)
                 .toList();
         return ResponseEntity.ok("Removido com sucesso em: " + excluidos );
     }

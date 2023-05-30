@@ -4,6 +4,7 @@ import br.vet.certvet.models.Animal;
 import br.vet.certvet.models.Usuario;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,5 +20,6 @@ public interface AnimalRepository extends JpaRepository<Animal, Long> {
 
     Long countByNomeContainingAndTutores(String search, Usuario tutor);
 
+    @Query("select a from Animal a inner join a.tutores tutores where tutores.id = ?1 and a.nome = ?2")
     Optional<Animal> findByTutores_idAndNome(Long id, String nome);
 }

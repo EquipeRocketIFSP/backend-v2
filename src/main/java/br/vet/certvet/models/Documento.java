@@ -87,7 +87,9 @@ public class Documento {
     @ManyToOne
     @JoinTable(name = "prontuario_documentos",
             joinColumns = { @JoinColumn(name = "documentos_id") },
-            inverseJoinColumns = { @JoinColumn(name = "prontuario_id") })
+            inverseJoinColumns = { @JoinColumn(name = "prontuario_id") },
+            uniqueConstraints = { @UniqueConstraint(columnNames = {"documentos_id", "prontuario_id"}) }
+    )
     private Prontuario prontuario;
 
     public Documento(LocalDateTime now) {

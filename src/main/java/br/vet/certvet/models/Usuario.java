@@ -98,16 +98,27 @@ public class Usuario implements UserDetails, Fillable<UsuarioRequestDto> {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "Usuario_authorities",
             joinColumns = @JoinColumn(name = "users_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "authorities_id", referencedColumnName = "id"))
+            inverseJoinColumns = @JoinColumn(name = "authorities_id", referencedColumnName = "id"),
+            uniqueConstraints = { @UniqueConstraint(columnNames = {"users_id", "authorities_id"}) }
+    )
     private List<Authority> authorities;
     private String email;
 
     @ManyToMany
     @ToString.Exclude
-    private List<Documento> assinaturas;
+    private List<Documento> documentosAssinados;
 
-    public void setAssinaturas(List<Documento> assinaturas) {
-        this.assinaturas = assinaturas;
+    @ToString.Exclude
+    @OneToMany
+    @JoinTable(name = "Usuario_prescricoesAssinadas",
+            joinColumns = @JoinColumn(name = "users_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "prescicao_id", referencedColumnName = "id"),
+            uniqueConstraints = { @UniqueConstraint(columnNames = {"users_id", "prescicao_id"}) }
+    )
+    private List<Prescricao> prescricoesAssinadas;
+
+    public void setDocumentosAssinados(List<Documento> documentosAssinados) {
+        this.documentosAssinados = documentosAssinados;
     }
 
     public Usuario(UsuarioRequestDto dto, Clinica clinica) {
