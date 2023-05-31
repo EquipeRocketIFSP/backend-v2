@@ -19,7 +19,7 @@
     "obito": {
         "cabecalho": true,
         "titulo": "ATESTADO DE ÓBITO",
-        "declara_consentimento": "Atesto para os devidos fins que o animal abaixo identificado veio a óbito na localidade ${prontuario.obito.local}, às ${prontuario.obito.horas}, horas do dia (${prontuario.obito.data}), sendo a provável causa mortis ${prontuario.obito.causa}.",
+        "declara_consentimento": "Atesto para os devidos fins que o animal abaixo identificado veio a óbito na localidade ${prontuario.obito.local}, às ${prontuario.obito.horas}, horas do dia ${prontuario.obito.data}, sendo a provável causa mortis ${prontuario.obito.causa}.",
         "identifica_animal": true,
         "declara_ciencia_riscos": false,
         "observacoes_veterinario": false,
@@ -70,7 +70,7 @@
     "retiraCorpo": {
         "cabecalho": true,
         "titulo": "TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO PARA RETIRADA DE CORPO DE ANIMAL EM ÓBITO",
-        "declara_consentimento": "Declaro para os devidos fins, que, nesta ocasião, retiro o cadáver do animal abaixo identificado, que veio a óbito na localidade ${prontuario.obito.local}, às ${prontuario.obito.horas}, horas do dia (${prontuario.obito.data}), cujo óbito, provocado pela provável <b>causa mortis</b> ${prontuario.obito.causa} foi constatado pelo médico-veterinário que subscreve a presente, e que recebi esclarecimentos quanto à necessidade de dar tratamento respeitoso e destinação ambiental adequada ao cadáver, em respeito às normas ambientais.",
+        "declara_consentimento": "Declaro para os devidos fins, que, nesta ocasião, retiro o cadáver do animal abaixo identificado, que veio a óbito na localidade ${prontuario.obito.local}, às ${prontuario.obito.horas}, horas do dia ${prontuario.obito.data}, cujo óbito, provocado pela provável <b>causa mortis</b> ${prontuario.obito.causa} foi constatado pelo médico-veterinário que subscreve a presente, e que recebi esclarecimentos quanto à necessidade de dar tratamento respeitoso e destinação ambiental adequada ao cadáver, em respeito às normas ambientais.",
         "identifica_animal": true,
         "declara_ciencia_riscos": false,
         "observacoes_veterinario": true,

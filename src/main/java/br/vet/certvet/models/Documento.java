@@ -52,24 +52,6 @@ public class Documento {
     @ToString.Exclude
     private Clinica clinica;
     private String caminhoArquivo;
-    public static Documento empty(){
-        return Documento.builder()
-                .tipo("")
-                .codigo("")
-                .versao(-1)
-                .criadoEm(new Date())
-                .observacaoVet("")
-                .observacaoTutor("")
-                .causaMortis("")
-                .causaMortisDescription("")
-                .orientaDestinoCorpo("")
-                .local("")
-                .dataHoraObito(LocalDateTime.of(1,1,1,1,1,1))
-                .terapia("")
-                .anestesia("")
-                .observacoes("")
-                .build();
-    }
 
     protected String md5 = null;
     protected String etag = null;
@@ -87,7 +69,9 @@ public class Documento {
     @ManyToOne
     @JoinTable(name = "prontuario_documentos",
             joinColumns = { @JoinColumn(name = "documentos_id") },
-            inverseJoinColumns = { @JoinColumn(name = "prontuario_id") })
+            inverseJoinColumns = { @JoinColumn(name = "prontuario_id") },
+            uniqueConstraints = { @UniqueConstraint(columnNames = {"documentos_id", "prontuario_id"}) }
+    )
     private Prontuario prontuario;
 
     public Documento(LocalDateTime now) {

@@ -85,7 +85,8 @@ public class Clinica implements Fillable<ClinicaRequestDto> {
     @JoinTable(
             name = "clinica_usuarios",
             joinColumns = @JoinColumn(name = "clinica_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "usuario_id", referencedColumnName = "id")
+            inverseJoinColumns = @JoinColumn(name = "usuario_id", referencedColumnName = "id"),
+            uniqueConstraints = { @UniqueConstraint(columnNames = {"clinica_id", "usuario_id"}) }
     )
     @ToString.Exclude
     private List<Usuario> usuarios;
