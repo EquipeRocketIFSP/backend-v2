@@ -127,6 +127,7 @@ public class ProntuarioController extends BaseController {
             @RequestHeader(HttpHeaders.CONTENT_TYPE) String contentType,
             @PathVariable Long id
     ) throws IOException {
+        //TODO: Priorizar escrita do prontuario
         if (!MediaType.APPLICATION_PDF_VALUE.equals(contentType))
             return ResponseEntity.badRequest()
                     .header("reason", "Media type not allowed")

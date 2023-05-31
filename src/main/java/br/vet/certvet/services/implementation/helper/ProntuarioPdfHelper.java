@@ -5,7 +5,11 @@ import br.vet.certvet.models.especializacoes.Doc;
 import br.vet.certvet.models.especializacoes.PrescricaoDocumento;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.text.StringSubstitutor;
+import org.springframework.format.datetime.DateFormatter;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -39,8 +43,8 @@ public class ProntuarioPdfHelper {
                 .put("documento.orientaDestinoCorpo",   obito.getOrientaDestinoCorpo())
                 .put("prontuario.obito.local",          obito.getLocal())
                 .put("documento.outrasObservacoes",     obito.getObservacoes())
-                .put("prontuario.obito.horas",          obito.getDataHoraObito().toString())
-                .put("prontuario.obito.data",           obito.getDataHoraObito().toString())
+                .put("prontuario.obito.horas",          obito.getDataHoraObito().toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm:ss")))
+                .put("prontuario.obito.data",           obito.getDataHoraObito().toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))
                 .put("prontuario.codigo",               prontuario.getCodigo())
                 .put("data.dia",                        String.valueOf(prontuario.getDataAtendimento().getDayOfMonth()))
                 .put("data.mes",                        prontuario.getMonthAtendimento())
@@ -50,34 +54,39 @@ public class ProntuarioPdfHelper {
                 .put("tutor.endereco",                  tutor.getEnderecoCompleto())
                 .put("veterinario.nome",                veterinario.getNome())
                 .put("veterinario.crmv",                veterinario.getRegistroCRMV());
-
         if(prontuario.getExames()!=null)
-            builder.put("prontuario.exames",               prontuario.getExames().toString());
+            builder.put("prontuario.exames",               prontuario.getExames().toString().replace("\\[]", ""));
         if(prontuario.getCirurgia()!=null)
-            builder.put("prontuario.cirurgia",             prontuario.getCirurgia().toString());
+            builder.put("prontuario.cirurgia",             prontuario.getCirurgia().getDescricao());
 
         return new StringSubstitutor(builder.build()).replace(layout);
     }
 
     private static String getObservacaoTutor(List<Documento> documentos) {
         return documentos.stream()
-                .filter(Objects::nonNull)
                 .map(Documento::getObservacaoTutor)
-                .toString();
+                .filter(Objects::nonNull)
+                .toList()
+                .toString()
+                .replaceAll("\\[]", "");
     }
 
     private static String getObservacaoVet(List<Documento> documentos) {
         return documentos.stream()
-                .filter(Objects::nonNull)
                 .map(Documento::getObservacaoVet)
-                .toString();
+                .filter(Objects::nonNull)
+                .toList()
+                .toString()
+                .replaceAll("\\[]", "");
     }
 
     private static String getDocumentoTipo(List<Documento> documentos, String tipo) {
         return documentos.stream()
                 .filter(Objects::nonNull)
                 .filter(documento -> documento.getTipo().equals(tipo))
-                .toString();
+                .toList()
+                .toString()
+                .replaceAll("\\[]", "");
     }
 
     private static Documento getObito(Prontuario prontuario) {
