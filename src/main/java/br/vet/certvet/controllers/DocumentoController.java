@@ -84,6 +84,7 @@ public class DocumentoController extends BaseController {
             OptimisticLockingFailureException,
             IOException {
         Prontuario prontuario = findProntuarioEClinica(auth, prontuarioCodigo);
+//        Versão abaixo dá suporte para a documentação, mas está comentada para podermos prosseguir ocm a implementação
 //        Documento documento = documentoService.save(documentoPdfDto.toDocumento(prontuario, tipo));
 //        return ResponseEntity.ok(
 //                pdfService.writePdfDocumentoEmBranco(
