@@ -7,25 +7,17 @@ import br.vet.certvet.repositories.DocumentoRepository;
 import br.vet.certvet.repositories.PdfRepository;
 import br.vet.certvet.repositories.ProntuarioRepository;
 import br.vet.certvet.services.DocumentoService;
-import com.amazonaws.services.s3.model.ObjectMetadata;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.junit4.SpringRunner;
 
-import javax.ws.rs.core.Application;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -34,14 +26,14 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -73,14 +65,16 @@ public class PdfFromHtmlPdfServiceImplTest {
 
 //    @InjectMocks
 //    @Qualifier("pdfFromHtmlPdfServiceImpl")
-    private PdfFromHtmlPdfServiceImpl service = new PdfFromHtmlPdfServiceImpl(documentoRepository, pdfRepository, clinicaRepository);
+    private PdfFromHtmlPdfServiceImpl service;
 
     @BeforeEach
     void setUp(){
+        service = new PdfFromHtmlPdfServiceImpl(documentoRepository, pdfRepository, clinicaRepository);
     }
 
     @AfterEach
     void tearDown(){
+        service = null;
     }
 
     private Prontuario getProntuarioInstance(){

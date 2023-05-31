@@ -30,7 +30,8 @@ import org.springframework.stereotype.Service;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -42,7 +43,7 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
     final static String ERRO = "{\"Error\":\"E022: Não foi possível baixar o arquivo da URL fornecida\"}";
 
     @Value("${app.default.pdf.password}")
-    private static String OWNER_PASSWORD;
+    private String OWNER_PASSWORD;
 
     private final DocumentoRepository documentoRepository;
 
@@ -50,14 +51,19 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
 
     private final ClinicaRepository clinicaRepository;
 
-    public PdfFromHtmlPdfServiceImpl(DocumentoRepository documentoRepository, PdfRepository pdfRepository, ClinicaRepository clinicaRepository) {
+    @Autowired
+    private static UsuarioRepository usuarioRepository;
+
+    public PdfFromHtmlPdfServiceImpl(
+            DocumentoRepository documentoRepository,
+            PdfRepository pdfRepository,
+            ClinicaRepository clinicaRepository
+    ) {
         this.documentoRepository = documentoRepository;
         this.pdfRepository = pdfRepository;
         this.clinicaRepository = clinicaRepository;
     }
 
-    @Autowired
-    private static UsuarioRepository usuarioRepository;
 
     @Override
     public byte[] writeProntuario(Prontuario prontuario) throws Exception {

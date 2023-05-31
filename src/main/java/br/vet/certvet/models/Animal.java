@@ -125,13 +125,13 @@ public class Animal implements Fillable<AnimalRequestDto> {
 
     @Override
     public void fill(AnimalRequestDto dto) {
-        this.nome = dto.nome;
-        this.especie = dto.especie;
-        this.sexo = SexoAnimal.valueOf(dto.sexo);
-        this.anoNascimento = dto.ano_nascimento;
-        this.peso = dto.peso;
-        this.pelagem = dto.pelagem;
-        this.raca = dto.raca;
+        this.nome = dto.getNome();
+        this.especie = dto.getEspecie();
+        this.sexo = SexoAnimal.valueOf(dto.getSexo());
+        this.anoNascimento = dto.getAno_nascimento();
+        this.peso = dto.getPeso();
+        this.pelagem = dto.getPelagem();
+        this.raca = dto.getRaca();
     }
 
     public int getIdade() {
