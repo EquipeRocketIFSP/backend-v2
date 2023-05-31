@@ -1,0 +1,30 @@
+version: '3'
+services:
+  back:
+    image: equiperocket/backend-v2_back:latest
+    build:
+      dockerfile: ./Dockerfile
+      args:
+        - AUTH_USER=admin
+        - DEFAULT_PDF_PASS=86E9tj9Z0ip4OLN
+        - DB_PASSWORD=1234
+        - DB_USER=root
+        - PROFILE=local
+        - SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3306/certvet?useUnicode=true&characterEncoding=utf8&useSSL=true&allowPublicKeyRetrieval=true
+        - ARGS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5000 -Xmx1G -Xms128m -XX:MaxMetaspaceSize=128m
+        - MAIL_PASS=yvayjysaldpubihr
+        - MAIL_USR=cartvet.ifsp@gmail.com
+    ports:
+      - '80:80'
+      - '443:443'
+      - '5000:5000'
+    environment:
+      - AUTH_USER=admin
+      - DEFAULT_PDF_PASS=86E9tj9Z0ip4OLN
+      - SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3306/certvet?useUnicode=true&characterEncoding=utf8&useSSL=true&allowPublicKeyRetrieval=true
+      - ARGS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5000 -Xmx1G -Xms128m -XX:MaxMetaspaceSize=128m
+      - PROFILE=local
+      - DB_PASSWORD=1234
+      - DB_USER=root
+      - MAIL_PASS=yvayjysaldpubihr
+      - MAIL_USR=cartvet.ifsp@gmail.com
