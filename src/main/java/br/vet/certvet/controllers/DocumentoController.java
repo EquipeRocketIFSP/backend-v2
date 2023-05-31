@@ -95,7 +95,7 @@ public class DocumentoController extends BaseController {
                 pdfService.writePdfDocumentoEmBranco(
                         prontuario.getDocumentos()
                                 .stream()
-                                .filter(documento -> documento.getTipo().equals("sanitario"))
+                                .filter(documento -> documento.getTipo().equals("Documento"))
                                 .findFirst()
                                 .orElseThrow(()->new DocumentoNotFoundException("O tipo de documento precisa ser Sanitário")),
                         documentoService.provideLayout(tipo)
