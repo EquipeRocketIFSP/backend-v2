@@ -82,7 +82,16 @@ nb-configuration.xml
 ## OS X
 ##############################
 .DS_Store
-# Elastic Beanstalk Files
+
+##############################
+## Elastic Beanstalk Files
+##############################
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+
+##############################
+## coverageFolder
+##############################
+.htmlReport/*
+.htmlReport/**
