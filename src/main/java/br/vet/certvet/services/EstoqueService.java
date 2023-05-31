@@ -11,6 +11,8 @@ public interface EstoqueService {
 
     Estoque edit(EstoqueRequestDto dto, Estoque estoque, Usuario responsavel);
 
+    Estoque add(BigDecimal dose, String reason, Estoque estoque, Usuario responsavel);
+
     Estoque subtract(BigDecimal dose, String reason, Estoque estoque, Usuario responsavel);
 
     Estoque findOne(Long id, Medicamento medicamento);

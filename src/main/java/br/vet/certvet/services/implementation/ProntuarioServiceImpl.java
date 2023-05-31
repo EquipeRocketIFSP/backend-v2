@@ -20,7 +20,6 @@ import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -149,27 +148,23 @@ public class ProntuarioServiceImpl implements ProntuarioService {
     public Prontuario edit(ProntuarioDTO dto, Prontuario prontuario) {
         ProntuarioDTOMapper.assignToModel(dto, prontuario);
 
+        if (prontuario.getStatus() == ProntuarioStatus.COMPLETED)
+            prontuario.setStatus(ProntuarioStatus.UPDATING);
+
         return this.prontuarioRepository.saveAndFlush(prontuario);
     }
 
     @Override
     @Transactional(rollbackFor = {SQLException.class, RuntimeException.class})
     public Prontuario finalizeMedicalRecord(Prontuario prontuario) {
-        int version = prontuario.getVersao();
+        final ProntuarioStatus status = prontuario.getStatus();
 
-        if (prontuario.getStatus() != ProntuarioStatus.PENDING) {
+        if (status == ProntuarioStatus.COMPLETED)
             return prontuario;
-        }
+        else if (status == ProntuarioStatus.PENDING)
+            prontuario.setDataAtendimento(LocalDateTime.now());
 
-        Cirurgia cirurgia = prontuario.getCirurgia();
-        List<Procedimento> procedimentos = prontuario.getProcedimentos();
-
-        if (cirurgia != null)
-            this.handleCirurgia(cirurgia, prontuario);
-
-        procedimentos.forEach((procedimento) -> this.handleProcedimento(procedimento, prontuario));
-
-        prontuario.setDataAtendimento(LocalDateTime.now()).setVersao(++version).setStatus(ProntuarioStatus.COMPLETED);
+        prontuario.setStatus(ProntuarioStatus.COMPLETED);
 
         return this.prontuarioRepository.saveAndFlush(prontuario);
     }
@@ -283,39 +278,5 @@ public class ProntuarioServiceImpl implements ProntuarioService {
                 .caminhoArquivo(fileName)
 //                .setProntuario(prontuario)
                 ;
-    }
-
-    private void handleCirurgia(Cirurgia cirurgia, Prontuario prontuario) {
-        cirurgia.getMedicamentosConsumidos().forEach((cirurgiaEstoqueMedicamento) -> {
-            final BigDecimal dose = cirurgiaEstoqueMedicamento.getDose();
-            final Usuario veterinario = prontuario.getVeterinario();
-            final Estoque estoque = cirurgiaEstoqueMedicamento.getEstoque();
-            final String reason = new StringBuilder("Usado na cirurgia ")
-                    .append(cirurgia.getDescricao())
-                    .append(" no prontuário ")
-                    .append(prontuario.getCodigo())
-                    .append(" do animal ")
-                    .append(prontuario.getAnimal().getNome()).toString();
-
-            this.estoqueService.subtract(dose, reason, estoque, veterinario);
-        });
-    }
-
-    private void handleProcedimento(Procedimento procedimento, Prontuario prontuario) {
-        final BigDecimal dose = procedimento.getDoseMedicamento();
-        final Usuario veterinario = prontuario.getVeterinario();
-        final Estoque estoque = procedimento.getMedicamentoConsumido();
-
-        if (dose == null || estoque == null)
-            return;
-
-        final String reason = new StringBuilder("Usado no procedimento ")
-                .append(procedimento.getDescricao())
-                .append(" no prontuário ")
-                .append(prontuario.getCodigo())
-                .append(" do animal ")
-                .append(prontuario.getAnimal().getNome()).toString();
-
-        this.estoqueService.subtract(dose, reason, estoque, veterinario);
     }
 }
