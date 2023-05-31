@@ -60,13 +60,13 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
         final String layoutFile = "src/main/resources/documents/prontuario/ProntuarioLayout.html";
 //        String fileName = prontuario.getCodigo() + ".pdf";
         String layout = Files.readString(Path.of(layoutFile));
-        layout = ProntuarioPdfHelper.fillLayoutFields(prontuario, layout);
+        layout = ProntuarioPdfHelper.fillLayoutFieldsForProntuario(prontuario, layout);
         return transformTxtToXmlToPdf(layout);
     }
 
     @Override
     public byte[] writePdfDocumentoEmBranco(
-            Prontuario prontuario,
+            Documento documento,
             Doc documentoTipo
     ) throws
             DocumentoNotPersistedException,
@@ -76,8 +76,8 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
         String layout = Files.readString(Path.of(from));
 
         documentoRepository.save(documentoTipo.getDocumento());
-        layout = ProntuarioPdfHelper.replaceWithDivs(documentoTipo, layout);
-        layout = ProntuarioPdfHelper.fillLayoutFields(prontuario, layout);
+        layout = ProntuarioPdfHelper.replaceWithDivsForDocumento(documentoTipo, layout);
+        layout = ProntuarioPdfHelper.fillLayoutFieldsForDocumento(documento, layout);
         return transformTxtToXmlToPdf(layout);
     }
 

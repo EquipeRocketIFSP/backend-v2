@@ -57,13 +57,13 @@ public class PdfFromHtmlPdfServiceImplTest {
     void tearDown(){
     }
 
-    private Prontuario getProntuarioInstance(){
-        Clinica clinica = Clinica.builder()
+    private Documento getDocumentoInstance(){
+        final Clinica clinica = Clinica.builder()
                 .cidade("Cidade das Abelhas")
                 .razaoSocial("Clinica vet")
                 .telefone("(12) 3456-7890")
                 .build();
-        Usuario tutor = Usuario.builder()
+        final Usuario tutor = Usuario.builder()
                 .nome("Caio Felipe Pires")
                 .cpf("175.578.151-22")
                 .rg("13.123.399-3")
@@ -80,7 +80,7 @@ public class PdfFromHtmlPdfServiceImplTest {
                 .password("6EzlRrYEzy")
                 .clinica(clinica)
                 .build();
-        Usuario veterinario = Usuario.builder()
+        final Usuario veterinario = Usuario.builder()
                 .nome("Diogo Rodrigo Theo Novaes")
                 .cpf("560.270.359-43")
                 .rg("10.586.140-6")
@@ -98,12 +98,10 @@ public class PdfFromHtmlPdfServiceImplTest {
                 .clinica(clinica)
                 .crmv("123456")
                 .build();
-
-        return Prontuario.builder()
+        final Prontuario prontuario = Prontuario.builder()
                 .codigo("code")
                 .dataAtendimento(
-                        LocalDateTime.now()
-                )
+                        LocalDateTime.now())
                 .animal(
                         Animal.builder()
                                 .especie("gato")
@@ -113,8 +111,7 @@ public class PdfFromHtmlPdfServiceImplTest {
                                 .pelagem("curta")
                                 .sexo(SexoAnimal.FEMEA)
                                 .tutores(
-                                        List.of(tutor)
-                                )
+                                        List.of(tutor))
                                 .build())
                 .clinica(clinica)
                 .tutor(tutor)
@@ -122,10 +119,9 @@ public class PdfFromHtmlPdfServiceImplTest {
                 .procedimentos(
                         List.of(
                                 Procedimento.builder()
-                                    .descricao("Vacinação")
-                                    .medicamentosConsumidos(
-                                            List.of(
-                                                    Estoque.builder()
+                                        .descricao("Vacinação")
+                                        .medicamentoConsumido(
+                                                Estoque.builder()
                                                         .medida("ml")
                                                         .quantidade(new BigDecimal("50.5"))
 //                                                        .clinica(clinica)
@@ -138,19 +134,23 @@ public class PdfFromHtmlPdfServiceImplTest {
                                                                         .principioAtivo("Virus Inativado")
                                                                         .build()
                                                         ).build()
-                                            )
-                                    ).build()
+                                        ).build()
                         )
                 ).build();
+
+        return Documento.builder()
+                .prontuario(prontuario)
+                .build();
     }
 
     @Test
     @DisplayName("Devolve um PDF de prontuario gerado a partir de HTML")
     void whenRequestProntuarioPdf_ThenReturnPdfFile() throws Exception {
 
-        Prontuario parametro = getProntuarioInstance();
+        Prontuario parametro = getDocumentoInstance()
+                .getProntuario();
         File outputFile = new File("src/test/resources/prontuario/htmlToPdf/test.pdf");
-        Files.write(outputFile.toPath(), service.writeProntuario(getProntuarioInstance()));
+        Files.write(outputFile.toPath(), service.writeProntuario(parametro));
     }
 
     @ParameterizedTest
@@ -172,7 +172,7 @@ public class PdfFromHtmlPdfServiceImplTest {
         Files.write(
                 outputFile.toPath(),
                 service.writePdfDocumentoEmBranco(
-                        getProntuarioInstance(),
+                        getDocumentoInstance(),
                         documentoService.provideLayout(documentoTipo)));
         final String txtFromPdf = new PDFTextStripper().getText(
                 PDDocument.load(outputFile));
