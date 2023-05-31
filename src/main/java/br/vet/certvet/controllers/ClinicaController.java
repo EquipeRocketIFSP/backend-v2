@@ -7,8 +7,10 @@ import br.vet.certvet.dto.responses.ClinicaResponseDto;
 import br.vet.certvet.dto.responses.UsuarioResponseDto;
 import br.vet.certvet.exceptions.ForbiddenException;
 import br.vet.certvet.exceptions.NotFoundException;
+import br.vet.certvet.models.Authority;
 import br.vet.certvet.models.Clinica;
 import br.vet.certvet.models.Usuario;
+import br.vet.certvet.repositories.AuthorityRepository;
 import br.vet.certvet.services.ClinicaService;
 import br.vet.certvet.services.UsuarioService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -30,6 +32,9 @@ public class ClinicaController extends BaseController {
 
     @Autowired
     private UsuarioService usuarioService;
+
+    @Autowired
+    private AuthorityRepository authorityRepository;
 
     @PostMapping("/clinica")
     public ResponseEntity<ClinicaResponseDto> create(
@@ -84,8 +89,13 @@ public class ClinicaController extends BaseController {
     ) {
         Clinica clinica = this.tokenService.getClinica(token);
         Usuario responsavelTecnico = this.tokenService.getUsuario(token);
+        Authority authority = this.authorityRepository.findByAuthority("VETERINARIO");
 
         responsavelTecnico.setCrmv(dto.getCrmv());
+
+        if (!responsavelTecnico.getAuthorities().contains(authority))
+            responsavelTecnico.getAuthorities().add(authority);
+
         clinica.setResponsavelTecnico(responsavelTecnico);
 
         this.clinicaService.edit(clinica);
