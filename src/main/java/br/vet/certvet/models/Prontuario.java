@@ -159,7 +159,8 @@ public class Prontuario {
     @JoinTable(
             name = "prontuario_prescricoes",
             joinColumns = @JoinColumn(name = "prontuario_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "prescricao_id", referencedColumnName = "id")
+            inverseJoinColumns = @JoinColumn(name = "prescricao_id", referencedColumnName = "id"),
+            uniqueConstraints = { @UniqueConstraint(columnNames = {"prontuario_id", "prescricao_id"}) }
     )
     @ToString.Exclude
     @Setter

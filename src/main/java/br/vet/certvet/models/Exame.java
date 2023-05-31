@@ -14,6 +14,7 @@ import java.util.Objects;
 @Entity
 @Accessors(chain = true)
 @Table(name = "exame")
+@ToString
 public class Exame {
     @Id
     @Setter(AccessLevel.NONE)

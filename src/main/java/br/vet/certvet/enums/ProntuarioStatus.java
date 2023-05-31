@@ -1,7 +1,7 @@
 package br.vet.certvet.enums;
 
 public enum ProntuarioStatus {
-    PENDING("Pending"), COMPLETED("Completed"), CANCELLED("Cancelled");
+    PENDING("Pending"), UPDATING("Updating"), COMPLETED("Completed");
 
     private final String status;
 

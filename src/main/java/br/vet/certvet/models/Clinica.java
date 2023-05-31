@@ -85,7 +85,8 @@ public class Clinica implements Fillable<ClinicaRequestDto> {
     @JoinTable(
             name = "clinica_usuarios",
             joinColumns = @JoinColumn(name = "clinica_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "usuario_id", referencedColumnName = "id")
+            inverseJoinColumns = @JoinColumn(name = "usuario_id", referencedColumnName = "id"),
+            uniqueConstraints = { @UniqueConstraint(columnNames = {"clinica_id", "usuario_id"}) }
     )
     @ToString.Exclude
     private List<Usuario> usuarios;
@@ -97,22 +98,10 @@ public class Clinica implements Fillable<ClinicaRequestDto> {
 
     @OneToMany
     @ToString.Exclude
-    private List<Agendamento> agendamentos;
-
-    /*@OneToMany
-    @ToString.Exclude
-    private List<Estoque> estoque;*/
-
-    @OneToMany
-    @ToString.Exclude
     private List<Prontuario> prontuarios;
 
     public void setProntuarios(List<Prontuario> prontuarios) {
         this.prontuarios = prontuarios;
-    }
-
-    public void setAgendamentos(List<Agendamento> agendamentos) {
-        this.agendamentos = agendamentos;
     }
 
     public void setUsuarios(List<Usuario> usuarios) {

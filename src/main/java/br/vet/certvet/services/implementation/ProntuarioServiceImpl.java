@@ -20,7 +20,6 @@ import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -84,50 +83,46 @@ public class ProntuarioServiceImpl implements ProntuarioService {
 
     @Override
     public Prontuario save(Prontuario prontuario) {
-        log.info("prontuario: " + prontuario);
-        Date now = new Date();
-        String codigo = Prontuario.createCodigo(LocalDateTime.now());
-//        return prontuarioRepository.save(prontuario);
-        prontuario.setCodigo(codigo);
+        if(null != prontuario.getCodigo())
+            return prontuarioRepository.save(prontuario);
+//        log.info("prontuario: " + prontuario);
         Optional<Clinica> clinica = clinicaRepository.findById(prontuario.getClinica().getId());
         if (clinica.isEmpty()) throw new ClinicaNotFoundException("Clínica não cadastrada ou não identificada");
         Optional<Usuario> tutor = tutorRepository.findById(prontuario.getTutor().getId());
         if (tutor.isEmpty()) throw new TutorNotFoundException("Tutor não cadastrado ou não identificado");
         Optional<Animal> animal = animalRepository.findByTutores_idAndNome(tutor.get().getId(), prontuario.getAnimal().getNome());
         if (animal.isEmpty()) throw new AnimalNotFoundException("Animal não cadastrado ou não identificado");
-        prontuario.setClinica(clinica.get());
-
-        prontuario.setTutor(tutor.get());
-
-        prontuario.setAnimal(animal.get());
-
-        log.debug("Iniciando persistência do prontuário");
-        Documento doc = Documento.builder()
-                .codigo(codigo)
-                .versao(1)
-                .criadoEm(now)
-                .veterinario(prontuario.getVeterinario())
-                .clinica(clinica.get())
-                .caminhoArquivo("/" + S3BucketServiceRepository.getConventionedBucketName(prontuario.getClinica().getCnpj()) + "/" + prontuario.getCodigo() + ".pdf")
-                .build();
-//        log.debug("doc a ser persistido: " + doc);
-        Documento tempDoc = documentoRepository.save(doc);
-        log.debug("doc persistido");
-        Prontuario p = prontuario.setDocumentoDetails(tempDoc);
-        log.debug("Prontuario atualizado");
-        p = prontuarioRepository.save(p);
-        log.debug("prontuario persistido");
-        documentoRepository.save(tempDoc.prontuario(p));
-        log.debug("documento persistido");
-        try {
-            pdfService.writeProntuario(p);
-            log.debug("Processo de gravação de PDF finalizado");
-        } catch (SQLException e) {
-            log.error("\"Erro de validação SQL do ID da Clínica\": " + e.getMessage());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        return p;
+//        log.debug("Iniciando persistência do prontuário");
+//        Documento doc = Documento.builder()
+//                .codigo(codigo)
+//                .versao(1)
+//                .criadoEm(now)
+//                .veterinario(prontuario.getVeterinario())
+//                .clinica(clinica.get())
+//                .caminhoArquivo("/" + S3BucketServiceRepository.getConventionedBucketName(prontuario.getClinica().getCnpj()) + "/" + prontuario.getCodigo() + ".pdf")
+//                .build();
+////        log.debug("doc a ser persistido: " + doc);
+//        Documento tempDoc = documentoRepository.save(doc);
+//        log.debug("doc persistido");
+//        Prontuario p = prontuario.setDocumentoDetails(tempDoc);
+//        log.debug("Prontuario atualizado");
+        return prontuarioRepository.save(
+                prontuario.setClinica(clinica.get())
+                        .setTutor(tutor.get())
+                        .setAnimal(animal.get())
+                        .setCodigo(Prontuario.createCodigo(LocalDateTime.now()))
+        );
+//        log.debug("prontuario persistido");
+//        documentoRepository.save(tempDoc.prontuario(p));
+//        log.debug("documento persistido");
+//        try {
+//            pdfService.writeProntuario(p);
+//            log.debug("Processo de gravação de PDF finalizado");
+//        } catch (SQLException e) {
+//            log.error("\"Erro de validação SQL do ID da Clínica\": " + e.getMessage());
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
     }
 
     @Override
@@ -156,27 +151,23 @@ public class ProntuarioServiceImpl implements ProntuarioService {
     public Prontuario edit(ProntuarioDTO dto, Prontuario prontuario) {
         ProntuarioDTOMapper.assignToModel(dto, prontuario);
 
+        if (prontuario.getStatus() == ProntuarioStatus.COMPLETED)
+            prontuario.setStatus(ProntuarioStatus.UPDATING);
+
         return this.prontuarioRepository.saveAndFlush(prontuario);
     }
 
     @Override
     @Transactional(rollbackFor = {SQLException.class, RuntimeException.class})
     public Prontuario finalizeMedicalRecord(Prontuario prontuario) {
-        int version = prontuario.getVersao();
+        final ProntuarioStatus status = prontuario.getStatus();
 
-        if (prontuario.getStatus() != ProntuarioStatus.PENDING) {
+        if (status == ProntuarioStatus.COMPLETED)
             return prontuario;
-        }
+        else if (status == ProntuarioStatus.PENDING)
+            prontuario.setDataAtendimento(LocalDateTime.now());
 
-        Cirurgia cirurgia = prontuario.getCirurgia();
-        List<Procedimento> procedimentos = prontuario.getProcedimentos();
-
-        if (cirurgia != null)
-            this.handleCirurgia(cirurgia, prontuario);
-
-        procedimentos.forEach((procedimento) -> this.handleProcedimento(procedimento, prontuario));
-
-        prontuario.setDataAtendimento(LocalDateTime.now()).setVersao(++version).setStatus(ProntuarioStatus.COMPLETED);
+        prontuario.setStatus(ProntuarioStatus.COMPLETED);
 
         return this.prontuarioRepository.saveAndFlush(prontuario);
     }
@@ -290,39 +281,5 @@ public class ProntuarioServiceImpl implements ProntuarioService {
                 .caminhoArquivo(fileName)
 //                .setProntuario(prontuario)
                 ;
-    }
-
-    private void handleCirurgia(Cirurgia cirurgia, Prontuario prontuario) {
-        cirurgia.getMedicamentosConsumidos().forEach((cirurgiaEstoqueMedicamento) -> {
-            final BigDecimal dose = cirurgiaEstoqueMedicamento.getDose();
-            final Usuario veterinario = prontuario.getVeterinario();
-            final Estoque estoque = cirurgiaEstoqueMedicamento.getEstoque();
-            final String reason = new StringBuilder("Usado na cirurgia ")
-                    .append(cirurgia.getDescricao())
-                    .append(" no prontuário ")
-                    .append(prontuario.getCodigo())
-                    .append(" do animal ")
-                    .append(prontuario.getAnimal().getNome()).toString();
-
-            this.estoqueService.subtract(dose, reason, estoque, veterinario);
-        });
-    }
-
-    private void handleProcedimento(Procedimento procedimento, Prontuario prontuario) {
-        final BigDecimal dose = procedimento.getDoseMedicamento();
-        final Usuario veterinario = prontuario.getVeterinario();
-        final Estoque estoque = procedimento.getMedicamentoConsumido();
-
-        if (dose == null || estoque == null)
-            return;
-
-        final String reason = new StringBuilder("Usado no procedimento ")
-                .append(procedimento.getDescricao())
-                .append(" no prontuário ")
-                .append(prontuario.getCodigo())
-                .append(" do animal ")
-                .append(prontuario.getAnimal().getNome()).toString();
-
-        this.estoqueService.subtract(dose, reason, estoque, veterinario);
     }
 }

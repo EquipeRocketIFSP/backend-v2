@@ -89,6 +89,7 @@ public class TokenService {
     }
 
     private Jws<Claims> jwtDecode(String token) {
+        if(token == null) throw new NullPointerException("Não existe token informado");
         token = token.startsWith("Bearer ") ? token.substring(7) : token;
 
         return Jwts.parser()

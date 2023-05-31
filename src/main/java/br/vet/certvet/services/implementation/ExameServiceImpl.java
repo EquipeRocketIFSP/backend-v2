@@ -1,6 +1,7 @@
 package br.vet.certvet.services.implementation;
 
 import br.vet.certvet.dto.requests.prontuario.exame.ExameListDTO;
+import br.vet.certvet.enums.ProntuarioStatus;
 import br.vet.certvet.models.Exame;
 import br.vet.certvet.models.Prontuario;
 import br.vet.certvet.models.factories.ExameFactory;
@@ -21,6 +22,9 @@ public class ExameServiceImpl implements ExameService {
     @Override
     @Transactional(rollbackFor = {SQLException.class, RuntimeException.class})
     public List<Exame> assignToProntuario(ExameListDTO dto, Prontuario prontuario) {
+        if (prontuario.getStatus() == ProntuarioStatus.COMPLETED)
+            prontuario.setStatus(ProntuarioStatus.UPDATING);
+
         List<Exame> exames = dto.getExames()
                 .stream()
                 .map((exameDTO) -> ExameFactory.factory(exameDTO, prontuario))

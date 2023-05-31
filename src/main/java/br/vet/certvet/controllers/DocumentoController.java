@@ -1,11 +1,13 @@
 package br.vet.certvet.controllers;
 
 import br.vet.certvet.contracts.apis.ipcBr.IcpResponse;
+import br.vet.certvet.dto.requests.DocumentoPdfDto;
 import br.vet.certvet.dto.responses.DocumentoResponse;
 import br.vet.certvet.exceptions.*;
 import br.vet.certvet.models.Documento;
 import br.vet.certvet.models.Prontuario;
 import br.vet.certvet.repositories.AnimalRepository;
+import br.vet.certvet.repositories.DocumentoRepository;
 import br.vet.certvet.services.DocumentoService;
 import br.vet.certvet.services.PdfService;
 import br.vet.certvet.services.ProntuarioService;
@@ -26,6 +28,7 @@ import java.io.*;
 import java.net.URI;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @Slf4j
@@ -33,8 +36,6 @@ import java.util.List;
 @RequestMapping("/api/documento")
 @SecurityRequirement(name = "bearer-key")
 public class DocumentoController extends BaseController {
-    @Autowired
-    private AnimalRepository animalRepository;
 
     @Autowired
     private ProntuarioService prontuarioService;
@@ -76,15 +77,28 @@ public class DocumentoController extends BaseController {
     public ResponseEntity<byte[]> getDocumentoEmBranco(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String auth,
             @RequestParam("tipo") String tipo,
-            @RequestParam("prontuario") String prontuarioCodigo
+            @RequestParam("prontuario") String prontuarioCodigo//,
+//            @RequestBody DocumentoPdfDto documentoPdfDto
     ) throws ProntuarioNotFoundException,
             DocumentoNotPersistedException,
             OptimisticLockingFailureException,
             IOException {
         Prontuario prontuario = findProntuarioEClinica(auth, prontuarioCodigo);
+//        Versão abaixo dá suporte para a documentação, mas está comentada para podermos prosseguir ocm a implementação
+//        Documento documento = documentoService.save(documentoPdfDto.toDocumento(prontuario, tipo));
+//        return ResponseEntity.ok(
+//                pdfService.writePdfDocumentoEmBranco(
+//                        documento, documentoService.provideLayout(tipo)
+//                )
+//        );
         return ResponseEntity.ok(
                 pdfService.writePdfDocumentoEmBranco(
-                        prontuario, documentoService.provideLayout(tipo)
+                        prontuario.getDocumentos()
+                                .stream()
+                                .filter(documento -> documento.getTipo().equals("Documento"))
+                                .findFirst()
+                                .orElseThrow(()->new DocumentoNotFoundException("O tipo de documento precisa ser Sanitário")),
+                        documentoService.provideLayout(tipo)
                 )
         );
     }

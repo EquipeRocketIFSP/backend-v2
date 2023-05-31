@@ -39,10 +39,10 @@ final static private String OPEN_POLICY = """
     private static final AmazonS3 s3 = AmazonS3ClientBuilder.standard()
             .withRegion(Regions.SA_EAST_1)
             .build();
-    private static final String SUCESSFULLY_SAVED = "Arquivo salvo com sucesso: ";
+    private final String SUCESSFULLY_SAVED = "Arquivo salvo com sucesso: ";
 
     @Value("app.temp.path")
-    private static String RESOURCE_PATH;
+    private String RESOURCE_PATH;
 
     @Override
     public Optional<byte[]> retrieveObject(String cnpj, String keyName) throws IOException {

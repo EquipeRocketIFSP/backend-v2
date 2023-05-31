@@ -10,7 +10,7 @@ public class ObitoDocumento extends Doc {
     public ObitoDocumento(Documento documento){
         super.documento = documento;
         this.titulo = "ATESTADO DE ÓBITO";
-        this.declaraConsentimento = "Atesto para os devidos fins que o animal abaixo identificado veio a óbito na localidade ${prontuario.obito.local}, às ${prontuario.obito.horas}, horas do dia (${prontuario.obito.data}), sendo a provável causa mortis ${prontuario.obito.causa}.";
+        this.declaraConsentimento = "Atesto para os devidos fins que o animal abaixo identificado veio a óbito na localidade ${prontuario.obito.local}, às ${prontuario.obito.horas}, horas do dia ${prontuario.obito.data}, sendo a provável causa mortis ${prontuario.obito.causa}.";
         this.causaMortis = """
                 <div id="causaMortis">
                     <p>
