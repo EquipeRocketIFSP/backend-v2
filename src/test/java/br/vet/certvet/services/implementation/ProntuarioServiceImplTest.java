@@ -1,25 +1,19 @@
 package br.vet.certvet.services.implementation;
 
 
-import br.vet.certvet.dto.requests.AnimalRequestDto;
 import br.vet.certvet.dto.requests.prontuario.ProntuarioDTO;
 import br.vet.certvet.dto.requests.prontuario.SinaisVitaisDTO;
 import br.vet.certvet.enums.SexoAnimal;
-import br.vet.certvet.exceptions.NotFoundException;
 import br.vet.certvet.models.*;
 import br.vet.certvet.models.factories.ProntuarioFactory;
 import br.vet.certvet.repositories.*;
 import br.vet.certvet.services.DocumentoService;
 import br.vet.certvet.services.PdfService;
-import br.vet.certvet.unit.UsuarioTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
@@ -30,14 +24,10 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 
-//@SpringBootTest
-//@ActiveProfiles("test")
-//@EnableConfigurationProperties
 @ExtendWith(SpringExtension.class)
 class ProntuarioServiceImplTest {
 
@@ -178,7 +168,6 @@ class ProntuarioServiceImplTest {
         );
 
         Prontuario prontuarioCreated = prontuarioService.create(dto, getAnimal(), getTutor(), getVeterinario());
-        //Prontuario criado não está recebendo valor algum p/ id. Isso é com logica no banco?
         Optional<Prontuario> foundProntuario = prontuarioService.findById(prontuarioExpected.getId());
 
         assertNotNull(foundProntuario);

@@ -1,9 +1,9 @@
-
+ 
 Clínica: Clinica vet
 Nome veterinário: Diogo Rodrigo Theo Novaes
-Crmv: 123456
+Crmv: ${veterinario.crmv}
 Telefone: (12) 3456-7890
-Telefone: code
+Prontuário: code
 ATESTADO SANITÁRIO
 Atesto para os devidos fins que foi por mim examinado nesta data o animal abaixo identificado, o 
 qual apresentou bom estado geral de saúde durante o exame clínico, e que se encontram 
@@ -18,5 +18,5 @@ Identificação do(a) responsável pelo animal:
 Nome: Caio Felipe Pires
 CPF: 175.578.151-22
 Endereço completo: Praça Magalhães, 242 - CEP: 66053-140 - Reduto - Belém/PA
-Cidade das Abelhas, 26 de Abril de 2023.
+Cidade das Abelhas, 1 de Abril de 2023.
 Assinatura do(a) responsável pelo animal

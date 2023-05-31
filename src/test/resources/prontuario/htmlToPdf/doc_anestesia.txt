@@ -3,7 +3,7 @@ Clínica: Clinica vet
 Nome veterinário: Diogo Rodrigo Theo Novaes
 Crmv: 123456
 Telefone: (12) 3456-7890
-Telefone: code
+Prontuário: code
 TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO PARA REALIZAÇÃO DE
 PROCEDIMENTOS ANESTÉSICOS
 Declaro o livre consentimento para a realização do(s) procedimento(s) anestésico(s) necessário(s)
@@ -16,15 +16,16 @@ Nome: miau  Espécie: gato Raça: Siames
 Sexo: femea  Idade: 3 Cor de pelagem/plumagem: curta
 Declaro, ainda, ter sido esclarecido(a) acerca dos possíveis riscos, inerentes ao(s) procedimento
 (s) proposto(s), estando o(a) referido(a) profissional isento(a) de quaisquer responsabilidades
-decorrentes de tais riscos. Tipo de procedimento Anestésico indicado: prontuario.anestesia.
+decorrentes de tais riscos. Tipo de procedimento Anestésico indicado: java.util.stream.
+ReferencePipeline$2@75fa1be3.
 Observações de interesse a serem fornecidas pelo(a) Médico(a) Veterinário(a):
-observacaoVet
+java.util.stream.ReferencePipeline$3@7158daf2
 Observações de interesse a serem fornecidas pelo(a) tutor(a)/proprietário(a)/responsável:
-observacaoTutor
+java.util.stream.ReferencePipeline$3@3936df72
 Identificação do(a) responsável pelo animal:
 Nome: Caio Felipe Pires
 CPF: 175.578.151-22
 Endereço completo: Praça Magalhães, 242 - CEP: 66053-140 - Reduto - Belém/PA
-Cidade das Abelhas, 26 de Abril de 2023.
+Cidade das Abelhas, 1 de Abril de 2023.
 Assinatura do(a) responsável pelo animal
 (documento a ser emitido em 2 vias: 1ª via: médico-veterinário; 2ª via: proprietário/tutor)

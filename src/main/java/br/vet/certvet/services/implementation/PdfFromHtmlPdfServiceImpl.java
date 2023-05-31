@@ -42,15 +42,19 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
     final static String ERRO = "{\"Error\":\"E022: Não foi possível baixar o arquivo da URL fornecida\"}";
 
     @Value("${app.default.pdf.password}")
-    private String OWNER_PASSWORD;
-    @Autowired
-    private DocumentoRepository documentoRepository;
+    private static String OWNER_PASSWORD;
 
-    @Autowired
-    private PdfRepository pdfRepository;
+    private final DocumentoRepository documentoRepository;
 
-    @Autowired
-    private ClinicaRepository clinicaRepository;
+    private final PdfRepository pdfRepository;
+
+    private final ClinicaRepository clinicaRepository;
+
+    public PdfFromHtmlPdfServiceImpl(DocumentoRepository documentoRepository, PdfRepository pdfRepository, ClinicaRepository clinicaRepository) {
+        this.documentoRepository = documentoRepository;
+        this.pdfRepository = pdfRepository;
+        this.clinicaRepository = clinicaRepository;
+    }
 
     @Autowired
     private static UsuarioRepository usuarioRepository;
@@ -74,7 +78,6 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
             IOException {
         final String from = "src/main/resources/documents/consentimento/ConsentimentoLayoutV2.html";
         String layout = Files.readString(Path.of(from));
-
         documentoRepository.save(documentoTipo.getDocumento());
         layout = ProntuarioPdfHelper.replaceWithDivs(documentoTipo, layout);
         layout = ProntuarioPdfHelper.fillLayoutFields(prontuario, layout);
