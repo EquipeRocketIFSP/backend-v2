@@ -1,28 +1,31 @@
 package br.vet.certvet.services.implementation;
 
-import br.vet.certvet.dto.responses.*;
+import br.vet.certvet.dto.requests.prontuario.ProntuarioDTO;
+import br.vet.certvet.dto.responses.Metadata;
+import br.vet.certvet.dto.responses.PaginatedResponse;
+import br.vet.certvet.dto.responses.ProntuarioResponseDTO;
 import br.vet.certvet.enums.ProntuarioStatus;
 import br.vet.certvet.exceptions.*;
 import br.vet.certvet.models.*;
-import br.vet.certvet.repositories.*;
-import br.vet.certvet.services.*;
-import org.springframework.data.domain.*;
-import br.vet.certvet.dto.requests.prontuario.ProntuarioDTO;
 import br.vet.certvet.models.factories.ProntuarioFactory;
 import br.vet.certvet.models.mappers.ProntuarioDTOMapper;
+import br.vet.certvet.repositories.*;
+import br.vet.certvet.services.DocumentoService;
+import br.vet.certvet.services.EstoqueService;
+import br.vet.certvet.services.PdfService;
+import br.vet.certvet.services.ProntuarioService;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.io.IOException;
-
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -224,10 +227,16 @@ public class ProntuarioServiceImpl implements ProntuarioService {
 
     @Override
     public Documento attachDocumentoAndPdfPersist(
+<<<<<<< Updated upstream
             final Documento documento,
             final ObjectMetadata awsResponse,
             final int version
     ) throws ProntuarioNotFoundException,
+=======
+            Documento documento,
+            ObjectMetadata awsResponse,
+            boolean update) throws ProntuarioNotFoundException,
+>>>>>>> Stashed changes
             DocumentoNotFoundException,
             OptimisticLockingFailureException {
         final String fileName = writeNomeArquivo(documento, version);
@@ -237,8 +246,13 @@ public class ProntuarioServiceImpl implements ProntuarioService {
             throw new DocumentoNotPersistedException("Não foi possível gerar o documento com sucesso.");
         try {
             log.debug("Persistindo atualização dos documentos");
+<<<<<<< Updated upstream
             return documentoRepository.saveAndFlush(setDocumentoMetadata(documento, awsResponse, fileName));
         } catch (OptimisticLockingFailureException e) {
+=======
+            return documentoRepository.saveAndFlush(setDocumentoMetadata(documento, awsResponse, fileName, update));
+        } catch (OptimisticLockingFailureException e){
+>>>>>>> Stashed changes
             log.error("Documento não salvo");
             throw e;
         } finally {
@@ -270,13 +284,13 @@ public class ProntuarioServiceImpl implements ProntuarioService {
                 .toString();
     }
 
-    private Documento setDocumentoMetadata(Documento documentoTipo, ObjectMetadata res, String fileName) {
+    private Documento setDocumentoMetadata(Documento documentoTipo, ObjectMetadata res, String fileName, boolean update) {
         return documentoTipo
                 .md5(res.getContentMD5())
                 .etag(res.getETag())
                 .algorithm(res.getSSEAlgorithm())
                 .caminhoArquivo(fileName)
-//                .setProntuario(prontuario)
+                .versao(update ? documentoTipo.getVersao() + 1 : documentoTipo.getVersao())
                 ;
     }
 }

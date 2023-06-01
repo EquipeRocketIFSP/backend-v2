@@ -8,9 +8,12 @@ import java.util.Optional;
 public interface PdfRepository {
     ObjectMetadata putObject(String cnpj, String keyName, byte[] bynaryArrayInputStream);
 
+    ObjectMetadata getExistingObjectMetadata(String cnpj, String keyName);
+
     Optional<byte[]> retrieveObject(String cnpj, String keyName) throws IOException;
 
     Boolean setPublicFileReadingPermission(final String bucket, Boolean allow);
 
     boolean exists(String cnpj, String fileName);
+
 }

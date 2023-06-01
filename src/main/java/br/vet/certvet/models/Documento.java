@@ -160,4 +160,9 @@ public class Documento {
         result = 31 * result + (algorithm != null ? algorithm.hashCode() : 0);
         return result;
     }
+
+    public Documento versao(Integer versao) {
+        this.versao = versao;
+        return this;
+    }
 }

@@ -1,13 +1,13 @@
 package br.vet.certvet.controllers;
 
 import br.vet.certvet.contracts.apis.ipcBr.IcpResponse;
-import br.vet.certvet.dto.requests.DocumentoPdfDto;
 import br.vet.certvet.dto.responses.DocumentoResponse;
-import br.vet.certvet.exceptions.*;
+import br.vet.certvet.exceptions.DocumentoNotFoundException;
+import br.vet.certvet.exceptions.DocumentoNotPersistedException;
+import br.vet.certvet.exceptions.InvalidSignedDocumentoException;
+import br.vet.certvet.exceptions.ProntuarioNotFoundException;
 import br.vet.certvet.models.Documento;
 import br.vet.certvet.models.Prontuario;
-import br.vet.certvet.repositories.AnimalRepository;
-import br.vet.certvet.repositories.DocumentoRepository;
 import br.vet.certvet.services.DocumentoService;
 import br.vet.certvet.services.PdfService;
 import br.vet.certvet.services.ProntuarioService;
@@ -24,11 +24,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.*;
+import java.io.IOException;
 import java.net.URI;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @Slf4j
@@ -127,7 +126,6 @@ public class DocumentoController extends BaseController {
                 .filter(p -> p.getCodigo().equals(documentoCodigo))
                 .findFirst()
                 .orElseThrow(() -> new DocumentoNotFoundException("Não foi possível identificar o id do documento na base de dados"));
-
         // Disponibiliza o arquivo na AWS para que possa ser validado pelo serviço do ICP-BR
         ObjectMetadata awsResponse = pdfService.saveDocumentoPdfInBucket(documento, version, documentoPdf);
         // Obtém dados convecionados para salvar o arquivo

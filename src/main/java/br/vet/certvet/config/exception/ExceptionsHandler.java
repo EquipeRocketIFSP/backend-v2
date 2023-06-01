@@ -3,13 +3,13 @@ package br.vet.certvet.config.exception;
 import br.vet.certvet.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 
 import javax.persistence.EntityNotFoundException;
 import java.io.IOException;
@@ -76,9 +76,12 @@ public class ExceptionsHandler {
     }
 
     @ResponseStatus(HttpStatus.BAD_GATEWAY)
-    @ExceptionHandler(BadGatewayException.class)
+    @ExceptionHandler({
+            BadGatewayException.class,
+            ErroMapeamentoRespostaException.class
+    })
     public ResponseEntity<String> handleBadGateway(RuntimeException exception) {
-        return new ResponseEntity<String>(exception.getLocalizedMessage(), HttpStatus.BAD_GATEWAY);
+        return new ResponseEntity<>(exception.getLocalizedMessage(), HttpStatus.BAD_GATEWAY);
     }
 
     @ExceptionHandler({AssinadorNaoCadastradoException.class})

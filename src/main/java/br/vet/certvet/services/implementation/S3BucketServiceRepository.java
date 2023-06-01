@@ -7,13 +7,16 @@ import com.amazonaws.AmazonServiceException;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.*;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
+import com.amazonaws.services.s3.model.DeletePublicAccessBlockRequest;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.StringSubstitutor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 
@@ -49,8 +52,12 @@ final static private String OPEN_POLICY = """
         String bucketName = getConventionedBucketName(cnpj);
         byte[] arr = null;
         try {
+            setPublicFileReadingPermission(bucketName,true);
             if(!s3.doesBucketExistV2(bucketName)){
                 s3.createBucket(bucketName);
+                var delete = new DeletePublicAccessBlockRequest();
+                delete.setBucketName(bucketName);
+                s3.deletePublicAccessBlock(delete);
             }
             arr = s3.getObject(bucketName, keyName)
                     .getObjectContent()
@@ -93,7 +100,7 @@ final static private String OPEN_POLICY = """
     public ObjectMetadata putObject(String cnpj, String keyName, byte[] fileBinary) {
         final String bucketName = getConventionedBucketName(cnpj);
         log.info("bucketName: " + bucketName + ", keyName: " + keyName);
-        try{
+        try {
             if(!s3.doesBucketExistV2(bucketName)){
                 s3.createBucket(bucketName);
                 var delete = new DeletePublicAccessBlockRequest();
@@ -107,11 +114,13 @@ final static private String OPEN_POLICY = """
 
         try {
             setPublicFileReadingPermission(bucketName, true);
-            log.debug("s3.doesObjectExist(bucketName, keyName): " + s3.doesObjectExist(bucketName, keyName));
-            if (s3.doesObjectExist(bucketName, keyName)) {
+            boolean exists = s3.doesObjectExist(bucketName, keyName);
+            log.debug("s3.doesObjectExist(bucketName, keyName): " + exists);
+            if (exists) {
                 log.info("Arquivo identificado: " + keyName + ". Não será gravado");
-                log.debug("s3.getObject(bucketName, keyName): " + s3.getObject(bucketName, keyName));
-                return s3.getObject(bucketName, keyName).getObjectMetadata();
+                var object = s3.getObject(bucketName, keyName);
+                log.debug("s3.getObject(bucketName, keyName): " + object);
+                return object.getObjectMetadata();
             }
         } catch (AmazonServiceException e) {
             log.warn("Arquivo não identificado. Gravando...");
@@ -131,6 +140,7 @@ final static private String OPEN_POLICY = """
     }
 
     private static void logAmazonError(AmazonServiceException e) {
+
         log.error("Error Message:    " + e.getMessage());
         log.error("HTTP Status Code: " + e.getStatusCode());
         log.error("AWS Error Code:   " + e.getErrorCode());
