@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface PdfRepository {
     ObjectMetadata putObject(String cnpj, String keyName, byte[] bynaryArrayInputStream);
 
-    ObjectMetadata getExistingObjectMetadata(String cnpj, String keyName);
+//    ObjectMetadata getExistingObjectMetadata(String cnpj, String keyName);
 
     Optional<byte[]> retrieveObject(String cnpj, String keyName) throws IOException;
 

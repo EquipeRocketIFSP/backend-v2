@@ -44,13 +44,8 @@ public interface ProntuarioService {
     byte[] getProntuarioPdfBy(Prontuario prontuario);
 
     List<Documento> getDocumentosFromProntuarioByTipo(String prontuarioId, String tipo);
-<<<<<<< Updated upstream
 
     Documento attachDocumentoAndPdfPersist(Documento documento, ObjectMetadata pdf, int version) throws SQLException;
-
-=======
-    Documento attachDocumentoAndPdfPersist(Documento documento, ObjectMetadata pdf, boolean update) throws SQLException;
->>>>>>> Stashed changes
     Optional<Prontuario> findByCodigo(String codigo);
 
 }

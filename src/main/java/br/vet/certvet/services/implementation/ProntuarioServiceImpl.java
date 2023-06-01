@@ -227,16 +227,10 @@ public class ProntuarioServiceImpl implements ProntuarioService {
 
     @Override
     public Documento attachDocumentoAndPdfPersist(
-<<<<<<< Updated upstream
             final Documento documento,
             final ObjectMetadata awsResponse,
             final int version
     ) throws ProntuarioNotFoundException,
-=======
-            Documento documento,
-            ObjectMetadata awsResponse,
-            boolean update) throws ProntuarioNotFoundException,
->>>>>>> Stashed changes
             DocumentoNotFoundException,
             OptimisticLockingFailureException {
         final String fileName = writeNomeArquivo(documento, version);
@@ -246,13 +240,8 @@ public class ProntuarioServiceImpl implements ProntuarioService {
             throw new DocumentoNotPersistedException("Não foi possível gerar o documento com sucesso.");
         try {
             log.debug("Persistindo atualização dos documentos");
-<<<<<<< Updated upstream
             return documentoRepository.saveAndFlush(setDocumentoMetadata(documento, awsResponse, fileName));
         } catch (OptimisticLockingFailureException e) {
-=======
-            return documentoRepository.saveAndFlush(setDocumentoMetadata(documento, awsResponse, fileName, update));
-        } catch (OptimisticLockingFailureException e){
->>>>>>> Stashed changes
             log.error("Documento não salvo");
             throw e;
         } finally {
@@ -284,13 +273,13 @@ public class ProntuarioServiceImpl implements ProntuarioService {
                 .toString();
     }
 
-    private Documento setDocumentoMetadata(Documento documentoTipo, ObjectMetadata res, String fileName, boolean update) {
+    private Documento setDocumentoMetadata(Documento documentoTipo, ObjectMetadata res, String fileName) {
         return documentoTipo
                 .md5(res.getContentMD5())
                 .etag(res.getETag())
                 .algorithm(res.getSSEAlgorithm())
                 .caminhoArquivo(fileName)
-                .versao(update ? documentoTipo.getVersao() + 1 : documentoTipo.getVersao())
+//                .setProntuario(prontuario)
                 ;
     }
 }
