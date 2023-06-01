@@ -1,11 +1,16 @@
 package br.vet.certvet.dto.requests;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Positive;
 import java.util.List;
 
+@Getter
+@Setter
 public class AnimalRequestDto {
     @NotEmpty(message = "Nome não pode ser vazio")
     public String nome;

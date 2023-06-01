@@ -14,15 +14,14 @@ public class ProntuarioFactory {
     public static Prontuario factory(ProntuarioDTO dto) {
         String className = dto.getClass().getSimpleName();
 
-        Optional<Method> factory = Arrays.stream(ProntuarioFactory.class.getDeclaredMethods())
+        Method factory = Arrays.stream(ProntuarioFactory.class.getDeclaredMethods())
                 .filter((method) -> method.getName().equals("factoryFrom" + className))
-                .findFirst();
-
-        if (factory.isEmpty())
-            throw new UnprocessableEntityException();
+                .findFirst()
+                //isEmpty
+                .orElseThrow(UnprocessableEntityException::new);
 
         try {
-            return (Prontuario) factory.get().invoke(null, dto);
+            return (Prontuario) factory.invoke(null, dto);
         } catch (Exception e) {
             throw new UnprocessableEntityException(e);
         }
