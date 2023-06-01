@@ -10,11 +10,10 @@ import br.vet.certvet.models.Usuario;
 import br.vet.certvet.repositories.UsuarioRepository;
 import br.vet.certvet.services.implementation.ClinicaServiceImpl;
 import br.vet.certvet.services.implementation.UsuarioServiceImpl;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -25,37 +24,35 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 @SpringBootTest
 @ActiveProfiles("test")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @EnableConfigurationProperties
 public class UsuarioTest {
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    private UsuarioRepository usuarioRepository = mock(UsuarioRepository.class);
 
-    @Autowired
-    private UsuarioServiceImpl usuarioService;
+    private UsuarioServiceImpl usuarioService = mock(UsuarioServiceImpl.class);
 
-    @Autowired
-    private ClinicaServiceImpl clinicaService;
+    private ClinicaServiceImpl clinicaService = mock(ClinicaServiceImpl.class);
 
     private static Clinica clinica;
     private static BCryptPasswordEncoder passwordEncoder;
 
     @BeforeAll
-    public void setup() {
+    void setup() {
         UsuarioTest.clinica = this.clinicaService.create(ClinicaTest.factoryClinicaInicialRequestDto());
         UsuarioTest.passwordEncoder = new BCryptPasswordEncoder();
     }
 
     @AfterEach
-    public void truncateTable() {
+    void truncateTable() {
         this.usuarioRepository.deleteAll();
     }
 
     @Test
-    public void createDono() {
+    void createDono() {
         final String[] AUTHORITIES = {"FUNCIONARIO", "ADMIN"};
 
         Usuario usuario = this.usuarioService.create(UsuarioTest.factoryDonoRequestDto(), UsuarioTest.clinica);
@@ -67,7 +64,7 @@ public class UsuarioTest {
     }
 
     @Test
-    public void createTutor() {
+    void createTutor() {
         final String[] AUTHORITIES = {"TUTOR"};
 
         Usuario usuario = this.usuarioService.create(UsuarioTest.factoryTutorRequestDto(), UsuarioTest.clinica);
@@ -79,7 +76,7 @@ public class UsuarioTest {
     }
 
     @Test
-    public void createVeterinario() {
+    void createVeterinario() {
         final String[] AUTHORITIES = {"VETERINARIO"};
 
         Usuario usuario = this.usuarioService.create(UsuarioTest.factoryVeterinarioRequestDto(), UsuarioTest.clinica);
@@ -91,7 +88,7 @@ public class UsuarioTest {
     }
 
     @Test
-    public void createFuncionario() {
+    void createFuncionario() {
         final String[] AUTHORITIES = {"FUNCIONARIO"};
 
         Usuario usuario = this.usuarioService.create(UsuarioTest.factoryFuncionarioRequestDto(), UsuarioTest.clinica);
@@ -103,7 +100,7 @@ public class UsuarioTest {
     }
 
     @Test
-    public void editDono() {
+    void editDono() {
         final String[] AUTHORITIES = {"FUNCIONARIO", "ADMIN"};
 
         FuncionarioRequestDto dto = UsuarioTest.factoryDonoRequestDto();
@@ -133,7 +130,7 @@ public class UsuarioTest {
     }
 
     @Test
-    public void editTutor() {
+    void editTutor() {
         final String[] AUTHORITIES = {"TUTOR"};
 
         UsuarioRequestDto dto = UsuarioTest.factoryTutorRequestDto();
@@ -161,7 +158,7 @@ public class UsuarioTest {
     }
 
     @Test
-    public void editVeterinario() {
+    void editVeterinario() {
         final String[] AUTHORITIES = {"VETERINARIO"};
 
         VeterinarioRequestDto dto = UsuarioTest.factoryVeterinarioRequestDto();
@@ -192,7 +189,7 @@ public class UsuarioTest {
     }
 
     @Test
-    public void editFuncionario() {
+    void editFuncionario() {
         final String[] AUTHORITIES = {"FUNCIONARIO"};
 
         FuncionarioRequestDto dto = UsuarioTest.factoryFuncionarioRequestDto();
@@ -222,7 +219,7 @@ public class UsuarioTest {
     }
 
     @Test
-    public void getExistentTutor() {
+    void getExistentTutor() {
         Usuario usuarioTest = this.usuarioService.create(UsuarioTest.factoryTutorRequestDto(), UsuarioTest.clinica);
         Usuario usuario = this.usuarioService.findOne(usuarioTest.getId(), UsuarioTest.clinica);
 
@@ -231,14 +228,14 @@ public class UsuarioTest {
     }
 
     @Test
-    public void getUnexistentTutor() {
+    void getUnexistentTutor() {
         assertThrowsExactly(NotFoundException.class, () -> {
             this.usuarioService.findOne(999999999L, UsuarioTest.clinica);
         });
     }
 
     @Test
-    public void softDeleteUsuario() {
+    void softDeleteUsuario() {
         Usuario usuario = this.usuarioService.create(UsuarioTest.factoryVeterinarioRequestDto(), UsuarioTest.clinica);
         this.usuarioService.delete(usuario);
 
@@ -246,7 +243,7 @@ public class UsuarioTest {
     }
 
     @Test
-    public void recoverDeleteUsuario() {
+    void recoverDeleteUsuario() {
         Usuario usuario = this.usuarioService.create(UsuarioTest.factoryTutorRequestDto(), UsuarioTest.clinica);
         this.usuarioService.delete(usuario);
         this.usuarioService.recover(usuario);
@@ -255,7 +252,7 @@ public class UsuarioTest {
     }
 
     @Test
-    public void findTutorAuthority() {
+    void findTutorAuthority() {
         Usuario usuario = this.usuarioService.create(UsuarioTest.factoryTutorRequestDto(), UsuarioTest.clinica);
 
         assertThat(this.usuarioService.findUsuarioAuthority(usuario, "TUTOR")).isPresent();
@@ -266,7 +263,7 @@ public class UsuarioTest {
     }
 
     @Test
-    public void findFuncionarioAuthority() {
+    void findFuncionarioAuthority() {
         Usuario usuario = this.usuarioService.create(UsuarioTest.factoryFuncionarioRequestDto(), UsuarioTest.clinica);
 
         assertThat(this.usuarioService.findUsuarioAuthority(usuario, "FUNCIONARIO")).isPresent();
@@ -277,7 +274,7 @@ public class UsuarioTest {
     }
 
     @Test
-    public void findVeterinarioAuthority() {
+    void findVeterinarioAuthority() {
         Usuario usuario = this.usuarioService.create(UsuarioTest.factoryVeterinarioRequestDto(), UsuarioTest.clinica);
 
         assertThat(this.usuarioService.findUsuarioAuthority(usuario, "VETERINARIO")).isPresent();
@@ -288,7 +285,7 @@ public class UsuarioTest {
     }
 
     @Test
-    public void findDonoAuthority() {
+    void findDonoAuthority() {
         Usuario usuario = this.usuarioService.create(UsuarioTest.factoryDonoRequestDto(), UsuarioTest.clinica);
 
         assertThat(this.usuarioService.findUsuarioAuthority(usuario, "ADMIN")).isPresent();
@@ -298,7 +295,7 @@ public class UsuarioTest {
         assertThat(this.usuarioService.findUsuarioAuthority(usuario, "VETERINARIO")).isEmpty();
     }
 
-    public static UsuarioRequestDto factoryTutorRequestDto() {
+    private static UsuarioRequestDto factoryTutorRequestDto() {
         UsuarioRequestDto dto = new UsuarioRequestDto();
 
         dto.setNome("Dorguk");
@@ -317,7 +314,7 @@ public class UsuarioTest {
         return dto;
     }
 
-    public static FuncionarioRequestDto factoryDonoRequestDto() {
+    private static FuncionarioRequestDto factoryDonoRequestDto() {
         FuncionarioRequestDto dto = new FuncionarioRequestDto();
 
         dto.setNome("Camaeon");
@@ -338,7 +335,7 @@ public class UsuarioTest {
         return dto;
     }
 
-    public static FuncionarioRequestDto factoryFuncionarioRequestDto() {
+    private static FuncionarioRequestDto factoryFuncionarioRequestDto() {
         FuncionarioRequestDto dto = new FuncionarioRequestDto();
 
         dto.setNome("Liero");
@@ -359,7 +356,7 @@ public class UsuarioTest {
         return dto;
     }
 
-    public static VeterinarioRequestDto factoryVeterinarioRequestDto() {
+    private static VeterinarioRequestDto factoryVeterinarioRequestDto() {
         VeterinarioRequestDto dto = new VeterinarioRequestDto();
 
         dto.setNome("Buior");
@@ -381,7 +378,7 @@ public class UsuarioTest {
         return dto;
     }
 
-    public static void updateUsuarioDto(UsuarioRequestDto dto) {
+    private static void updateUsuarioDto(UsuarioRequestDto dto) {
         dto.setNome("Nome Teste");
         dto.setCpf("teste@teste.com");
         dto.setRg("11111-000");

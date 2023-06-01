@@ -1,0 +1,27 @@
+Clínica: Clinica vet
+Nome veterinário: Diogo Rodrigo Theo Novaes
+Crmv: 123456
+Telefone: (12) 3456-7890
+Telefone: code
+TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO DE DOAÇÃO DE CORPO
+DE ANIMAL PARA FINS DE ENSINO E PESQUISA
+Declaro o livre consentimento sobre a doação do corpo do animal abaixo identificado.
+Identificação do animal (nome, sexo, raça, idade real ou presumida, cor de pelagem ou
+plumagem, sinais particulares, tatuagem, brinco, microchip, registro genealógico e, conforme o
+caso, resenha detalhada):
+Nome: miau  Espécie: gato Raça: Siames
+Sexo: femea  Idade: 3 Cor de pelagem/plumagem: curta
+Declaro, ainda, ter sido esclarecido(a) acerca da destinação do corpo para fins de estudo e
+pesquisa.
+Observações de interesse a serem fornecidas pelo(a) Médico(a) Veterinário(a):
+observacaoVet
+Observações de interesse a serem fornecidas pelo(a) tutor(a)/proprietário(a)/responsável:
+observacaoTutor
+Identificação do(a) responsável pelo animal:
+Nome: Caio Felipe Pires
+CPF: 175.578.151-22
+Endereço completo: Praça Magalhães, 242 - CEP: 66053-140 - Reduto - Belém/PA
+Cidade das Abelhas, 1 de Abril de 2023.
+Assinatura do(a) Médico(a) Veterinário(a)
+Nome e nº de inscrição no CRMV
+(documento a ser emitido em 2 vias: 1ª via: médico-veterinário; 2ª via: proprietário/tutor)

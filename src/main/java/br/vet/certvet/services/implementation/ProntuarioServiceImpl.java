@@ -29,32 +29,35 @@ import java.util.Optional;
 @Service
 @Slf4j
 public class ProntuarioServiceImpl implements ProntuarioService {
-    @Autowired
-    private ProntuarioRepository prontuarioRepository;
+    private final ProntuarioRepository prontuarioRepository;
 
-    @Autowired
-    private PdfRepository pdfRepository;
+    private final PdfRepository pdfRepository;
 
-    @Autowired
-    private CirurgiaRepository cirurgiaRepository;
+    private final CirurgiaRepository cirurgiaRepository;
 
-    @Autowired
-    private TutorRepository tutorRepository;
+    private final TutorRepository tutorRepository;
 
-    @Autowired
-    private DocumentoRepository documentoRepository;
+    private final DocumentoRepository documentoRepository;
 
-    @Autowired
-    private PdfService pdfService;
+    private final PdfService pdfService;
 
-    @Autowired
-    private ClinicaRepository clinicaRepository;
+    private final ClinicaRepository clinicaRepository;
 
-    @Autowired
-    private AnimalRepository animalRepository;
+    private final AnimalRepository animalRepository;
 
-    @Autowired
-    private DocumentoService documentoService;
+    private final DocumentoService documentoService;
+
+    public ProntuarioServiceImpl(ProntuarioRepository prontuarioRepository, PdfRepository pdfRepository, CirurgiaRepository cirurgiaRepository, TutorRepository tutorRepository, DocumentoRepository documentoRepository, PdfService pdfService, ClinicaRepository clinicaRepository, AnimalRepository animalRepository, DocumentoService documentoService) {
+        this.prontuarioRepository = prontuarioRepository;
+        this.pdfRepository = pdfRepository;
+        this.cirurgiaRepository = cirurgiaRepository;
+        this.tutorRepository = tutorRepository;
+        this.documentoRepository = documentoRepository;
+        this.pdfService = pdfService;
+        this.clinicaRepository = clinicaRepository;
+        this.animalRepository = animalRepository;
+        this.documentoService = documentoService;
+    }
 
     @Autowired
     private EstoqueService estoqueService;

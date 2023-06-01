@@ -166,8 +166,9 @@ public class Prontuario {
     @Setter
     private List<Prescricao> prescricoes;
 
-    public void setDocumentos(List<Documento> documentos) {
+    public Prontuario setDocumentos(List<Documento> documentos) {
         this.documentos = documentos;
+        return this;
     }
 
     public void setProcedimentos(List<Procedimento> procedimentos) {
