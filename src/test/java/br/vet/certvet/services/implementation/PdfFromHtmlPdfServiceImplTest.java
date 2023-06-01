@@ -26,14 +26,13 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -69,6 +68,7 @@ public class PdfFromHtmlPdfServiceImplTest {
                 .cidade("Cidade das Abelhas")
                 .razaoSocial("Clinica vet")
                 .telefone("(12) 3456-7890")
+                .celular("(83) 98694-6301")
                 .build();
         final Usuario tutor = Usuario.builder()
                 .nome("Caio Felipe Pires")
@@ -143,11 +143,14 @@ public class PdfFromHtmlPdfServiceImplTest {
                                                         ).build()
                                     ).build()
                         )
-                ).build();
-
-        return Documento.builder()
+                ).documentos(List.of())
+                .build();
+        Documento documento = Documento.builder()
+                .tipo("sanitario")
                 .prontuario(prontuario)
                 .build();
+        prontuario.setDocumentos(List.of(documento));
+        return documento;
     }
     private Prontuario getProntuarioInstanceWithDocumento(String documentoTipo){
         Clinica clinica = Clinica.builder()
@@ -190,16 +193,11 @@ public class PdfFromHtmlPdfServiceImplTest {
                 .clinica(clinica)
                 .crmv("123456")
                 .build();
-        Documento documento = Documento.builder()
-                .tipo(documentoTipo)
-                .build();
-
-        return Prontuario.builder()
+        Prontuario prontuario = Prontuario.builder()
                 .codigo("code")
                 .dataAtendimento(
                         LocalDateTime.now()
-                )
-                .animal(
+                ).animal(
                         Animal.builder()
                                 .especie("gato")
                                 .nome("miau")
@@ -209,12 +207,10 @@ public class PdfFromHtmlPdfServiceImplTest {
                                 .sexo(SexoAnimal.FEMEA)
                                 .tutores(
                                         List.of(tutor)
-                                )
-                                .build())
+                                ).build())
                 .clinica(clinica)
                 .tutor(tutor)
                 .veterinario(veterinario)
-                .documentos(List.of(documento))
                 .procedimentos(
                         List.of(
                                 Procedimento.builder()
@@ -233,10 +229,14 @@ public class PdfFromHtmlPdfServiceImplTest {
                                                                         .principioAtivo("Virus Inativado")
                                                                         .build()
                                                         ).build()
-                                        )
-                                        .build()
+                                        ).build()
                         )
                 ).build();
+        Documento documento = Documento.builder()
+                .tipo(documentoTipo)
+                .prontuario(prontuario)
+                .build();
+        return prontuario.setDocumentos(List.of(documento));
     }
     private Documento getDocumento() {
         return Documento.builder()
@@ -283,10 +283,16 @@ public class PdfFromHtmlPdfServiceImplTest {
                         .provideLayout(documentoTipo));
         when(documentoRepository.save(any())).thenReturn(Documento.builder().tipo(documentoTipo).build());
 
+//        Documento documento = getProntuarioInstanceWithDocumento(documentoTipo).getDocumentos()
+//                .stream()
+//                .findFirst()
+//                .orElseThrow(NullPointerException::new);
+        Documento documento = getDocumentoInstance();
+
         Files.write(
                 outputFile.toPath(),
                 service.writePdfDocumentoEmBranco(
-                        getProntuarioInstanceWithDocumento(documentoTipo),
+                        documento,
                         documentoService.provideLayout(documentoTipo)));
         final String txtFromPdf = new PDFTextStripper().getText(
                 PDDocument.load(outputFile));
@@ -304,20 +310,7 @@ public class PdfFromHtmlPdfServiceImplTest {
                                 + ".")
                         .replace("${veterinario.crmv}", "123456")
                 ).collect(Collectors.joining("\r\n", "", ""));
-
-        String[] txtFromPdfLines = txtFromPdf.split("\\r?\\n");
-        String[] parameterTxtLines = parameterTxt.split("\\r?\\n");
-
-        List<String> filteredTxtFromPdfLines = Arrays.stream(txtFromPdfLines)
-                .filter(line -> !line.trim().isEmpty()).toList();
-
-        List<String> filteredParameterTxtLines = Arrays.stream(parameterTxtLines)
-                .filter(line -> !line.trim().isEmpty()).toList();
-
-        boolean pdfIsVald = filteredTxtFromPdfLines.equals(filteredParameterTxtLines);
-
-        assertTrue(pdfIsVald);
-
+        assertEquals(parameterTxt, txtFromPdf);
     }
 
     @Test

@@ -73,38 +73,31 @@ public class AnimalServiceImplTest {
 
     @Test
     void getExistentAnimal(){
-        AnimalRequestDto dto = factoryAnimalRequestDto();
-        final Animal referenceAnimal = new Animal(dto);
+        Usuario tutor = getTutor();
+        Optional<Animal> expected = Optional.of(
+                Animal.builder()
+                        .id(1L)
+                        .nome("Amy")
+                        .anoNascimento(1205)
+                        .peso(4.0f)
+                        .raca("Pinscher")
+                        .especie("canina")
+                        .pelagem("curta")
+                        .sexo(SexoAnimal.valueOf("FEMEA"))
+                        .build()
+        );
+        when(
+                animalRepository.findOneByIdAndTutores(
+                        expected.get().getId(),
+                        tutor
+                )
+        ).thenReturn(
+                expected
+        );
 
-        when(this.animalRepository.saveAndFlush(any())).thenReturn(referenceAnimal);
-        when(this.usuarioService.findUsuarioAuthority(any(), eq("TUTOR")))
-                .thenReturn(
-                        Optional.of(
-                                Authority.builder()
-                                        .id(1L)
-                                        .authority("TUTOR")
-                                        .build()
-                        )
-                );
-        when(this.animalRepository.findOneByIdAndTutores(any(), any()))
-                .thenReturn(
-                        Optional.of(
-                                Animal.builder()
-                                        .nome("Amy")
-                                        .anoNascimento(1205)
-                                        .peso(4.0f)
-                                        .raca("Pinscher")
-                                        .especie("canina")
-                                        .pelagem("curta")
-                                        .sexo(SexoAnimal.valueOf("FEMEA"))
-                                        .build()
-                        )
-                );
+        Animal existentAnimal = animalService.findOne(expected.get().getId(), getTutor());
 
-        Animal existentAnimal = animalService.findOne(referenceAnimal.getId(), getTutor());
-
-//        substituir .getClass por algo que pegue o conteúdo das variáveis
-        assertEquals(existentAnimal.getClass(), referenceAnimal.getClass());
+        assertEquals(expected.get(), existentAnimal);
     }
 
     @Test
