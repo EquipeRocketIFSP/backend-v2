@@ -6,17 +6,17 @@ import lombok.Getter;
 public class Doc {
 
     protected Documento documento;
-    protected String titulo = null;
-    protected String declaraConsentimento = null;
-    protected String identificaAnimal = null;
-    protected String declaraCienciaRiscos = null;
-    protected String observacoesVeterinario = null;
-    protected String observacoesResponsavel = null;
-    protected String causaMortis = null;
-    protected String orientaDestinoCorpo = null;
-    protected String identificaResponsavel = null;
-    protected String outrasObservacoes = null;
-    protected String assinaturaResponsavel = null;
-    protected String assinaturaVet = null;
-    protected String explicaDuasVias = null;
+    protected String titulo = "";
+    protected String declaraConsentimento = "";
+    protected String identificaAnimal = "";
+    protected String declaraCienciaRiscos = "";
+    protected String observacoesVeterinario = "";
+    protected String observacoesResponsavel = "";
+    protected String causaMortis = "";
+    protected String orientaDestinoCorpo = "";
+    protected String identificaResponsavel = "";
+    protected String outrasObservacoes = "";
+    protected String assinaturaResponsavel = "";
+    protected String assinaturaVet = "";
+    protected String explicaDuasVias = "";
 }

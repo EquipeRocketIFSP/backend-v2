@@ -60,14 +60,11 @@ public class Animal implements Fillable<AnimalRequestDto> {
 
     private String formaIdentificacao;
 
-    @OneToMany(mappedBy = "id")
-    @ToString.Exclude
-    private List<ParentescoAnimal> parentescos;
-
     @ManyToMany
     @JoinTable(name = "animal_tutores",
             joinColumns = @JoinColumn(name = "animal_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "tutor_id", referencedColumnName = "id")
+            inverseJoinColumns = @JoinColumn(name = "tutor_id", referencedColumnName = "id"),
+            uniqueConstraints = { @UniqueConstraint(columnNames = {"animal_id", "tutor_id"}) }
     )
     @ToString.Exclude
     private List<Usuario> tutores;
@@ -75,33 +72,6 @@ public class Animal implements Fillable<AnimalRequestDto> {
     public void setTutores(List<Usuario> tutores) {
         this.tutores = tutores;
     }
-
-    public void setParentescos(List<ParentescoAnimal> parentescos) {
-        this.parentescos = parentescos;
-    }
-
-
-//    /**
-//     * Sempre a necessidade de invocar o método pelo menos duas vezes,
-//     * uma para cada elemento.
-//     * Cada animal pode ter seus pais, assim como os pais têm seus filhos.
-//     * O ideal é que apenas um nivel para cima ou para baixo sejam registradas,
-//     * pois podem ser encontradas navegando pelas entidades registradas.
-//     *
-//     * @param animal
-//     * @param grau
-//     * @return this
-//     */
-//    public Animal addParentesco(Animal animal, GrauParentesco grau){
-//        parentescos.add(
-//                Parentesco.builder()
-//                        .animal(this)
-//                        .parente(animal)
-//                        .grau(grau)
-//                        .build()
-//        );
-//        return this;
-//    }
 
     @Override
     public boolean equals(Object o) {
@@ -118,20 +88,19 @@ public class Animal implements Fillable<AnimalRequestDto> {
 
     public Animal(AnimalRequestDto dto) {
         this.tutores = new ArrayList<>();
-        this.parentescos = new ArrayList<>();
 
         this.fill(dto);
     }
 
     @Override
     public void fill(AnimalRequestDto dto) {
-        this.nome = dto.nome;
-        this.especie = dto.especie;
-        this.sexo = SexoAnimal.valueOf(dto.sexo);
-        this.anoNascimento = dto.ano_nascimento;
-        this.peso = dto.peso;
-        this.pelagem = dto.pelagem;
-        this.raca = dto.raca;
+        this.nome = dto.getNome();
+        this.especie = dto.getEspecie();
+        this.sexo = SexoAnimal.valueOf(dto.getSexo());
+        this.anoNascimento = dto.getAno_nascimento();
+        this.peso = dto.getPeso();
+        this.pelagem = dto.getPelagem();
+        this.raca = dto.getRaca();
     }
 
     public int getIdade() {

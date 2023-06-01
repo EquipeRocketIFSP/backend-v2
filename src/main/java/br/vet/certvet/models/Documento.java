@@ -32,6 +32,17 @@ public class Documento {
     private Integer versao;
     private Date criadoEm;
 
+    private String observacaoVet;
+    private String observacaoTutor;
+    private String causaMortis;
+    private String causaMortisDescription;
+    private String orientaDestinoCorpo;
+    private String local;
+    private LocalDateTime dataHoraObito;
+    private String terapia;
+    private String anestesia;
+    private String observacoes;
+
     @ManyToOne
     @JoinColumn(name = "veterinario_id")
     private Usuario veterinario;
@@ -41,6 +52,7 @@ public class Documento {
     @ToString.Exclude
     private Clinica clinica;
     private String caminhoArquivo;
+
     protected String md5 = null;
     protected String etag = null;
     protected String algorithm = null;
@@ -57,7 +69,9 @@ public class Documento {
     @ManyToOne
     @JoinTable(name = "prontuario_documentos",
             joinColumns = { @JoinColumn(name = "documentos_id") },
-            inverseJoinColumns = { @JoinColumn(name = "prontuario_id") })
+            inverseJoinColumns = { @JoinColumn(name = "prontuario_id") },
+            uniqueConstraints = { @UniqueConstraint(columnNames = {"documentos_id", "prontuario_id"}) }
+    )
     private Prontuario prontuario;
 
     public Documento(LocalDateTime now) {
