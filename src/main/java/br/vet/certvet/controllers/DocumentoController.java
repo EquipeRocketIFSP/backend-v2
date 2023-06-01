@@ -1,13 +1,13 @@
 package br.vet.certvet.controllers;
 
 import br.vet.certvet.contracts.apis.ipcBr.IcpResponse;
-import br.vet.certvet.dto.requests.DocumentoPdfDto;
 import br.vet.certvet.dto.responses.DocumentoResponse;
-import br.vet.certvet.exceptions.*;
+import br.vet.certvet.exceptions.DocumentoNotFoundException;
+import br.vet.certvet.exceptions.DocumentoNotPersistedException;
+import br.vet.certvet.exceptions.InvalidSignedDocumentoException;
+import br.vet.certvet.exceptions.ProntuarioNotFoundException;
 import br.vet.certvet.models.Documento;
 import br.vet.certvet.models.Prontuario;
-import br.vet.certvet.repositories.AnimalRepository;
-import br.vet.certvet.repositories.DocumentoRepository;
 import br.vet.certvet.services.DocumentoService;
 import br.vet.certvet.services.PdfService;
 import br.vet.certvet.services.ProntuarioService;
@@ -24,11 +24,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.*;
+import java.io.IOException;
 import java.net.URI;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @Slf4j
@@ -73,7 +72,7 @@ public class DocumentoController extends BaseController {
      * @throws OptimisticLockingFailureException
      * @throws IOException
      */
-    @GetMapping("/novo")
+    @GetMapping(value = "/novo")
     public ResponseEntity<byte[]> getDocumentoEmBranco(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String auth,
             @RequestParam("tipo") String tipo,
@@ -83,10 +82,10 @@ public class DocumentoController extends BaseController {
             OptimisticLockingFailureException,
             IOException {
         Prontuario prontuario = findProntuarioEClinica(auth, prontuarioCodigo);
-        return ResponseEntity.ok(
-                pdfService.writePdfDocumentoEmBranco(
-                        prontuario, documentoService.provideLayout(tipo)
-                )
+        return ResponseEntity.ok()
+                .header("content", MediaType.APPLICATION_PDF_VALUE)
+                .body(pdfService.writePdfDocumentoEmBranco(
+                        prontuario, documentoService.provideLayout(tipo))
         );
     }
 
@@ -104,7 +103,7 @@ public class DocumentoController extends BaseController {
             @RequestHeader(HttpHeaders.AUTHORIZATION) String auth,
             @RequestParam("prontuario") String prontuarioCodigo,
             @RequestParam("documento") String documentoCodigo,
-            @RequestParam("versao") Integer versao,
+            @RequestParam(value = "versao", required = false) Integer versao,
             @RequestBody byte[] documentoPdf
     ) throws IOException, SQLException {
         final int version = null == versao ? -1 : versao;
