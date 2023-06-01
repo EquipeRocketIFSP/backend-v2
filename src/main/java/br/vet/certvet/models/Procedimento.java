@@ -32,9 +32,8 @@ public class Procedimento {
     @JoinColumn(name = "prontuario_id")
     private Prontuario prontuario;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "estoque_id")
-    //TODO: Adicionar tabela de relacionamento
     private Estoque medicamentoConsumido;
 
     private BigDecimal doseMedicamento;
