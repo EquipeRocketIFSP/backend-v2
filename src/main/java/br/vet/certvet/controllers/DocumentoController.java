@@ -77,28 +77,15 @@ public class DocumentoController extends BaseController {
     public ResponseEntity<byte[]> getDocumentoEmBranco(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String auth,
             @RequestParam("tipo") String tipo,
-            @RequestParam("prontuario") String prontuarioCodigo//,
-//            @RequestBody DocumentoPdfDto documentoPdfDto
+            @RequestParam("prontuario") String prontuarioCodigo
     ) throws ProntuarioNotFoundException,
             DocumentoNotPersistedException,
             OptimisticLockingFailureException,
             IOException {
         Prontuario prontuario = findProntuarioEClinica(auth, prontuarioCodigo);
-//        Versão abaixo dá suporte para a documentação, mas está comentada para podermos prosseguir ocm a implementação
-//        Documento documento = documentoService.save(documentoPdfDto.toDocumento(prontuario, tipo));
-//        return ResponseEntity.ok(
-//                pdfService.writePdfDocumentoEmBranco(
-//                        documento, documentoService.provideLayout(tipo)
-//                )
-//        );
         return ResponseEntity.ok(
                 pdfService.writePdfDocumentoEmBranco(
-                        prontuario.getDocumentos()
-                                .stream()
-                                .filter(documento -> documento.getTipo().equals("Documento"))
-                                .findFirst()
-                                .orElseThrow(()->new DocumentoNotFoundException("O tipo de documento precisa ser Sanitário")),
-                        documentoService.provideLayout(tipo)
+                        prontuario, documentoService.provideLayout(tipo)
                 )
         );
     }

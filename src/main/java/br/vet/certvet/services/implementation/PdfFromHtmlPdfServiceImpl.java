@@ -66,7 +66,7 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
 
     @Override
     public byte[] writePdfDocumentoEmBranco(
-            Documento documento,
+            Prontuario prontuario,
             Doc documentoTipo
     ) throws
             DocumentoNotPersistedException,
@@ -75,7 +75,9 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
         final String from = "src/main/resources/documents/consentimento/ConsentimentoLayoutV2.html";
         String layout = Files.readString(Path.of(from));
 
-        documentoRepository.save(documentoTipo.getDocumento());
+        Documento documento = documentoRepository.save(documentoTipo.getDocumento());
+        documento.prontuario(prontuario);
+
         layout = ProntuarioPdfHelper.replaceWithDivsForDocumento(documentoTipo, layout);
         layout = ProntuarioPdfHelper.fillLayoutFieldsForDocumento(documento, layout);
         return transformTxtToXmlToPdf(layout);

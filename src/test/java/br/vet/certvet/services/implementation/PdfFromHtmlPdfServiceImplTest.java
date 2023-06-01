@@ -172,7 +172,7 @@ public class PdfFromHtmlPdfServiceImplTest {
         Files.write(
                 outputFile.toPath(),
                 service.writePdfDocumentoEmBranco(
-                        getDocumentoInstance(),
+                        getDocumentoInstance().getProntuario(),
                         documentoService.provideLayout(documentoTipo)));
         final String txtFromPdf = new PDFTextStripper().getText(
                 PDDocument.load(outputFile));
