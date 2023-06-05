@@ -160,4 +160,9 @@ public class Documento {
         result = 31 * result + (algorithm != null ? algorithm.hashCode() : 0);
         return result;
     }
+
+    public Documento fromProntuario(Prontuario prontuario) {
+        return this.setCodigo(LocalDateTime.now())
+                .prontuario(prontuario);
+    }
 }

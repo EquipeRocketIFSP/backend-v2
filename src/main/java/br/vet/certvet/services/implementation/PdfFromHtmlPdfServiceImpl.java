@@ -85,8 +85,8 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
         final String from = "src/main/resources/documents/consentimento/ConsentimentoLayoutV2.html";
         String layout = Files.readString(Path.of(from));
 
-        Documento documento = documentoRepository.save(documentoTipo.getDocumento());
-        documento.prontuario(prontuario);
+        Documento documento = documentoRepository.save(documentoTipo.getDocumento().fromProntuario(prontuario));
+//        documento.prontuario(prontuario);
 
         layout = ProntuarioPdfHelper.replaceWithDivsForDocumento(documentoTipo, layout);
         layout = ProntuarioPdfHelper.fillLayoutFieldsForDocumento(documento, layout);
