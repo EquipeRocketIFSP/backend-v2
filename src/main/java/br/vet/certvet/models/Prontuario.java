@@ -22,128 +22,101 @@ public class Prontuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
+    @Setter(AccessLevel.NONE)
     private Long id;
 
+    @Setter(AccessLevel.NONE)
     private Integer versao = 0;
 
     @ManyToOne
+    @Setter(AccessLevel.NONE)
     private Clinica clinica;
 
-    @Setter
     private int frequenciaCardiaca;
 
-    @Setter
     private int frequenciaRespiratoria;
 
-    @Setter
-    private int temperatura;
+    private byte temperatura;
 
-    @Setter
     private String peso;
 
-    @Setter
     private String hidratacao;
 
-    @Setter
     private String tpc;
 
-    @Setter
     private String mucosa;
 
-    @Setter
     private String conciencia;
 
-    @Setter
     private String escoreCorporal;
 
-    @Setter
     @Column(length = 2000)
     private String supeitaDiagnostica;
 
-    @Setter
     private boolean prostracao;
 
-    @Setter
     private boolean febre;
 
-    @Setter
     private boolean vomito;
 
-    @Setter
     private boolean diarreia;
 
-    @Setter
     private boolean espasmosConvulsao;
 
-    @Setter
     private boolean deambulacao;
 
-    @Setter
     private boolean sensibilidadeDor;
 
-    @Setter
     private boolean lesoesNodulos;
 
-    @Setter
     private String apetite;
 
-    @Setter
     private String linfonodos;
 
-    @Setter
     private String linfonodosObs;
 
-    @Setter
     private String regiaoColuna;
 
-    @Setter
     private String regiaoAbdomen;
 
-    @Setter
     private String regiaoMToracicos;
 
-    @Setter
     private String regiaoMPelvicos;
 
-    @Setter
     private boolean regiaoCabeca;
 
-    @Setter
     private boolean regiaoTorax;
 
-    @Setter
     private String regioesObs;
 
-    @Setter
     private LocalDateTime dataAtendimento;
 
-    @Setter
     @ManyToOne(optional = false)
     @JoinColumn(name = "animal_id", nullable = false)
     @ToString.Exclude
     private Animal animal;
 
-    @Setter
     @ManyToOne
     @JoinColumn(name = "usuario_id")
     @ToString.Exclude
     private Usuario veterinario;
 
-    @Setter
     @OneToOne(mappedBy = "prontuario")
     @ToString.Exclude
     private Cirurgia cirurgia;
 
     @OneToMany(mappedBy = "prontuario", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
+    @Setter(AccessLevel.NONE)
     private List<Procedimento> procedimentos = new ArrayList<>();
 
     @OneToMany(mappedBy = "prontuario", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
+    @Setter(AccessLevel.NONE)
     private List<Exame> exames = new ArrayList<>();
+    @Setter(AccessLevel.NONE)
     private String codigo;
 
-    @Setter
     @ManyToOne
     @Accessors(chain = true)
     @JoinColumn(name = "tutor_id")
@@ -152,6 +125,7 @@ public class Prontuario {
 
     @OneToMany(mappedBy = "id")
     @ToString.Exclude
+    @Setter(AccessLevel.NONE)
     private List<Documento> documentos = new ArrayList<>();
     private Date criadoEm;
 
@@ -163,11 +137,11 @@ public class Prontuario {
             uniqueConstraints = { @UniqueConstraint(columnNames = {"prontuario_id", "prescricao_id"}) }
     )
     @ToString.Exclude
-    @Setter
     private List<Prescricao> prescricoes;
 
-    public void setDocumentos(List<Documento> documentos) {
+    public Prontuario setDocumentos(List<Documento> documentos) {
         this.documentos = documentos;
+        return this;
     }
 
     public void setProcedimentos(List<Procedimento> procedimentos) {
@@ -228,7 +202,6 @@ public class Prontuario {
         return this;
     }
 
-    @Setter
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ProntuarioStatus status = ProntuarioStatus.PENDING;
