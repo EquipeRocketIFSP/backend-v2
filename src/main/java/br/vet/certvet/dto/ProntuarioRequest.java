@@ -9,7 +9,7 @@ public record ProntuarioRequest (
         Clinica clinica,
         int frequenciaCardiaca,
         int frequenciaRespiratoria,
-        int temperatura,
+        byte temperatura,
         String hidratacao,
         String tpc,
         String mucosa,

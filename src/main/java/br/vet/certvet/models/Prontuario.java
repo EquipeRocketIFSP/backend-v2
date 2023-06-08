@@ -36,7 +36,7 @@ public class Prontuario {
     private int frequenciaRespiratoria;
 
     @Setter
-    private int temperatura;
+    private byte temperatura;
 
     @Setter
     private String peso;

@@ -23,7 +23,7 @@ public class SinaisVitaisDTO extends ProntuarioDTO {
 
     @JsonProperty("temperatura")
     @NotNull(message = "Temperatura é obrigatória")
-    private int temperatura;
+    private byte temperatura;
 
     @JsonProperty("peso")
     @NotEmpty(message = "Peso é obrigatório")
