@@ -1,12 +1,8 @@
 package br.vet.certvet.enums;
 
-import br.vet.certvet.enums.helper.SexoAnimalConverter;
-import lombok.Getter;
+//import br.vet.certvet.enums.helper.SexoAnimalConverter;
 
-import javax.persistence.Convert;
-
-@Getter
-@Convert(converter = SexoAnimalConverter.class)
+//@Convert(converter = SexoAnimalConverter.class)
 public enum SexoAnimal {
     MACHO("M", false),
     FEMEA("F", true);
@@ -17,5 +13,13 @@ public enum SexoAnimal {
     SexoAnimal(String sexo, Boolean bitValue) {
         this.sexo = sexo;
         this.bitValue = bitValue;
+    }
+
+    public String getSexo() {
+        return sexo;
+    }
+
+    public Boolean getBitValue() {
+        return bitValue;
     }
 }

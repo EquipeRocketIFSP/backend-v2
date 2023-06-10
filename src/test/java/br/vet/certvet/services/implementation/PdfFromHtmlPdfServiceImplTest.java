@@ -29,12 +29,10 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -212,14 +210,17 @@ public class PdfFromHtmlPdfServiceImplTest {
         final String path = "src/test/resources/prontuario/htmlToPdf/";
         final File parameterFile = new File(path + "doc_" + documentoTipo + ".txt");
         final File outputFile = new File(path + "test_documento_" + documentoTipo+ ".pdf");
+        Documento documento = getDocumentoInstance(documentoTipo);
         when(documentoService.provideLayout(documentoTipo))
                 .thenReturn(new DocumentoServiceImpl()
                         .provideLayout(documentoTipo));
+        when(documentoRepository.save(any())).thenReturn(documento);
 
+        Prontuario prontuario = documento.getProntuario();
         Files.write(
                 outputFile.toPath(),
                 service.writePdfDocumentoEmBranco(
-                        getDocumentoInstance(documentoTipo),
+                        prontuario,
                         documentoService.provideLayout(documentoTipo)));
         final String txtFromPdf = new PDFTextStripper().getText(
                 PDDocument.load(outputFile));

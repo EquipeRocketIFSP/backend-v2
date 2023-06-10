@@ -61,7 +61,7 @@ public class AnimalServiceImplTest {
                         Optional.of(
                                 Authority.builder()
                                         .id(1L)
-                                        .authority("TUTOR")
+                                        .permissao("TUTOR")
                                         .build()
                         )
                 );
@@ -117,7 +117,7 @@ public class AnimalServiceImplTest {
                         Optional.of(
                                 Authority.builder()
                                         .id(1L)
-                                        .authority("TUTOR")
+                                        .permissao("TUTOR")
                                         .build()
                         )
                 );
@@ -131,39 +131,34 @@ public class AnimalServiceImplTest {
     }
 
     private AnimalRequestDto factoryAnimalRequestDto(){
-        AnimalRequestDto dto = new AnimalRequestDto();
-
-        dto.setNome("Amy");
-        dto.setPeso(4.0f);
-        dto.setEspecie("canina");
-        dto.setRaca("Pinscher");
-        dto.setSexo("FEMEA");
-        dto.setPelagem("curta");
-        dto.setAno_nascimento(1205);
-        dto.setTutores(List.of(1L));
-
-        return dto;
+        return new AnimalRequestDto(
+                "Amy",
+                1205,
+                4.0f,
+                "Pinscher",
+                "canina",
+                "curta",
+                "FEMEA",
+                List.of(1L)
+                );
     }
 
     private AnimalRequestDto factoryAnimalRequestDtoForEdition(){
-        AnimalRequestDto dto = new AnimalRequestDto();
-
-        dto.setNome("Amy");
-        dto.setPeso(5.0f);
-        dto.setEspecie("canina");
-        dto.setRaca("Raça");
-        dto.setSexo("FEMEA");
-        dto.setPelagem("longa");
-        dto.setAno_nascimento(1205);
-        dto.setTutores(List.of(1L));
-
-        return dto;
+        return new AnimalRequestDto(
+                "Amy",
+                1205,
+                5.0f,
+                "Raça",
+                "canina",
+                "longa",
+                "FEMEA",
+                List.of(1L));
     }
 
     private Usuario getTutor(){
         Authority authority = Authority.builder()
                 .id(1L)
-                .authority("TUTOR")
+                .permissao("TUTOR")
                 .build();
         Clinica clinica = Clinica.builder()
                 .cidade("Cidade das Abelhas")

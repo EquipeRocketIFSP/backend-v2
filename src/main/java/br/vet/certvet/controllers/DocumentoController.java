@@ -92,11 +92,12 @@ public class DocumentoController extends BaseController {
 //        );
         return ResponseEntity.ok(
                 pdfService.writePdfDocumentoEmBranco(
-                        prontuario.getDocumentos()
-                                .stream()
-                                .filter(documento -> documento.getTipo().equals("sanitario"))
-                                .findFirst()
-                                .orElseThrow(()->new DocumentoNotFoundException("O tipo de documento precisa ser Sanitário")),
+//                        prontuario.getDocumentos()
+//                                .stream()
+//                                .filter(documento -> documento.getTipo().equals("sanitario"))
+//                                .findFirst()
+//                                .orElseThrow(()->new DocumentoNotFoundException("O tipo de documento precisa ser Sanitário")),
+                        prontuario,
                         documentoService.provideLayout(tipo)
                 )
         );

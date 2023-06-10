@@ -29,7 +29,7 @@ public class AgendamentoCompleteResponseDto {
         this.id = agendamento.getId();
         this.observacoes = agendamento.getObservacoes();
         this.dataConsulta = agendamento.getDataConsulta().toString();
-        this.animal = new AnimalResponseDto(agendamento.getAnimal());
+        this.animal = AnimalResponseDto.of(agendamento.getAnimal());
         this.tutor = new UsuarioResponseDto(agendamento.getTutor());
         this.veterinario = new VeterinarioResponseDto(agendamento.getVeterinario());
     }

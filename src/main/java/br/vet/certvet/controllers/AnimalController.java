@@ -38,10 +38,10 @@ public class AnimalController extends BaseController {
             @RequestBody @Valid AnimalRequestDto dto
     ) {
         Clinica clinica = this.tokenService.getClinica(token);
-        List<Usuario> tutores = dto.getTutores().stream().map(id -> this.usuarioService.findOne(id, clinica)).toList();
+        List<Usuario> tutores = dto.tutores().stream().map(id -> this.usuarioService.findOne(id, clinica)).toList();
         Animal animal = this.animalService.create(dto, tutores);
 
-        return new ResponseEntity<>(new AnimalResponseDto(animal), HttpStatus.CREATED);
+        return new ResponseEntity<>(AnimalResponseDto.of(animal), HttpStatus.CREATED);
     }
 
     @PutMapping("/tutor/{tutor_id}/animal/{id}")
@@ -53,12 +53,12 @@ public class AnimalController extends BaseController {
     ) {
         Clinica clinica = this.tokenService.getClinica(token);
         Usuario tutor = this.usuarioService.findOne(previousTutorId, clinica);
-        List<Usuario> tutores = dto.getTutores().stream().map(tutorId -> this.usuarioService.findOne(tutorId, clinica)).toList();
+        List<Usuario> tutores = dto.tutores().stream().map(tutorId -> this.usuarioService.findOne(tutorId, clinica)).toList();
 
         Animal animal = this.animalService.findOne(id, tutor);
         animal = this.animalService.edit(dto, animal, tutores);
 
-        return new ResponseEntity<>(new AnimalResponseDto(animal), HttpStatus.CREATED);
+        return new ResponseEntity<>(AnimalResponseDto.of(animal), HttpStatus.CREATED);
     }
 
     @GetMapping("/tutor/{tutor_id}/animal/{id}")
@@ -71,7 +71,7 @@ public class AnimalController extends BaseController {
         Usuario tutor = this.usuarioService.findOne(tutorId, clinica);
         Animal animal = this.animalService.findOne(id, tutor);
 
-        return ResponseEntity.ok(new AnimalResponseDto(animal));
+        return ResponseEntity.ok(AnimalResponseDto.of(animal));
     }
 
     @GetMapping("/tutor/{tutor_id}/animal")

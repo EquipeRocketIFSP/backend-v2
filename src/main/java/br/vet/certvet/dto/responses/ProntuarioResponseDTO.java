@@ -155,7 +155,7 @@ public class ProntuarioResponseDTO {
         this.regiaoTorax = prontuario.isRegiaoTorax();
         this.regioesObs = prontuario.getRegioesObs();
         this.codigo = prontuario.getCodigo();
-        this.animal = new AnimalResponseDto(prontuario.getAnimal());
+        this.animal = AnimalResponseDto.of(prontuario.getAnimal());
         this.tutor = new UsuarioResponseDto(prontuario.getTutor());
         this.veterinario = new UsuarioResponseDto(prontuario.getVeterinario());
         this.exames = prontuario.getExames().stream().map(ExameResponseDTO::new).toList();
