@@ -3,6 +3,7 @@ package br.vet.certvet.services.implementation;
 import br.vet.certvet.enums.SexoAnimal;
 import br.vet.certvet.models.*;
 import br.vet.certvet.repositories.ClinicaRepository;
+import br.vet.certvet.repositories.DocumentoRepository;
 import br.vet.certvet.repositories.PdfRepository;
 import br.vet.certvet.repositories.ProntuarioRepository;
 import br.vet.certvet.services.DocumentoService;
@@ -28,6 +29,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -40,6 +43,8 @@ public class PdfFromHtmlPdfServiceImplTest {
     @Mock private ProntuarioRepository prontuarioRepository;// = mock(ProntuarioRepository.class);
 
     @Mock private ClinicaRepository clinicaRepository; // = mock(ClinicaRepository.class);
+
+    @Mock private DocumentoRepository documentoRepository;
 
     @Mock private PdfRepository pdfRepository;
 
@@ -57,11 +62,12 @@ public class PdfFromHtmlPdfServiceImplTest {
     void tearDown(){
     }
 
-    private Documento getDocumentoInstance(){
+    private Documento getDocumentoInstance(String tipo){
         final Clinica clinica = Clinica.builder()
                 .cidade("Cidade das Abelhas")
                 .razaoSocial("Clinica vet")
                 .telefone("(12) 3456-7890")
+                .celular("(12) 3456-7890")
                 .build();
         final Usuario tutor = Usuario.builder()
                 .nome("Caio Felipe Pires")
@@ -137,21 +143,46 @@ public class PdfFromHtmlPdfServiceImplTest {
                                         ).build()
                         )
                 ).build();
-
-        return Documento.builder()
-                .prontuario(prontuario)
-                .build();
+    final Documento documento = Documento.builder()
+            .tipo(tipo)
+            .local("Sao Paulo")
+            .criadoEm(new Date())
+            .terapia("terapia")
+            .observacaoVet("observacao Vet")
+            .observacaoTutor("observacao tutor")
+            .causaMortis("causa mortis")
+            .causaMortisDescription("causa mortis description")
+            .dataHoraObito(LocalDateTime.now())
+            .anestesia("anestesia")
+            .id(1L)
+            .algorithm("MD5")
+            .md5("MD5SIGN")
+            .etag("ETAG")
+            .caminhoArquivo("FilePath")
+            .versao(1)
+            .observacoes("observacoes")
+            .orientaDestinoCorpo("orienta destino corpo")
+            .clinica(clinica)
+            .prontuario(prontuario)
+            .build();
+    prontuario.setDocumentos(List.of(documento));
+        return documento;
     }
 
     @Test
-    @DisplayName("Devolve um PDF de prontuario gerado a partir de HTML")
+    @DisplayName("Devolve um PDF de prontuario gerado a partir de HTML. Necessita de permissão de leitura para a área de caching")
     void whenRequestProntuarioPdf_ThenReturnPdfFile() throws Exception {
 
-        Prontuario parametro = getDocumentoInstance()
+        Prontuario parametro = getDocumentoInstance("sanitario")
                 .getProntuario();
+
+        when(documentoRepository.save(any())).thenReturn(null);//.thenReturn(new SanitarioDocumento(parametro.getDocumentos().get(0)));
+
+
         File outputFile = new File("src/test/resources/prontuario/htmlToPdf/test.pdf");
         Files.write(outputFile.toPath(), service.writeProntuario(parametro));
-
+        String fileType = Files.probeContentType(outputFile.toPath());
+        assertEquals("application/pdf", fileType);
     }
 
     @ParameterizedTest
@@ -173,7 +204,7 @@ public class PdfFromHtmlPdfServiceImplTest {
         Files.write(
                 outputFile.toPath(),
                 service.writePdfDocumentoEmBranco(
-                        getDocumentoInstance(),
+                        getDocumentoInstance(documentoTipo),
                         documentoService.provideLayout(documentoTipo)));
         final String txtFromPdf = new PDFTextStripper().getText(
                 PDDocument.load(outputFile));

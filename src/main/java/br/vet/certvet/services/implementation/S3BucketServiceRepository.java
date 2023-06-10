@@ -23,7 +23,7 @@ import java.util.Optional;
 @Slf4j
 @Service
 public class S3BucketServiceRepository implements PdfRepository {
-    private final static String OPEN_POLICY = """
+    private static final String OPEN_POLICY = """
     {
         "Version": "2012-10-17",
         "Statement": [
@@ -41,7 +41,7 @@ public class S3BucketServiceRepository implements PdfRepository {
     private static final AmazonS3 s3 = AmazonS3ClientBuilder.standard()
             .withRegion(Regions.SA_EAST_1)
             .build();
-    private final String SUCESSFULLY_SAVED = "Arquivo salvo com sucesso no bucket: ";
+    private static final String SUCESSFULLY_SAVED = "Arquivo salvo com sucesso no bucket: ";
 
     @Override
     public Optional<byte[]> retrieveObject(String cnpj, String keyName) throws IOException {

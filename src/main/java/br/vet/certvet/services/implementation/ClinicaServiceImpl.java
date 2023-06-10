@@ -116,7 +116,7 @@ public class ClinicaServiceImpl implements ClinicaService {
         }
     }
 
-    private static FuncionarioRequestDto getDonoDto(ClinicaInicialRequestDto dto) {
+    public static FuncionarioRequestDto getDonoDto(ClinicaInicialRequestDto dto) {
         return ClinicaServiceImpl.getDonoResponsavelTecnicoDto(dto);
     }
 
