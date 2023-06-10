@@ -12,7 +12,6 @@ import com.amazonaws.services.s3.model.DeletePublicAccessBlockRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.StringSubstitutor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
@@ -24,28 +23,25 @@ import java.util.Optional;
 @Slf4j
 @Service
 public class S3BucketServiceRepository implements PdfRepository {
-final static private String OPEN_POLICY = """
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "PublicReadGetObject",
-            "Effect": "Allow",
-            "Principal": "*",
-            "Action": ["s3:GetObject"],
-            "Resource": ["arn:aws:s3:::${bucketName}/*"]
-        }
-    ]
-}
-""";
+    private final static String OPEN_POLICY = """
+    {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Sid": "PublicReadGetObject",
+                "Effect": "Allow",
+                "Principal": "*",
+                "Action": ["s3:GetObject"],
+                "Resource": ["arn:aws:s3:::${bucketName}/*"]
+            }
+        ]
+    }
+    """.indent(4);
 
     private static final AmazonS3 s3 = AmazonS3ClientBuilder.standard()
             .withRegion(Regions.SA_EAST_1)
             .build();
-    private final String SUCESSFULLY_SAVED = "Arquivo salvo com sucesso: ";
-
-    @Value("app.temp.path")
-    private String RESOURCE_PATH;
+    private final String SUCESSFULLY_SAVED = "Arquivo salvo com sucesso no bucket: ";
 
     @Override
     public Optional<byte[]> retrieveObject(String cnpj, String keyName) throws IOException {
@@ -62,10 +58,11 @@ final static private String OPEN_POLICY = """
             arr = s3.getObject(bucketName, keyName)
                     .getObjectContent()
                     .readAllBytes();
+            log.info(SUCESSFULLY_SAVED + bucketName);
         } catch (AmazonS3Exception e) {
             logAmazonError(e);
         }
-//        log.error("Nenhum arquivo identificado para o nome: " + keyName);
+        log.error("Nenhum arquivo identificado para o nome: " + keyName);
         return Optional.ofNullable(arr);
     }
 
@@ -73,7 +70,7 @@ final static private String OPEN_POLICY = """
     public Boolean setPublicFileReadingPermission(String bucketName, Boolean allow) {
 
         try {
-            if(allow) {
+            if(Boolean.TRUE.equals(allow)) {
                 s3.setBucketPolicy(bucketName, new StringSubstitutor(Map.of("bucketName", bucketName)).replace(OPEN_POLICY));
             } else{
                 s3.deleteBucketPolicy(bucketName);
@@ -151,7 +148,7 @@ final static private String OPEN_POLICY = """
     private static ObjectMetadata getObjectMetadata(byte[] storedFile) {
         ObjectMetadata o = new ObjectMetadata();
         o.setContentType("application/pdf");
-        o.setContentLength((long) storedFile.length);
+        o.setContentLength(storedFile.length);
         return o;
     }
 

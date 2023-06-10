@@ -11,7 +11,7 @@ import javax.validation.constraints.Size;
 @Getter
 @Accessors(chain = true)
 public class FuncionarioRequestDto extends UsuarioRequestDto {
-    public boolean is_admin;
+//    public boolean is_admin;
     @JsonProperty("senha")
     @Size(max = 255, message = "Senha não pode ultrapassar 255 caracteres")
     private String senha;

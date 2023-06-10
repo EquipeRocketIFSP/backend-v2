@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public class UsuarioResponseDto {
     @JsonProperty("id")
-    public Long id;
+    private Long id;
 
     @JsonProperty("nome")
     private String nome;
@@ -67,7 +67,7 @@ public class UsuarioResponseDto {
         this.estado = usuario.getEstado();
         this.celular = usuario.getCelular();
         this.telefone = usuario.getTelefone();
-        this.authorities = usuario.getAuthorities().stream().map(Authority::getAuthority).toList();
+        this.authorities = usuario.getAuthorities().stream().map(Authority::getPermissao).toList();
 
         if (usuario.getDeletedAt() == null)
             this.deletedAt = Optional.empty();

@@ -28,7 +28,7 @@ public class ExceptionsHandler {
                 .getFieldErrors()
                 .stream()
                 .collect(Collectors.toMap(
-                        (fieldError) -> fieldError.getField().replaceAll("([a-z])([A-Z]+)", "$1_$2").toLowerCase(),
+                        fieldError -> fieldError.getField().replaceAll("([a-z])([A-Z]+)", "$1_$2").toLowerCase(),
                         FieldError::getDefaultMessage
                 ));
     }
@@ -58,7 +58,7 @@ public class ExceptionsHandler {
             AlreadyPrescribedException.class
     })
     public ResponseEntity<String> handleConflict(RuntimeException exception) {
-        return new ResponseEntity<String>(exception.getLocalizedMessage(), HttpStatus.CONFLICT);
+        return new ResponseEntity<>(exception.getLocalizedMessage(), HttpStatus.CONFLICT);
     }
 
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
@@ -66,19 +66,18 @@ public class ExceptionsHandler {
             HttpMessageNotReadableException.class
     })
     public ResponseEntity<String> handleUnprocessableEntity(RuntimeException exception) {
-        return new ResponseEntity<String>("Não foi possivel processar o conteúdo dessa requisição", HttpStatus.UNPROCESSABLE_ENTITY);
+        return new ResponseEntity<>("Não foi possivel processar o conteúdo dessa requisição", HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(ForbiddenException.class)
     public ResponseEntity<String> handleForbidden(RuntimeException exception) {
-        return new ResponseEntity<String>(exception.getLocalizedMessage(), HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(exception.getLocalizedMessage(), HttpStatus.FORBIDDEN);
     }
 
     @ResponseStatus(HttpStatus.BAD_GATEWAY)
     @ExceptionHandler({
-            BadGatewayException.class,
-            ErroMapeamentoRespostaException.class
+            BadGatewayException.class
     })
     public ResponseEntity<String> handleBadGateway(RuntimeException exception) {
         return new ResponseEntity<>(exception.getLocalizedMessage(), HttpStatus.BAD_GATEWAY);
@@ -103,8 +102,23 @@ public class ExceptionsHandler {
             ProcessamentoIcpBrJsonResponseException.class,
             ProcessamentoIcpBrJsonRequestException.class
     })
-    public ResponseEntity<String> handleInternalServerError(IOException e){
+    public ResponseEntity<String> handleServiceUnavailable(IOException e){
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(e.getLocalizedMessage());
+    }
+
+    @ExceptionHandler({
+            ElementoMauFormadoNoHtmlException.class,
+            PdfMauFormadoException.class,
+            EscritaProntuarioPdfException.class,
+            RendezizacaoPDFException.class,
+            EscritaDocumentoPdfException.class,
+            EscritaPrescricaoPdfException.class,
+            ErroSalvarPdfAssinadoAwsException.class,
+            FalhaEnvioEmailException.class
+    })
+    public ResponseEntity<String> handleInternalServerError(IOException e){
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(e.getLocalizedMessage());
     }
 }

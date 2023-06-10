@@ -124,7 +124,7 @@ public class Documento {
     }
 
     public Documento caminhoArquivo(String urlFullPath){
-        this.caminhoArquivo = caminhoArquivo;
+        this.caminhoArquivo = urlFullPath;
         return this;
     }
 

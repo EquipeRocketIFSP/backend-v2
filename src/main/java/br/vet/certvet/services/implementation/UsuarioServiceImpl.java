@@ -1,10 +1,13 @@
 package br.vet.certvet.services.implementation;
 
-import br.vet.certvet.dto.requests.*;
+import br.vet.certvet.dto.requests.FuncionarioRequestDto;
+import br.vet.certvet.dto.requests.UsuarioRequestDto;
+import br.vet.certvet.dto.requests.VeterinarioRequestDto;
 import br.vet.certvet.dto.responses.Metadata;
 import br.vet.certvet.dto.responses.PaginatedResponse;
 import br.vet.certvet.dto.responses.UsuarioResponseDto;
 import br.vet.certvet.exceptions.ConflictException;
+import br.vet.certvet.exceptions.FalhaEnvioEmailException;
 import br.vet.certvet.exceptions.ForbiddenException;
 import br.vet.certvet.exceptions.NotFoundException;
 import br.vet.certvet.models.Authority;
@@ -32,6 +35,10 @@ import java.util.Optional;
 @Service
 @Slf4j
 public class UsuarioServiceImpl implements UsuarioService {
+    private static final String FUNCIONARIO = "FUNCIONARIO";
+    private static final String VETERINARIO = "VETERINARIO";
+    private static final String ADMIN = "ADMIN";
+    private static final String USER_NOT_FOUND = "Usuário não encontrado";
     @Autowired
     private ClinicaRepository clinicaRepository;
 
@@ -51,13 +58,13 @@ public class UsuarioServiceImpl implements UsuarioService {
         Usuario usuario = new Usuario(dto, clinica);
         List<Authority> authoritiesUsuario = usuario.getAuthorities();
 
-        authoritiesUsuario.add(this.authorityRepository.findByAuthority("FUNCIONARIO"));
+        authoritiesUsuario.add(this.authorityRepository.findByPermissao(FUNCIONARIO));
 
-        if (dto instanceof VeterinarioRequestDto && ((VeterinarioRequestDto) dto).getCrmv() != null)
-            authoritiesUsuario.add(this.authorityRepository.findByAuthority("VETERINARIO"));
+        if (dto instanceof VeterinarioRequestDto v && v.getCrmv() != null)
+            authoritiesUsuario.add(this.authorityRepository.findByPermissao(VETERINARIO));
 
         if (dto.isAdmin())
-            authoritiesUsuario.add(this.authorityRepository.findByAuthority("ADMIN"));
+            authoritiesUsuario.add(this.authorityRepository.findByPermissao(ADMIN));
 
         return this.save(usuario, clinica);
     }
@@ -65,7 +72,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     public Usuario create(UsuarioRequestDto dto, Clinica clinica) {
         Usuario usuario = new Usuario(dto, clinica);
-        Authority authority = this.authorityRepository.findByAuthority("TUTOR");
+        Authority authority = this.authorityRepository.findByPermissao("TUTOR");
         log.info("create: " + usuario.toString());
         usuario.getAuthorities().add(authority);
 
@@ -80,17 +87,17 @@ public class UsuarioServiceImpl implements UsuarioService {
         Usuario usuario = new Usuario(dto, clinica);
         List<Authority> authoritiesUsuario = usuario.getAuthorities();
 
-        authoritiesUsuario.add(this.authorityRepository.findByAuthority("FUNCIONARIO"));
+        authoritiesUsuario.add(this.authorityRepository.findByPermissao(FUNCIONARIO));
 
         if (dto instanceof VeterinarioRequestDto)
-            authoritiesUsuario.add(this.authorityRepository.findByAuthority("VETERINARIO"));
+            authoritiesUsuario.add(this.authorityRepository.findByPermissao(VETERINARIO));
 
         if (dto.isAdmin())
-            authoritiesUsuario.add(this.authorityRepository.findByAuthority("ADMIN"));
+            authoritiesUsuario.add(this.authorityRepository.findByPermissao(ADMIN));
 
         usuario = this.save(usuario, clinica);
 
-        if (dto instanceof VeterinarioRequestDto && ((VeterinarioRequestDto) dto).isTechnicalResponsible())
+        if (dto instanceof VeterinarioRequestDto v && v.isTechnicalResponsible())
             clinica.setResponsavelTecnico(usuario);
 
         this.clinicaRepository.saveAndFlush(clinica);
@@ -103,7 +110,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         try {
             this.emailService.sendTextMessage(dto.getEmail(), "Senha de acesso - Certvet", message.toString());
         } catch (MessagingException e) {
-            throw new RuntimeException(e);
+            throw new FalhaEnvioEmailException(e.getCause());
         }
 
         return usuario;
@@ -131,13 +138,13 @@ public class UsuarioServiceImpl implements UsuarioService {
         List<Authority> authoritiesUsuario = usuario.getAuthorities();
         authoritiesUsuario.clear();
 
-        authoritiesUsuario.add(this.authorityRepository.findByAuthority("FUNCIONARIO"));
+        authoritiesUsuario.add(this.authorityRepository.findByPermissao("FUNCIONARIO"));
 
         if (dto instanceof VeterinarioRequestDto)
-            authoritiesUsuario.add(this.authorityRepository.findByAuthority("VETERINARIO"));
+            authoritiesUsuario.add(this.authorityRepository.findByPermissao("VETERINARIO"));
 
         if (dto.isAdmin())
-            authoritiesUsuario.add(this.authorityRepository.findByAuthority("ADMIN"));
+            authoritiesUsuario.add(this.authorityRepository.findByPermissao("ADMIN"));
 
         usuario.fill(dto);
 
@@ -149,7 +156,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         Optional<Usuario> response = usuarioRepository.findByIdAndClinica(id, clinica);
 
         if (response.isEmpty())
-            throw new NotFoundException("Usuário não encontrado");
+            throw new NotFoundException(USER_NOT_FOUND);
 
         return response.get();
     }
@@ -159,7 +166,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         Optional<Usuario> response = this.usuarioRepository.findByUsernameAndClinica(username, clinica);
 
         if (response.isEmpty())
-            throw new NotFoundException("Usuário não encontrado");
+            throw new NotFoundException(USER_NOT_FOUND);
 
         return response.get();
     }
@@ -169,14 +176,15 @@ public class UsuarioServiceImpl implements UsuarioService {
         Optional<Usuario> response = this.usuarioRepository.findByResetPasswordToken(passwordResetToken);
 
         if (response.isEmpty())
-            throw new NotFoundException("Usuário não encontrado");
+            throw new NotFoundException(USER_NOT_FOUND);
 
         return response.get();
     }
 
     @Override
     public Usuario findOneVeterinario(Long id, Clinica clinica) {
-        final String NOT_FOUND_VETERINARIO = "Veterinário não encontrado", AUTHORITY_NAME = "VETERINARIO";
+        final String NOT_FOUND_VETERINARIO = "Veterinário não encontrado";
+        final String AUTHORITY_NAME = "VETERINARIO";
 
         Optional<Usuario> response = usuarioRepository.findByIdAndClinica(id, clinica);
 
@@ -197,7 +205,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         String[] pathnames = url.split("/");
         String path = pathnames[pathnames.length - 1].toUpperCase();
-        Authority authority = this.authorityRepository.findByAuthority(path);
+        Authority authority = this.authorityRepository.findByPermissao(path);
         Long total = search.trim().isEmpty() ?
                 this.usuarioRepository.countByAuthoritiesAndClinica(authority, clinica) :
                 this.usuarioRepository.countByNomeContainingAndAuthoritiesAndClinica(search, authority, clinica);
@@ -249,7 +257,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     private static Optional<Authority> getUsuarioAuthority(Usuario usuario, String authorityName) {
         return usuario.getAuthorities()
                 .stream()
-                .filter((authority) -> authority.getAuthority().equals(authorityName))
+                .filter(authority -> authority.getPermissao().equals(authorityName))
                 .findFirst();
     }
 }

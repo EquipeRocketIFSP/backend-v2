@@ -2,10 +2,6 @@ package br.vet.certvet.models.especializacoes;
 
 import br.vet.certvet.models.Documento;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import java.time.LocalDateTime;
-
 
 public class CirurgiaDocumento extends Doc {
     public CirurgiaDocumento(Documento documento){

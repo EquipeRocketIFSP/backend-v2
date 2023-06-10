@@ -18,9 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -34,7 +32,7 @@ public class ClinicaTest {
     private ClinicaServiceImpl clinicaService;
 
     @Test
-    public void createClinicaWithoutResponsavelTecnico() {
+     void createClinicaWithoutResponsavelTecnico() {
         ClinicaInicialRequestDto dto = ClinicaTest.factoryClinicaInicialRequestDto();
         final Clinica expected = new Clinica(dto);
 
@@ -46,7 +44,7 @@ public class ClinicaTest {
     }
 
     @Test
-    public void createClinicaWithResponsavelTecnico() {
+     void createClinicaWithResponsavelTecnico() {
         ClinicaInicialRequestDto dto = ClinicaTest.factoryClinicaInicialRequestDto();
         //dto.dono_crmv = "SP-1234";
 
@@ -64,7 +62,7 @@ public class ClinicaTest {
     }
 
     @Test
-    public void getExistentClinica() {
+     void getExistentClinica() {
         ClinicaInicialRequestDto dto = ClinicaTest.factoryClinicaInicialRequestDto();
         final Clinica expected = new Clinica(dto);
 
@@ -76,7 +74,7 @@ public class ClinicaTest {
     }
 
     @Test
-    public void getExistentClinicaByCnpj() {
+     void getExistentClinicaByCnpj() {
         ClinicaInicialRequestDto dto = ClinicaTest.factoryClinicaInicialRequestDto();
         final Clinica expected = new Clinica(dto);
 
@@ -88,19 +86,19 @@ public class ClinicaTest {
     }
 
     @Test
-    public void getNotExistentClinica() {
+     void getNotExistentClinica() {
         when(this.clinicaRepository.findById(any())).thenReturn(Optional.empty());
         assertThrowsExactly(NotFoundException.class, () -> this.clinicaService.findById(Long.parseLong("999999999")));
     }
 
     @Test
-    public void getNotExistentClinicaByCnpj() {
+     void getNotExistentClinicaByCnpj() {
         when(this.clinicaRepository.findByCnpj(any())).thenReturn(Optional.empty());
         assertThrowsExactly(NotFoundException.class, () -> this.clinicaService.findByCnpj("11.222.333/0001-11"));
     }
 
     @Test
-    public void editClinica() {
+     void editClinica() {
         final Clinica expected = new Clinica(ClinicaTest.factoryClinicaInicialRequestDto());
         expected.fill(ClinicaTest.factoryUpdatedClinicaDto());
 
@@ -115,7 +113,7 @@ public class ClinicaTest {
         assertEquals(expected, actual);
     }
 
-    public static ClinicaInicialRequestDto factoryClinicaInicialRequestDto() {
+    private static ClinicaInicialRequestDto factoryClinicaInicialRequestDto() {
         return new ClinicaInicialRequestDto(
                 "Nome fantasia",
                 "Razão social",

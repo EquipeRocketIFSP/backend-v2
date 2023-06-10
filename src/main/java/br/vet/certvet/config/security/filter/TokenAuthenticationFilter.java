@@ -5,6 +5,7 @@ import br.vet.certvet.config.security.service.TokenService;
 import br.vet.certvet.models.Usuario;
 import br.vet.certvet.repositories.UsuarioRepository;
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,16 +21,25 @@ import java.util.NoSuchElementException;
 @AllArgsConstructor
 @Slf4j
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
-    final private static String TYPE = "Bearer ";
+    private final static String TYPE = "Bearer ";
 
     private TokenService tokenService;
 
     private UsuarioRepository repository;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String token = retrieveToken(request);
-        if(tokenService.validate(token)){
+    protected void doFilterInternal(
+            @NonNull HttpServletRequest request,
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain
+    ) throws ServletException, IOException {
+        String token = request.getHeader("Authorization");
+        if(token == null || !token.startsWith(TYPE)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+        token = token.substring(TYPE.length());
+        if(Boolean.TRUE.equals(tokenService.validate(token))){
             authenticate(token);
         }
         filterChain.doFilter(request, response);
@@ -50,14 +60,5 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         }
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userId, null, usuario.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
-    }
-
-    private String retrieveToken(HttpServletRequest request) {
-        String token = request.getHeader("Authorization");
-        if(token == null)
-            return null;
-        if(!token.startsWith(TYPE))
-            return null;
-        return token.substring(TYPE.length(), token.length());
     }
 }

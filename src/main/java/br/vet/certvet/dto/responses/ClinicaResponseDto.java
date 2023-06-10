@@ -2,16 +2,18 @@ package br.vet.certvet.dto.responses;
 
 import br.vet.certvet.models.Clinica;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
 
+@Getter
 public class ClinicaResponseDto {
     @JsonProperty("id")
     private Long id;
 
     @JsonProperty("nome_fantasia")
-    private String nome_fantasia;
+    private String nomeFantasia;
 
     @JsonProperty("razao_social")
-    private String razao_social;
+    private String razaoSocial;
 
     @JsonProperty("cnpj")
     private String cnpj;
@@ -51,8 +53,8 @@ public class ClinicaResponseDto {
 
     public ClinicaResponseDto(Clinica clinica) {
         this.id = clinica.getId();
-        this.nome_fantasia = clinica.getNomeFantasia();
-        this.razao_social = clinica.getRazaoSocial();
+        this.nomeFantasia = clinica.getNomeFantasia();
+        this.razaoSocial = clinica.getRazaoSocial();
         this.cnpj = clinica.getCnpj();
         this.cnae = clinica.getCnae();
         this.email = clinica.getEmail();

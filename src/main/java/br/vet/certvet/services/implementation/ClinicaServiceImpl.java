@@ -25,6 +25,7 @@ import java.util.Optional;
 @Slf4j
 public class ClinicaServiceImpl implements ClinicaService {
 
+    private static final String CLINICA_NAO_EXISTE = "Clínica não existe.";
     @Autowired
     private ClinicaRepository clinicaRepository;
 
@@ -62,7 +63,7 @@ public class ClinicaServiceImpl implements ClinicaService {
         Optional<Clinica> response = this.clinicaRepository.findById(id);
 
         if (response.isEmpty())
-            throw new NotFoundException("Clínica não existe.");
+            throw new NotFoundException(CLINICA_NAO_EXISTE);
 
         return response.get();
     }
@@ -72,7 +73,7 @@ public class ClinicaServiceImpl implements ClinicaService {
         Optional<Clinica> response = this.clinicaRepository.findByCnpj(cnpj);
 
         if (response.isEmpty())
-            throw new NotFoundException("Clínica não existe.");
+            throw new NotFoundException(CLINICA_NAO_EXISTE);
 
         return response.get();
     }
@@ -82,7 +83,7 @@ public class ClinicaServiceImpl implements ClinicaService {
         Optional<Clinica> response = this.clinicaRepository.findByCode(code);
 
         if (response.isEmpty())
-            throw new NotFoundException("Clínica não existe.");
+            throw new NotFoundException(CLINICA_NAO_EXISTE);
 
         return response.get();
     }

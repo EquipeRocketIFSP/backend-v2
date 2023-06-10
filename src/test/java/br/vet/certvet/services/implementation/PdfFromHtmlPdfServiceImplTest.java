@@ -151,6 +151,7 @@ public class PdfFromHtmlPdfServiceImplTest {
                 .getProntuario();
         File outputFile = new File("src/test/resources/prontuario/htmlToPdf/test.pdf");
         Files.write(outputFile.toPath(), service.writeProntuario(parametro));
+
     }
 
     @ParameterizedTest

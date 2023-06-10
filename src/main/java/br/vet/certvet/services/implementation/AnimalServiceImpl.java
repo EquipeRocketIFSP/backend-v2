@@ -85,7 +85,7 @@ public class AnimalServiceImpl implements AnimalService {
     }
 
     private static void checkTutorAuthority(List<Usuario> tutores, UsuarioService usuarioService) throws ForbiddenException {
-        tutores.forEach((tutor) -> {
+        tutores.forEach(tutor -> {
             Optional<Authority> response = usuarioService.findUsuarioAuthority(tutor, "TUTOR");
 
             if (response.isEmpty())

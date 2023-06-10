@@ -89,7 +89,7 @@ public class ClinicaController extends BaseController {
     ) {
         Clinica clinica = this.tokenService.getClinica(token);
         Usuario responsavelTecnico = this.tokenService.getUsuario(token);
-        Authority authority = this.authorityRepository.findByAuthority("VETERINARIO");
+        Authority authority = this.authorityRepository.findByPermissao("VETERINARIO");
 
         responsavelTecnico.setCrmv(dto.getCrmv());
 

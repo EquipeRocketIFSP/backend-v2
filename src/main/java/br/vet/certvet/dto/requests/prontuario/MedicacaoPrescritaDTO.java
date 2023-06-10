@@ -1,7 +1,6 @@
 package br.vet.certvet.dto.requests.prontuario;
 
 import br.vet.certvet.models.Prescricao;
-import br.vet.certvet.models.Procedimento;
 import br.vet.certvet.models.Prontuario;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;

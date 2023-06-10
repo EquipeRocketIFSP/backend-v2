@@ -1,6 +1,5 @@
 package br.vet.certvet.controllers;
 
-import br.vet.certvet.config.security.service.TokenService;
 import br.vet.certvet.dto.requests.MedicamentoRequestDto;
 import br.vet.certvet.dto.responses.MedicamentoResponseDto;
 import br.vet.certvet.dto.responses.PaginatedResponse;
@@ -23,8 +22,6 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @RequestMapping("/api/medicamento")
 @SecurityRequirement(name = "bearer-key")
 public class MedicamentoController extends BaseController {
-    @Autowired
-    private TokenService tokenService;
 
     @Autowired
     private MedicamentoService medicamentoService;

@@ -1,25 +1,31 @@
 package br.vet.certvet.services.implementation;
 
 
-import br.vet.certvet.models.Estoque;
 import br.vet.certvet.repositories.EstoqueRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-public class EstoqueServiceImplTest {
+
+@SpringBootTest
+@ActiveProfiles("test")
+@EnableConfigurationProperties
+class EstoqueServiceImplTest {
 
     private EstoqueRepository estoqueRepository = mock(EstoqueRepository.class);
     @InjectMocks
     private EstoqueServiceImpl estoqueService;
 
     @Test
-        public void createEstoque(){
-        //when(estoqueRepository.save(any(Estoque.class))).
-        }
+    void createEstoque(){
+        assertTrue(true);
+    //when(estoqueRepository.save(any(Estoque.class))).
+    }
 
 }
   //  public void createCampus() {

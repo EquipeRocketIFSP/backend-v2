@@ -1,6 +1,6 @@
 package br.vet.certvet.controllers;
 
-import br.vet.certvet.contracts.apis.ipcBr.IcpResponse;
+import br.vet.certvet.contracts.apis.ipc_br.IcpResponse;
 import br.vet.certvet.dto.responses.DocumentoResponse;
 import br.vet.certvet.exceptions.DocumentoNotFoundException;
 import br.vet.certvet.exceptions.DocumentoNotPersistedException;
@@ -128,7 +128,7 @@ public class DocumentoController extends BaseController {
                 .orElseThrow(() -> new DocumentoNotFoundException("Não foi possível identificar o id do documento na base de dados"));
         // Disponibiliza o arquivo na AWS para que possa ser validado pelo serviço do ICP-BR
         ObjectMetadata awsResponse = pdfService.saveDocumentoPdfInBucket(documento, version, documentoPdf);
-        // Obtém dados convecionados para salvar o arquivo
+        // Obtém dados convencionados para salvar o arquivo
         final String bucket = S3BucketServiceRepository.getConventionedBucketName(documento.getClinica().getCnpj());
         final String fileName = ProntuarioServiceImpl.writeNomeArquivo(documento, version);
         IcpResponse icpResponse = pdfService.getIcpBrValidation(bucket, fileName);

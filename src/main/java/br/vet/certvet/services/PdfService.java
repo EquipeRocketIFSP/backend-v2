@@ -1,6 +1,6 @@
 package br.vet.certvet.services;
 
-import br.vet.certvet.contracts.apis.ipcBr.IcpResponse;
+import br.vet.certvet.contracts.apis.ipc_br.IcpResponse;
 import br.vet.certvet.exceptions.DocumentoNotPersistedException;
 import br.vet.certvet.models.Documento;
 import br.vet.certvet.models.Prontuario;
@@ -15,7 +15,7 @@ import java.util.Optional;
 @Service
 public interface PdfService {
 
-    byte[] writeProntuario(Prontuario prontuario) throws Exception;
+    byte[] writeProntuario(Prontuario prontuario);
 
     byte[] writePdfDocumentoEmBranco(Documento documento, Doc documentoTipo) throws DocumentoNotPersistedException, OptimisticLockingFailureException, IOException;
 
@@ -28,7 +28,7 @@ public interface PdfService {
 
     Optional<byte[]> getPrescricaoPdf(Prontuario prontuario, int version);
 
-    Optional<byte[]> writePrescricao(Prontuario prontuario) throws IOException;
+    Optional<byte[]> writePrescricao(Prontuario prontuario);
 
     ObjectMetadata savePrescricaoPdfInBucket(Prontuario prontuario, int version, byte[] medicacaoPrescritaPdf);
 }

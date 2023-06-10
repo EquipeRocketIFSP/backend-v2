@@ -1,5 +1,6 @@
 package br.vet.certvet.unit;
 
+import br.vet.certvet.dto.requests.ClinicaInicialRequestDto;
 import br.vet.certvet.dto.requests.FuncionarioRequestDto;
 import br.vet.certvet.dto.requests.UsuarioRequestDto;
 import br.vet.certvet.dto.requests.VeterinarioRequestDto;
@@ -10,8 +11,8 @@ import br.vet.certvet.models.Usuario;
 import br.vet.certvet.repositories.UsuarioRepository;
 import br.vet.certvet.services.implementation.ClinicaServiceImpl;
 import br.vet.certvet.services.implementation.UsuarioServiceImpl;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("test")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @EnableConfigurationProperties
-public class UsuarioTest {
+class UsuarioTest {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
@@ -43,23 +44,56 @@ public class UsuarioTest {
     private static Clinica clinica;
     private static BCryptPasswordEncoder passwordEncoder;
 
+    private static ClinicaInicialRequestDto factoryClinicaInicialRequestDto() {
+        return new ClinicaInicialRequestDto(
+                "Nome fantasia",
+                "Razão social",
+                "11.243.612/0001-21",
+                "15378",
+                "57490-970",
+                "Rua Doutor Miguel Torres 19",
+                "45",
+                "Centro",
+                "Água Branca",
+                "AL",
+                "(11) 91111-1111",
+                "(11) 1111-1111",
+                "clinica@teste.com",
+
+                "Camaeon",
+                "920.137.300-71",
+                "13.764.333-0",
+                "57490-970",
+                "Rua Doutor Miguel Torres 19",
+                "45",
+                "Centro",
+                "Água Branca",
+                "AL",
+                "(11) 92222-1111",
+                "(11) 2211-1111",
+                "camaeon@teste.com",
+                "1234",
+                null
+        );
+    }
+
     @BeforeAll
-    public void setup() {
-        UsuarioTest.clinica = this.clinicaService.create(ClinicaTest.factoryClinicaInicialRequestDto());
+    void setup() {
+        UsuarioTest.clinica = this.clinicaService.create(factoryClinicaInicialRequestDto());
         UsuarioTest.passwordEncoder = new BCryptPasswordEncoder();
     }
 
     @AfterEach
-    public void truncateTable() {
+    void truncateTable() {
         this.usuarioRepository.deleteAll();
     }
 
     @Test
-    public void createDono() {
+    void createDono() {
         final String[] AUTHORITIES = {"FUNCIONARIO", "ADMIN"};
 
         Usuario usuario = this.usuarioService.create(UsuarioTest.factoryDonoRequestDto(), UsuarioTest.clinica);
-        List<String> usuarioAuthorities = usuario.getAuthorities().stream().map(Authority::getAuthority).toList();
+        List<String> usuarioAuthorities = usuario.getAuthorities().stream().map(Authority::getPermissao).toList();
 
         assertNotNull(usuario);
         assertNotNull(usuario.getId());
@@ -67,11 +101,11 @@ public class UsuarioTest {
     }
 
     @Test
-    public void createTutor() {
+    void createTutor() {
         final String[] AUTHORITIES = {"TUTOR"};
 
         Usuario usuario = this.usuarioService.create(UsuarioTest.factoryTutorRequestDto(), UsuarioTest.clinica);
-        List<String> usuarioAuthorities = usuario.getAuthorities().stream().map(Authority::getAuthority).toList();
+        List<String> usuarioAuthorities = usuario.getAuthorities().stream().map(Authority::getPermissao).toList();
 
         assertNotNull(usuario);
         assertNotNull(usuario.getId());
@@ -79,11 +113,11 @@ public class UsuarioTest {
     }
 
     @Test
-    public void createVeterinario() {
+    void createVeterinario() {
         final String[] AUTHORITIES = {"VETERINARIO"};
 
         Usuario usuario = this.usuarioService.create(UsuarioTest.factoryVeterinarioRequestDto(), UsuarioTest.clinica);
-        List<String> usuarioAuthorities = usuario.getAuthorities().stream().map(Authority::getAuthority).toList();
+        List<String> usuarioAuthorities = usuario.getAuthorities().stream().map(Authority::getPermissao).toList();
 
         assertNotNull(usuario);
         assertNotNull(usuario.getId());
@@ -91,11 +125,11 @@ public class UsuarioTest {
     }
 
     @Test
-    public void createFuncionario() {
+    void createFuncionario() {
         final String[] AUTHORITIES = {"FUNCIONARIO"};
 
         Usuario usuario = this.usuarioService.create(UsuarioTest.factoryFuncionarioRequestDto(), UsuarioTest.clinica);
-        List<String> usuarioAuthorities = usuario.getAuthorities().stream().map(Authority::getAuthority).toList();
+        List<String> usuarioAuthorities = usuario.getAuthorities().stream().map(Authority::getPermissao).toList();
 
         assertNotNull(usuario);
         assertNotNull(usuario.getId());
@@ -103,7 +137,7 @@ public class UsuarioTest {
     }
 
     @Test
-    public void editDono() {
+    void editDono() {
         final String[] AUTHORITIES = {"FUNCIONARIO", "ADMIN"};
 
         FuncionarioRequestDto dto = UsuarioTest.factoryDonoRequestDto();
@@ -116,7 +150,7 @@ public class UsuarioTest {
         final Usuario USUARIO_COMPARATION = new Usuario(dto, UsuarioTest.clinica);
         usuario = this.usuarioService.edit(dto, usuario);
 
-        List<String> usuarioAuthorities = usuario.getAuthorities().stream().map(Authority::getAuthority).toList();
+        List<String> usuarioAuthorities = usuario.getAuthorities().stream().map(Authority::getPermissao).toList();
 
         assertNotNull(usuario);
         assertEquals(usuario.getId(), idUsuario);
@@ -133,7 +167,7 @@ public class UsuarioTest {
     }
 
     @Test
-    public void editTutor() {
+    void editTutor() {
         final String[] AUTHORITIES = {"TUTOR"};
 
         UsuarioRequestDto dto = UsuarioTest.factoryTutorRequestDto();
@@ -145,7 +179,7 @@ public class UsuarioTest {
         final Usuario USUARIO_COMPARATION = new Usuario(dto, UsuarioTest.clinica);
         usuario = this.usuarioService.edit(dto, usuario);
 
-        List<String> usuarioAuthorities = usuario.getAuthorities().stream().map(Authority::getAuthority).toList();
+        List<String> usuarioAuthorities = usuario.getAuthorities().stream().map(Authority::getPermissao).toList();
 
         assertNotNull(usuario);
         assertEquals(usuario.getId(), idUsuario);
@@ -161,7 +195,7 @@ public class UsuarioTest {
     }
 
     @Test
-    public void editVeterinario() {
+    void editVeterinario() {
         final String[] AUTHORITIES = {"VETERINARIO"};
 
         VeterinarioRequestDto dto = UsuarioTest.factoryVeterinarioRequestDto();
@@ -175,7 +209,7 @@ public class UsuarioTest {
         final Usuario USUARIO_COMPARATION = new Usuario(dto, UsuarioTest.clinica);
         usuario = this.usuarioService.edit(dto, usuario);
 
-        List<String> usuarioAuthorities = usuario.getAuthorities().stream().map(Authority::getAuthority).toList();
+        List<String> usuarioAuthorities = usuario.getAuthorities().stream().map(Authority::getPermissao).toList();
 
         assertNotNull(usuario);
         assertEquals(usuario.getId(), idUsuario);
@@ -192,7 +226,7 @@ public class UsuarioTest {
     }
 
     @Test
-    public void editFuncionario() {
+    void editFuncionario() {
         final String[] AUTHORITIES = {"FUNCIONARIO"};
 
         FuncionarioRequestDto dto = UsuarioTest.factoryFuncionarioRequestDto();
@@ -205,7 +239,7 @@ public class UsuarioTest {
         final Usuario USUARIO_COMPARATION = new Usuario(dto, UsuarioTest.clinica);
         usuario = this.usuarioService.edit(dto, usuario);
 
-        List<String> usuarioAuthorities = usuario.getAuthorities().stream().map(Authority::getAuthority).toList();
+        List<String> usuarioAuthorities = usuario.getAuthorities().stream().map(Authority::getPermissao).toList();
 
         assertNotNull(usuario);
         assertEquals(usuario.getId(), idUsuario);
@@ -222,7 +256,7 @@ public class UsuarioTest {
     }
 
     @Test
-    public void getExistentTutor() {
+    void getExistentTutor() {
         Usuario usuarioTest = this.usuarioService.create(UsuarioTest.factoryTutorRequestDto(), UsuarioTest.clinica);
         Usuario usuario = this.usuarioService.findOne(usuarioTest.getId(), UsuarioTest.clinica);
 
@@ -231,14 +265,14 @@ public class UsuarioTest {
     }
 
     @Test
-    public void getUnexistentTutor() {
+    void getUnexistentTutor() {
         assertThrowsExactly(NotFoundException.class, () -> {
             this.usuarioService.findOne(999999999L, UsuarioTest.clinica);
         });
     }
 
     @Test
-    public void softDeleteUsuario() {
+    void softDeleteUsuario() {
         Usuario usuario = this.usuarioService.create(UsuarioTest.factoryVeterinarioRequestDto(), UsuarioTest.clinica);
         this.usuarioService.delete(usuario);
 
@@ -246,7 +280,7 @@ public class UsuarioTest {
     }
 
     @Test
-    public void recoverDeleteUsuario() {
+    void recoverDeleteUsuario() {
         Usuario usuario = this.usuarioService.create(UsuarioTest.factoryTutorRequestDto(), UsuarioTest.clinica);
         this.usuarioService.delete(usuario);
         this.usuarioService.recover(usuario);
@@ -255,7 +289,7 @@ public class UsuarioTest {
     }
 
     @Test
-    public void findTutorAuthority() {
+    void findTutorAuthority() {
         Usuario usuario = this.usuarioService.create(UsuarioTest.factoryTutorRequestDto(), UsuarioTest.clinica);
 
         assertThat(this.usuarioService.findUsuarioAuthority(usuario, "TUTOR")).isPresent();
@@ -266,7 +300,7 @@ public class UsuarioTest {
     }
 
     @Test
-    public void findFuncionarioAuthority() {
+    void findFuncionarioAuthority() {
         Usuario usuario = this.usuarioService.create(UsuarioTest.factoryFuncionarioRequestDto(), UsuarioTest.clinica);
 
         assertThat(this.usuarioService.findUsuarioAuthority(usuario, "FUNCIONARIO")).isPresent();
@@ -277,7 +311,7 @@ public class UsuarioTest {
     }
 
     @Test
-    public void findVeterinarioAuthority() {
+    void findVeterinarioAuthority() {
         Usuario usuario = this.usuarioService.create(UsuarioTest.factoryVeterinarioRequestDto(), UsuarioTest.clinica);
 
         assertThat(this.usuarioService.findUsuarioAuthority(usuario, "VETERINARIO")).isPresent();
@@ -288,7 +322,7 @@ public class UsuarioTest {
     }
 
     @Test
-    public void findDonoAuthority() {
+    void findDonoAuthority() {
         Usuario usuario = this.usuarioService.create(UsuarioTest.factoryDonoRequestDto(), UsuarioTest.clinica);
 
         assertThat(this.usuarioService.findUsuarioAuthority(usuario, "ADMIN")).isPresent();
@@ -298,7 +332,7 @@ public class UsuarioTest {
         assertThat(this.usuarioService.findUsuarioAuthority(usuario, "VETERINARIO")).isEmpty();
     }
 
-    public static UsuarioRequestDto factoryTutorRequestDto() {
+    private static UsuarioRequestDto factoryTutorRequestDto() {
         UsuarioRequestDto dto = new UsuarioRequestDto();
 
         dto.setNome("Dorguk");
@@ -317,7 +351,7 @@ public class UsuarioTest {
         return dto;
     }
 
-    public static FuncionarioRequestDto factoryDonoRequestDto() {
+    private static FuncionarioRequestDto factoryDonoRequestDto() {
         FuncionarioRequestDto dto = new FuncionarioRequestDto();
 
         dto.setNome("Camaeon");
@@ -338,7 +372,7 @@ public class UsuarioTest {
         return dto;
     }
 
-    public static FuncionarioRequestDto factoryFuncionarioRequestDto() {
+    private static FuncionarioRequestDto factoryFuncionarioRequestDto() {
         FuncionarioRequestDto dto = new FuncionarioRequestDto();
 
         dto.setNome("Liero");
@@ -359,7 +393,7 @@ public class UsuarioTest {
         return dto;
     }
 
-    public static VeterinarioRequestDto factoryVeterinarioRequestDto() {
+    private static VeterinarioRequestDto factoryVeterinarioRequestDto() {
         VeterinarioRequestDto dto = new VeterinarioRequestDto();
 
         dto.setNome("Buior");
@@ -381,7 +415,7 @@ public class UsuarioTest {
         return dto;
     }
 
-    public static void updateUsuarioDto(UsuarioRequestDto dto) {
+    private static void updateUsuarioDto(UsuarioRequestDto dto) {
         dto.setNome("Nome Teste");
         dto.setCpf("teste@teste.com");
         dto.setRg("11111-000");

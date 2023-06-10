@@ -14,7 +14,8 @@ import java.util.Optional;
 public interface ProntuarioRepository extends JpaRepository<Prontuario, Long> {
     Optional<Prontuario> findOneByIdAndAnimal(Long id, Animal animal);
 
-    List<Documento> findAllByIdAndDocumentos_tipo(Long prontuarioId, String tipo);
+    @Query("select p from Prontuario p inner join p.documentos documentos where p.id = ?1 and documentos.tipo = ?2")
+    List<Documento> findAllByIdAndDocumentoTipo(Long prontuarioId, String tipo);
 
     boolean existsByDataAtendimento(LocalDateTime dataAtendimento);
 
@@ -22,7 +23,7 @@ public interface ProntuarioRepository extends JpaRepository<Prontuario, Long> {
     Optional<Prontuario> findByCodigo(String prontuarioCodigo);
 
     @Query("select p from Prontuario p inner join p.documentos documentos where p.codigo = ?1 and documentos.tipo = ?2")
-    List<Documento> findAllByCodigoAndDocumentos_tipo(String prontuarioCodigo, String tipo);
+    List<Documento> findAllByCodigoAndDocumentoTipo(String prontuarioCodigo, String tipo);
 
     Long countByAnimal(Animal animal);
 

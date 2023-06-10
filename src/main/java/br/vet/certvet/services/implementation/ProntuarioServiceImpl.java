@@ -85,14 +85,13 @@ public class ProntuarioServiceImpl implements ProntuarioService {
     public Prontuario save(Prontuario prontuario) {
         if(null != prontuario.getCodigo())
             return prontuarioRepository.save(prontuario);
-//        log.info("prontuario: " + prontuario);
         Optional<Clinica> clinica = clinicaRepository.findById(prontuario.getClinica().getId());
         if (clinica.isEmpty()) throw new ClinicaNotFoundException("Clínica não cadastrada ou não identificada");
         Optional<Usuario> tutor = tutorRepository.findById(prontuario.getTutor().getId());
         if (tutor.isEmpty()) throw new TutorNotFoundException("Tutor não cadastrado ou não identificado");
-        Optional<Animal> animal = animalRepository.findByTutores_idAndNome(tutor.get().getId(), prontuario.getAnimal().getNome());
+        Optional<Animal> animal = animalRepository.findByTutoridAndNome(tutor.get().getId(), prontuario.getAnimal().getNome());
         if (animal.isEmpty()) throw new AnimalNotFoundException("Animal não cadastrado ou não identificado");
-//        log.debug("Iniciando persistência do prontuário");
+        log.debug("Iniciando persistência do prontuário");
 //        Documento doc = Documento.builder()
 //                .codigo(codigo)
 //                .versao(1)
@@ -222,7 +221,7 @@ public class ProntuarioServiceImpl implements ProntuarioService {
 
     @Override
     public List<Documento> getDocumentosFromProntuarioByTipo(String prontuarioCodigo, String tipo) {
-        return prontuarioRepository.findAllByCodigoAndDocumentos_tipo(prontuarioCodigo, tipo);
+        return prontuarioRepository.findAllByCodigoAndDocumentoTipo(prontuarioCodigo, tipo);
     }
 
     @Override
@@ -250,7 +249,6 @@ public class ProntuarioServiceImpl implements ProntuarioService {
     }
 
     public static String writeNomeArquivo(Documento documento, int version) {
-        //TODO: Verificar se como tornar dinâmico para versionamento
         return new StringBuilder()
                 .append(documento.getProntuario().getCodigo())
                 .append("-doc-")

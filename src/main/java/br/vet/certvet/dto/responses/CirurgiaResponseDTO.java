@@ -3,10 +3,12 @@ package br.vet.certvet.dto.responses;
 import br.vet.certvet.models.Cirurgia;
 import br.vet.certvet.models.Estoque;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.util.List;
 
+@Getter
 public class CirurgiaResponseDTO {
     @JsonProperty("descricao")
     private String descricao;
@@ -21,7 +23,7 @@ public class CirurgiaResponseDTO {
         this.descricao = cirurgia.getDescricao();
         this.data = cirurgia.getData().toString();
 
-        this.medicamentos = cirurgia.getMedicamentosConsumidos().stream().map((cirurgiaEstoqueMedicamento) -> {
+        this.medicamentos = cirurgia.getMedicamentosConsumidos().stream().map(cirurgiaEstoqueMedicamento -> {
             Estoque estoque = cirurgiaEstoqueMedicamento.getEstoque();
             BigDecimal dose = cirurgiaEstoqueMedicamento.getDose();
 

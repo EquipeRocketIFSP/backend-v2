@@ -18,6 +18,7 @@ import java.util.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Setter
 public class Prontuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -159,7 +160,7 @@ public class Prontuario {
                 .toList();
     }
 
-    final public String getMonthAtendimento() {
+    public final String getMonthAtendimento() {
         final var month = new DateFormatSymbols().getMonths()[
                 dataAtendimento.getMonth()
                         .getValue() - 1
@@ -321,7 +322,7 @@ public class Prontuario {
         return this.codigo;
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = false)
     public Prontuario setCodigo(LocalDateTime now) {
         this.codigo = "VT-P-" + now.format(DateTimeFormatter.ofPattern("yyyy_MM_dd_hh_mm_ss"));
         return this;

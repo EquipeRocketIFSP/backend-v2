@@ -8,7 +8,6 @@ import br.vet.certvet.dto.responses.VeterinarioResponseDto;
 import br.vet.certvet.models.Authority;
 import br.vet.certvet.models.Usuario;
 import br.vet.certvet.services.UsuarioService;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -71,7 +70,7 @@ public class AccountController {
     @GetMapping("autoridades")
     public ResponseEntity<List<String>> findAuthorities(@RequestHeader(AUTHORIZATION) String token) {
         Usuario usuario = this.tokenService.getUsuario(token);
-        List<String> authorities = usuario.getAuthorities().stream().map(Authority::getAuthority).toList();
+        List<String> authorities = usuario.getAuthorities().stream().map(Authority::getPermissao).toList();
 
         return ResponseEntity.ok(authorities);
     }

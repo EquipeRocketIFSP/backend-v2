@@ -11,11 +11,13 @@ import java.util.Arrays;
 import java.util.Optional;
 
 public class ProntuarioFactory {
+
+    private ProntuarioFactory(){}
     public static Prontuario factory(ProntuarioDTO dto) {
         String className = dto.getClass().getSimpleName();
 
         Optional<Method> factory = Arrays.stream(ProntuarioFactory.class.getDeclaredMethods())
-                .filter((method) -> method.getName().equals("factoryFrom" + className))
+                .filter(method -> method.getName().equals("factoryFrom" + className))
                 .findFirst();
 
         if (factory.isEmpty())

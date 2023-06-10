@@ -1,9 +1,10 @@
 package br.vet.certvet.controllers;
 
-import br.vet.certvet.contracts.apis.ipcBr.IcpResponse;
+import br.vet.certvet.contracts.apis.ipc_br.IcpResponse;
 import br.vet.certvet.dto.requests.prontuario.MedicacaoPrescritaDTO;
 import br.vet.certvet.dto.requests.prontuario.MedicacaoPrescritaListDTO;
 import br.vet.certvet.exceptions.AssinadorNaoCadastradoException;
+import br.vet.certvet.exceptions.ErroSalvarPdfAssinadoAwsException;
 import br.vet.certvet.exceptions.InvalidSignedDocumentoException;
 import br.vet.certvet.models.Prescricao;
 import br.vet.certvet.models.PrescricaoRepository;
@@ -22,9 +23,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.net.URI;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/prontuario/prescricao")
@@ -80,11 +81,8 @@ public class PrescricaoController extends BaseController {
         final int version = null == v ? 1 : v;
         Prontuario prontuario = findProntuario(prontuarioCodigo);
         Optional<byte[]> pdf;
-        try {
-            pdf = pdfService.writePrescricao(prontuario);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+
+        pdf = pdfService.writePrescricao(prontuario);
 
 //        Optional<byte[]> pdf = pdfService.getPrescricaoPdf(prontuario, version);
         return pdf.map(ResponseEntity::ok)
@@ -104,6 +102,7 @@ public class PrescricaoController extends BaseController {
         final int version = Integer.parseInt(prontuario.prescricaoLatestVersion());
         //Importante: passo necessário para adicionar o documento no repositório em nuvem para que o serviço icp-br possa realizar a validação do documento
         ObjectMetadata awsResponse = pdfService.savePrescricaoPdfInBucket(prontuario, version, medicacaoPrescritaPdf);
+        if(null == awsResponse) throw new ErroSalvarPdfAssinadoAwsException("Não foi recebido nenhuma confirmação de que o arquivo foi salvo com sucesso. tente novamente");
 
         final String bucket = S3BucketServiceRepository.getConventionedBucketName(prontuario.getClinica().getCnpj());
         final String fileName = ProntuarioServiceImpl.writeNomeArquivoPrescricao(prontuario, version);

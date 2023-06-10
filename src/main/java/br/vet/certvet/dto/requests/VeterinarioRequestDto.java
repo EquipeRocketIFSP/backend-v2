@@ -12,7 +12,8 @@ import javax.validation.constraints.Size;
 @Getter
 @Accessors(chain = true)
 public class VeterinarioRequestDto extends FuncionarioRequestDto {
-    public boolean is_admin;
+    @JsonProperty("is_admin")
+    public boolean isAdmin;
     @NotEmpty(message = "CRMV não pode estar vazio")
     @Size(max = 255, message = "CRMV não pode ultrapassar 255 caracteres")
     @JsonProperty("crmv")

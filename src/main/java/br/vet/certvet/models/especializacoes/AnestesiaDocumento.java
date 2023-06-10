@@ -1,11 +1,6 @@
 package br.vet.certvet.models.especializacoes;
 
 import br.vet.certvet.models.Documento;
-import org.springframework.stereotype.Service;
-
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import java.time.LocalDateTime;
 
 
 public class AnestesiaDocumento extends Doc {

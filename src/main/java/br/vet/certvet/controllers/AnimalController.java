@@ -1,6 +1,5 @@
 package br.vet.certvet.controllers;
 
-import br.vet.certvet.config.security.service.TokenService;
 import br.vet.certvet.dto.requests.AnimalRequestDto;
 import br.vet.certvet.dto.responses.AnimalResponseDto;
 import br.vet.certvet.dto.responses.PaginatedResponse;
@@ -26,8 +25,6 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @CrossOrigin
 @SecurityRequirement(name = "bearer-key")
 public class AnimalController extends BaseController {
-    @Autowired
-    private TokenService tokenService;
 
     @Autowired
     private AnimalService animalService;
@@ -41,7 +38,7 @@ public class AnimalController extends BaseController {
             @RequestBody @Valid AnimalRequestDto dto
     ) {
         Clinica clinica = this.tokenService.getClinica(token);
-        List<Usuario> tutores = dto.tutores.stream().map((id) -> this.usuarioService.findOne(id, clinica)).toList();
+        List<Usuario> tutores = dto.getTutores().stream().map(id -> this.usuarioService.findOne(id, clinica)).toList();
         Animal animal = this.animalService.create(dto, tutores);
 
         return new ResponseEntity<>(new AnimalResponseDto(animal), HttpStatus.CREATED);
@@ -56,7 +53,7 @@ public class AnimalController extends BaseController {
     ) {
         Clinica clinica = this.tokenService.getClinica(token);
         Usuario tutor = this.usuarioService.findOne(previousTutorId, clinica);
-        List<Usuario> tutores = dto.tutores.stream().map((tutorId) -> this.usuarioService.findOne(tutorId, clinica)).toList();
+        List<Usuario> tutores = dto.getTutores().stream().map(tutorId -> this.usuarioService.findOne(tutorId, clinica)).toList();
 
         Animal animal = this.animalService.findOne(id, tutor);
         animal = this.animalService.edit(dto, animal, tutores);
@@ -78,7 +75,7 @@ public class AnimalController extends BaseController {
     }
 
     @GetMapping("/tutor/{tutor_id}/animal")
-    public ResponseEntity<PaginatedResponse> findAll(
+    public ResponseEntity<PaginatedResponse<AnimalResponseDto>> findAll(
             @RequestHeader(AUTHORIZATION) String token,
             @PathVariable("tutor_id") Long tutorId,
             @RequestParam(name = "pagina", defaultValue = "1") int page,

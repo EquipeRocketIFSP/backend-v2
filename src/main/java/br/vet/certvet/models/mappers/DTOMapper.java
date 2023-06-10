@@ -6,8 +6,10 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 
 public class DTOMapper {
+
+    private DTOMapper(){}
     @SuppressWarnings("unchecked")
-    public static <D, M, DM> M assignToModel(D dto, M model, Class<DM> dtoMapper) {
+    public static <D, M, F> M assignToModel(D dto, M model, Class<F> dtoMapper) {
         final String className = dto.getClass().getName();
         final Method[] methods = dtoMapper.getDeclaredMethods();
 
