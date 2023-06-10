@@ -73,7 +73,7 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
 
     @Override
     public byte[] writePdfDocumentoEmBranco(
-            Documento documento,
+            Prontuario prontuario,
             Doc documentoTipo
     ) throws
             DocumentoNotPersistedException,
@@ -89,7 +89,9 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
             throw new EscritaDocumentoPdfException("Erro ao realizar ao ler o documento de referência para geração do pdf de Documento de Autorização/Consentimento.");
         }
 
-        documentoRepository.save(documentoTipo.getDocumento());
+        Documento documento = documentoRepository.save(documentoTipo.getDocumento().fromProntuario(prontuario));
+//        documento.prontuario(prontuario);
+
         layout = ProntuarioPdfHelper.replaceWithDivsForDocumento(documentoTipo, layout);
         layout = ProntuarioPdfHelper.fillLayoutFieldsForDocumento(documento, layout);
         return transformTxtToXmlToPdf(layout);

@@ -116,7 +116,7 @@ public class DocumentoController extends BaseController {
             @RequestHeader(HttpHeaders.AUTHORIZATION) String auth,
             @RequestParam("prontuario") String prontuarioCodigo,
             @RequestParam("documento") String documentoCodigo,
-            @RequestParam("versao") Integer versao,
+            @RequestParam(value = "versao", required = false) Integer versao,
             @RequestBody byte[] documentoPdf
     ) throws IOException, SQLException {
         final int version = null == versao ? -1 : versao;

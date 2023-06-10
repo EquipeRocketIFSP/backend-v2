@@ -97,7 +97,7 @@ public class Animal implements Fillable<AnimalRequestDto> {
         this.nome = dto.getNome();
         this.especie = dto.getEspecie();
         this.sexo = SexoAnimal.valueOf(dto.getSexo());
-        this.anoNascimento = dto.getAnoNascimento();
+        this.anoNascimento = dto.getAno_nascimento();
         this.peso = dto.getPeso();
         this.pelagem = dto.getPelagem();
         this.raca = dto.getRaca();

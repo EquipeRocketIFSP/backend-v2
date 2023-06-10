@@ -17,7 +17,7 @@ public interface PdfService {
 
     byte[] writeProntuario(Prontuario prontuario);
 
-    byte[] writePdfDocumentoEmBranco(Documento documento, Doc documentoTipo) throws DocumentoNotPersistedException, OptimisticLockingFailureException, IOException;
+    byte[] writePdfDocumentoEmBranco(Prontuario prontuario, Doc documentoTipo) throws DocumentoNotPersistedException, OptimisticLockingFailureException, IOException;
 
     byte[] retrieveFromRepository(Prontuario prontuario) throws IOException;
 

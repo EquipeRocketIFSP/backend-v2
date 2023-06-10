@@ -165,4 +165,9 @@ public class Documento {
         this.versao = versao;
         return this;
     }
+
+    public Documento fromProntuario(Prontuario prontuario) {
+        return this.setCodigo(LocalDateTime.now())
+                .prontuario(prontuario);
+    }
 }

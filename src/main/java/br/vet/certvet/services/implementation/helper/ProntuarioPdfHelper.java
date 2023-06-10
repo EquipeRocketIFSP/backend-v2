@@ -57,7 +57,7 @@ public class ProntuarioPdfHelper {
         return prontuario.getDocumentos()
                 .stream()
                 .filter(Objects::nonNull)
-                .filter(documento -> documento.getTipo().equals("obito"))
+                .filter(documento -> "obito".equals(documento.getTipo()))
                 .findFirst();
     }
 

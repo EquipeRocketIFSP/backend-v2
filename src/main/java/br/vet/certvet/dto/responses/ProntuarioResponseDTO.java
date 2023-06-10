@@ -4,6 +4,7 @@ import br.vet.certvet.enums.ProntuarioStatus;
 import br.vet.certvet.models.Prontuario;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProntuarioResponseDTO {
@@ -124,6 +125,9 @@ public class ProntuarioResponseDTO {
     @JsonProperty("veterinario")
     private UsuarioResponseDto veterinario;
 
+    @JsonProperty("prescricoes")
+    private List<PrescricaoResponseDTO> prescricoes = new ArrayList<>();
+
     public ProntuarioResponseDTO(Prontuario prontuario) {
         this.id = prontuario.getId();
         this.frequenciaRespiratoria = prontuario.getFrequenciaRespiratoria();
@@ -158,6 +162,12 @@ public class ProntuarioResponseDTO {
         this.procedimentos = prontuario.getProcedimentos().stream().map(ProcedimentoResponseDTO::new).toList();
         this.versao = prontuario.getVersao();
         this.status = prontuario.getStatus();
+
+        if (prontuario.getPrescricoes() != null)
+            this.prescricoes = prontuario.getPrescricoes()
+                    .stream()
+                    .filter((prescricao) -> prescricao.getDataExclusao() == null)
+                    .map(PrescricaoResponseDTO::new).toList();
 
         if (prontuario.getCirurgia() != null)
             this.cirurgia = new CirurgiaResponseDTO(prontuario.getCirurgia());

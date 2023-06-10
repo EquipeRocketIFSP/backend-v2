@@ -52,7 +52,7 @@ public class PrescricaoController extends BaseController {
     public ResponseEntity<MedicacaoPrescritaListDTO> getPrescricao(
             @PathVariable("prontuario") String prontuarioCodigo,
             @RequestHeader(value = "version", required = false) Integer v
-    ){
+    ) {
         final int version = null == v ? 1 : v;
         Prontuario prontuario = findProntuario(prontuarioCodigo);
         List<MedicacaoPrescritaDTO> prescricoes = prontuario.getPrescricoes(version)
@@ -66,18 +66,19 @@ public class PrescricaoController extends BaseController {
 
     /**
      * Se nenhum valor for informado para version, o valor default será 1
+     *
      * @param prontuarioCodigo
      * @param v
      * @return pdf
      */
     @GetMapping(
-            value="/{prontuario}",
-            consumes= MediaType.APPLICATION_PDF_VALUE
+            value = "/{prontuario}",
+            consumes = MediaType.APPLICATION_PDF_VALUE
     )
     public ResponseEntity<byte[]> getPrescricaoPdf(
             @PathVariable("prontuario") String prontuarioCodigo,
             @RequestHeader(value = "version", required = false) Integer v
-    ){
+    ) {
         final int version = null == v ? 1 : v;
         Prontuario prontuario = findProntuario(prontuarioCodigo);
         Optional<byte[]> pdf;
@@ -107,7 +108,8 @@ public class PrescricaoController extends BaseController {
         final String bucket = S3BucketServiceRepository.getConventionedBucketName(prontuario.getClinica().getCnpj());
         final String fileName = ProntuarioServiceImpl.writeNomeArquivoPrescricao(prontuario, version);
         final IcpResponse icpResponse = pdfService.getIcpBrValidation(bucket, fileName);
-        if(!icpResponse.isValidDocument()) throw new InvalidSignedDocumentoException("O documento não pôde ser confirmado pelo ICP-BR");
+        if (!icpResponse.isValidDocument())
+            throw new InvalidSignedDocumentoException("O documento não pôde ser confirmado pelo ICP-BR");
 
         final List<Usuario> assinadores = PdfFromHtmlPdfServiceImpl.assinadoresPresentesSistema(icpResponse);
         Prontuario signedPrescricao = prontuarioService.save(
@@ -115,7 +117,7 @@ public class PrescricaoController extends BaseController {
                         prontuario.getPrescricoes()
                                 .stream()
                                 .map(prescricao -> {
-                                    if(prescricao.getVersao() == version) {
+                                    if (prescricao.getVersao() == version) {
                                         prescricao.setAssinador(
                                                 assinadores.stream()
                                                         .findFirst()
@@ -152,7 +154,7 @@ public class PrescricaoController extends BaseController {
                 .forEach(prescricao -> {
                     prescricao.setVersao(max);
                     List<Prescricao> p = prontuario.getPrescricoes();
-                    if(!p.contains(prescricao)) p.add(prescricao.setDataCriacao());
+                    if (!p.contains(prescricao)) p.add(prescricao.setDataCriacao());
                 });
 //        List<Prescricao> prescricoesARemover = prontuario.getPrescricoes()
 //                .stream()
@@ -164,11 +166,12 @@ public class PrescricaoController extends BaseController {
 //        prescricoesARemover.forEach(prescricao -> prescricaoRepository.save(prontuario.getPrescricoes().getprescricao.delete()));
         prescricaoRepository.saveAll(prontuario.getPrescricoes());
         return ResponseEntity.created(
-                URI.create("/api/prontuario/prescricao/" + prontuarioCodigo))
+                        URI.create("/api/prontuario/prescricao/" + prontuarioCodigo))
                 .header("version", prontuario.prescricaoLatestVersion())
                 .body(new MedicacaoPrescritaListDTO().of(
                         prontuario.getPrescricoes()
                                 .stream()
+                                .filter((prescricao) -> prescricao.getDataExclusao() == null)
                                 .filter(prescricao -> prescricao.getVersao() == max)
                                 .map(p -> new MedicacaoPrescritaDTO().of(p))
                                 .toList()
@@ -177,31 +180,23 @@ public class PrescricaoController extends BaseController {
 
     @DeleteMapping("/{prontuario}")
     public ResponseEntity<String> deletePrescricao(
-            @PathVariable("prontuario") String prontuarioCodigo,
-            @RequestBody MedicacaoPrescritaListDTO medicacaoPrescritaList
-    ){
+            @PathVariable("prontuario") String prontuarioCodigo
+            //@RequestBody MedicacaoPrescritaListDTO medicacaoPrescritaList
+    ) {
         //TODO: Sempre marcar como excluído a versão do documento anterior
         Prontuario prontuario = findProntuario(prontuarioCodigo);
-        List<Prescricao> prescritoARemover = medicacaoPrescritaList.getMedicacoesPrescritas()
-                .stream()
-                .map(medicacaoPrescrita -> new MedicacaoPrescritaDTO().translate(prontuario))
-                .toList();
-        prontuario.getPrescricoes()
-                .forEach(prescricao -> {
-                    if(prescritoARemover.contains(prescricao)) {
-                        prescricao.delete();
-                    }
-                });
+
+        prontuario.getPrescricoes().forEach(prescricao -> {
+            prescricao.delete();
+        });
         List<String> excluidos = prontuarioService.save(prontuario)
                 .getPrescricoes()
                 .stream()
                 .map(Prescricao::getDataExclusao)
                 .map(LocalDateTime::toString)
                 .toList();
-        return ResponseEntity.ok("Removido com sucesso em: " + excluidos );
+        return ResponseEntity.ok("Removido com sucesso em: " + excluidos);
     }
-
-
 
 
 }

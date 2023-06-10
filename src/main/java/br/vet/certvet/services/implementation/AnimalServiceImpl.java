@@ -22,13 +22,16 @@ import java.util.Optional;
 
 @Service
 public class AnimalServiceImpl implements AnimalService {
-    @Autowired
-    private UsuarioService usuarioService;
+    private final UsuarioService usuarioService;
 
-    @Autowired
-    private AnimalRepository animalRepository;
+    private final AnimalRepository animalRepository;
 
     private static final short RESPONSE_LIMIT = 30;
+
+    public AnimalServiceImpl(UsuarioService usuarioService, AnimalRepository animalRepository) {
+        this.usuarioService = usuarioService;
+        this.animalRepository = animalRepository;
+    }
 
     @Override
     public Animal create(AnimalRequestDto dto, List<Usuario> tutores) {

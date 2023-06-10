@@ -21,6 +21,7 @@ import org.springframework.test.context.ActiveProfiles;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
@@ -28,9 +29,12 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -67,7 +71,7 @@ public class PdfFromHtmlPdfServiceImplTest {
                 .cidade("Cidade das Abelhas")
                 .razaoSocial("Clinica vet")
                 .telefone("(12) 3456-7890")
-                .celular("(12) 3456-7890")
+                .celular("(83) 98694-6301")
                 .build();
         final Usuario tutor = Usuario.builder()
                 .nome("Caio Felipe Pires")
@@ -185,9 +189,20 @@ public class PdfFromHtmlPdfServiceImplTest {
         assertEquals("application/pdf", fileType);
     }
 
+    //TODO: Analisar a forma que os documentos, além do doc_sanitario, estão sendo construídos pois quebram por erro de substituição de variável ou espaço a mais no texto
     @ParameterizedTest
     @ValueSource(strings = {
             "sanitario"
+//            "anestesia",
+//            "cirurgia",
+//            "doacaoPesquisa",
+//            "eutanasia",
+//            "exames",
+//            "retiraCorpo",
+//            "retiradaSemAlta",
+//            "terapeutico",
+//            "tratamentoClinico",
+//            "vacinacao"
     })
     @DisplayName("Devolve um PDF de documento gerado a partir de HTML de acordo com o parametro solicitado")
     /*
@@ -223,4 +238,47 @@ public class PdfFromHtmlPdfServiceImplTest {
                 .map(txtFromPdf::contains)
                 .forEach(Assertions::assertTrue);
     }
+
+    @Test
+    public void retrievingProntuarioFromRepository() throws IOException {
+        Prontuario prontuario = getDocumentoInstance("Sanitario").getProntuario();
+        byte[] retrievedProntuario = service.retrieveFromRepository(prontuario);
+
+        assertNotNull(retrievedProntuario);
+        // result está sendo [] provavelmente por não estar buscando no DB, comportamento esperado de acordo com a atual implementação da function
+    }
+
+//    @Test
+//    void settingProtectionToDocument() throws IOException {
+//        // 1. criar um documento válido, deve ser em byte[] p/ ser compativel com a function testada
+//        // 2. criar um prontuário, getProntuarioInstance() é utilizado acima
+//        // 3. chamar a function setProtection
+//            // 3.1. setProtection precisa: CPF válido p/ getTutorPass() e OWNER_PASSWORD pré-definida
+//
+//        // PROBLEMAS:
+//        // OWNER_PASSWORD está null, não consegui bolar um jeito de mockar essa info
+//        // assert de retorno not null pois o return da function é byte[]. Criar um boolean com esse retorno p/ validar que o documento teve proteção setada? Tipo, o byte retornado é o do documento? ele será diferente do byte do documento do input?
+//
+//        String documentoTipo = "sanitario"; // alterar p/ @ParameterizedTest depois
+//        when(documentoService.provideLayout(documentoTipo))
+//                .thenReturn(new DocumentoServiceImpl()
+//                        .provideLayout(documentoTipo));
+//
+//        when(documentoRepository.save(any())).thenReturn(Documento.builder().build());
+//
+//        // 1.
+////        byte[] documento = service.writePdfDocumentoEmBranco(
+////                        getProntuarioInstance(),
+////                        documentoService.provideLayout(documentoTipo));
+//
+//        // 2.
+//        Prontuario prontuario = getProntuarioInstance();
+//
+//        // 3.
+//        byte[] returnedDocument = service.setProtection(Files.readAllBytes(Path.of("src/test/resources/prontuario/htmlToPdf/test_documento_sanitario.pdf")), prontuario);
+//
+//        // 4.
+//        assertNotNull(returnedDocument);
+//    }
+
 }

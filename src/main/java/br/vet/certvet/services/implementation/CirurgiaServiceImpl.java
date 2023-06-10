@@ -62,7 +62,7 @@ public class CirurgiaServiceImpl implements CirurgiaService {
             if (estoqueMedicamentoOptional.isPresent())
                 this.updateMedications(estoqueMedicamentoOptional.get(), currentDose, prontuario);
             else
-                this.addMedications(medicamentoCirurgiaDTO, currentDose, prontuario);
+                this.addMedications(medicamentoCirurgiaDTO, currentDose, cirurgia, prontuario);
         });
 
         prontuario.setCirurgia(cirurgia);
@@ -124,12 +124,12 @@ public class CirurgiaServiceImpl implements CirurgiaService {
         this.estoqueService.subtract(currentDose, reason, estoque, prontuario.getVeterinario());
     }
 
-    private void addMedications(MedicamentoCirurgiaDTO dto, BigDecimal currentDose, Prontuario prontuario) {
+    private void addMedications(MedicamentoCirurgiaDTO dto, BigDecimal currentDose, Cirurgia cirurgia, Prontuario prontuario) {
         final Medicamento medicamento = this.medicamentoService.findOne(dto.getMedicamento(), prontuario.getClinica());
         final Estoque estoque = this.estoqueService.findOne(dto.getLote(), medicamento);
 
         final String reason = new StringBuilder("Usado na cirurgia ")
-                .append(prontuario.getCirurgia().getDescricao())
+                .append(cirurgia.getDescricao())
                 .append(" no prontuário ")
                 .append(prontuario.getCodigo())
                 .append(DO_ANIMAL)
@@ -142,6 +142,6 @@ public class CirurgiaServiceImpl implements CirurgiaService {
 
         this.estoqueService.subtract(currentDose, reason, estoque, prontuario.getVeterinario());
 
-        prontuario.getCirurgia().getMedicamentosConsumidos().add(cirurgiaEstoqueMedicamento);
+        cirurgia.getMedicamentosConsumidos().add(cirurgiaEstoqueMedicamento);
     }
 }
