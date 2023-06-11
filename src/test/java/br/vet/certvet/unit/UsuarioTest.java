@@ -95,6 +95,36 @@ class UsuarioTest {
                 .bairro("Centro")
                 .build();
     }
+    private Usuario newUsuario(String[] auths){
+        return Usuario.builder()
+                .id(null)
+                .username("camaeon@teste.com")
+                .password("$2a$10$B1JCg6ULYTAj2dikHO3jWON0oWNkxQ8D5O/ryn7jj9cODipZj/qP2")
+                .nome("Camaeon")
+                .cpf("920.137.300-71")
+                .rg("13.764.333-0")
+                .cep("057490-970")
+                .logradouro("Rua Doutor Miguel Torres 19")
+                .numero("45")
+                .bairro("Centro")
+                .cidade("Água Branca")
+                .estado("AL")
+                .celular("(11) 91111-1111")
+                .telefone("(11) 2211-1111")
+                .crmv(null)
+                .deletedAt(null)
+                .resetPasswordToken(null)
+                .email(null)
+                .authorities(
+                        Arrays.stream(auths)
+                                .map(auth -> Authority.builder()
+                                        .permissao(auth)
+                                        .build())
+                                .toList()
+                )
+                .build();
+    }
+
     @BeforeEach
     public void setUp() {
         clinica = newClinica();
@@ -106,9 +136,9 @@ class UsuarioTest {
     }
 
     @Test
-    void whenDonoWithoutActiveVet_thenCreateUser() {
+    void whenDonoWithoutActiveVet_thenCreateNewUser() {
         final String[] AUTHORITIES = {"FUNCIONARIO", "ADMIN"};
-        final Usuario parametro = newUsuario();
+        final Usuario parametro = newUsuario(AUTHORITIES);
         try {
             doNothing().when(emailService).sendTextMessage(any(),any(),any());
         } catch (MessagingException e) {
@@ -127,38 +157,62 @@ class UsuarioTest {
     }
 
     @Test
-    void createTutor() {
+    void whenNewTutorIsRequested_thenCreateNewUser() {
         final String[] AUTHORITIES = {"TUTOR"};
+        final Usuario parametro = newUsuario(AUTHORITIES);
+        try {
+            doNothing().when(emailService).sendTextMessage(any(),any(),any());
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
+        when(authorityRepository.findByPermissao("TUTOR")).thenReturn(Authority.builder().permissao("TUTOR").build());
+        when(usuarioRepository.findByUsernameAndClinica(any(), any())).thenReturn(Optional.empty());
+        when(usuarioRepository.saveAndFlush(any())).thenReturn(parametro);
 
         Usuario usuario = this.usuarioService.create(UsuarioTest.factoryTutorRequestDto(), UsuarioTest.clinica);
         List<String> usuarioAuthorities = usuario.getAuthorities().stream().map(Authority::getPermissao).toList();
 
-        assertNotNull(usuario);
-        assertNotNull(usuario.getId());
+        assertEquals(parametro, usuario);
         assertEquals(Arrays.stream(AUTHORITIES).toList(), usuarioAuthorities);
     }
 
     @Test
-    void createVeterinario() {
+    void whenNewVeterinarioIsRequested_thenCreateNewUser() {
         final String[] AUTHORITIES = {"VETERINARIO"};
+        final Usuario parametro = newUsuario(AUTHORITIES);
+        try {
+            doNothing().when(emailService).sendTextMessage(any(),any(),any());
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
+        when(authorityRepository.findByPermissao("VETERINARIO")).thenReturn(Authority.builder().permissao("VETERINARIO").build());
+        when(usuarioRepository.findByUsernameAndClinica(any(), any())).thenReturn(Optional.empty());
+        when(usuarioRepository.saveAndFlush(any())).thenReturn(parametro);
 
         Usuario usuario = this.usuarioService.create(UsuarioTest.factoryVeterinarioRequestDto(), UsuarioTest.clinica);
         List<String> usuarioAuthorities = usuario.getAuthorities().stream().map(Authority::getPermissao).toList();
 
-        assertNotNull(usuario);
-        assertNotNull(usuario.getId());
+        assertEquals(parametro, usuario);
         assertEquals(Arrays.stream(AUTHORITIES).toList(), usuarioAuthorities);
     }
 
     @Test
-    void createFuncionario() {
+    void whenNewFuncionarioIsRequested_thenCreateNewUser() {
         final String[] AUTHORITIES = {"FUNCIONARIO"};
+        final Usuario parametro = newUsuario(AUTHORITIES);
+        try {
+            doNothing().when(emailService).sendTextMessage(any(),any(),any());
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
+        when(authorityRepository.findByPermissao("FUNCIONARIO")).thenReturn(Authority.builder().permissao("FUNCIONARIO").build());
+        when(usuarioRepository.findByUsernameAndClinica(any(), any())).thenReturn(Optional.empty());
+        when(usuarioRepository.saveAndFlush(any())).thenReturn(parametro);
 
         Usuario usuario = this.usuarioService.create(UsuarioTest.factoryFuncionarioRequestDto(), UsuarioTest.clinica);
         List<String> usuarioAuthorities = usuario.getAuthorities().stream().map(Authority::getPermissao).toList();
 
-        assertNotNull(usuario);
-        assertNotNull(usuario.getId());
+        assertEquals(parametro, usuario);
         assertEquals(Arrays.stream(AUTHORITIES).toList(), usuarioAuthorities);
     }
 
@@ -190,35 +244,6 @@ class UsuarioTest {
                 .usingRecursiveComparison()
                 .ignoringFields("id", "clinica", "password", "authorities")
                 .isEqualTo(USUARIO_COMPARATION);
-    }
-
-    private Usuario newUsuario(){
-        return Usuario.builder()
-                .id(null)
-                .username("camaeon@teste.com")
-                .password("$2a$10$B1JCg6ULYTAj2dikHO3jWON0oWNkxQ8D5O/ryn7jj9cODipZj/qP2")
-                .nome("Camaeon")
-                .cpf("920.137.300-71")
-                .rg("13.764.333-0")
-                .cep("057490-970")
-                .logradouro("Rua Doutor Miguel Torres 19")
-                .numero("45")
-                .bairro("Centro")
-                .cidade("Água Branca")
-                .estado("AL")
-                .celular("(11) 91111-1111")
-                .telefone("(11) 2211-1111")
-                .crmv(null)
-                .deletedAt(null)
-                .resetPasswordToken(null)
-                .email(null)
-                .authorities(
-                        List.of(
-                                Authority.builder().id(3L).permissao("FUNCIONARIO").build(),
-                                Authority.builder().id(2L).permissao("ADMIN").build()
-                        )
-                )
-                .build();
     }
 
     @Test
