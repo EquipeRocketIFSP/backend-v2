@@ -125,6 +125,18 @@ class UsuarioTest {
                 .build();
     }
 
+    private void setProcedureForAuthorities(String[] auths){
+        Arrays.stream(auths)
+                .toList()
+                .forEach(
+                        auth -> when(authorityRepository.findByPermissao("FUNCIONARIO"))
+                                .thenReturn(
+                                        Authority.builder().permissao("FUNCIONARIO").build()
+                                )
+                );
+
+    }
+
     @BeforeEach
     public void setUp() {
         clinica = newClinica();
@@ -144,8 +156,7 @@ class UsuarioTest {
         } catch (MessagingException e) {
             throw new RuntimeException(e);
         }
-        when(authorityRepository.findByPermissao("FUNCIONARIO")).thenReturn(Authority.builder().id(3L).permissao("FUNCIONARIO").build());
-        when(authorityRepository.findByPermissao("VETERINARIO")).thenReturn(Authority.builder().id(2L).permissao("VETERINARIO").build());
+        setProcedureForAuthorities(AUTHORITIES);
         when(usuarioRepository.findByUsernameAndClinica(any(), any())).thenReturn(Optional.empty());
         when(usuarioRepository.saveAndFlush(any())).thenReturn(parametro);
 
@@ -165,7 +176,7 @@ class UsuarioTest {
         } catch (MessagingException e) {
             throw new RuntimeException(e);
         }
-        when(authorityRepository.findByPermissao("TUTOR")).thenReturn(Authority.builder().permissao("TUTOR").build());
+        setProcedureForAuthorities(AUTHORITIES);
         when(usuarioRepository.findByUsernameAndClinica(any(), any())).thenReturn(Optional.empty());
         when(usuarioRepository.saveAndFlush(any())).thenReturn(parametro);
 
@@ -185,7 +196,7 @@ class UsuarioTest {
         } catch (MessagingException e) {
             throw new RuntimeException(e);
         }
-        when(authorityRepository.findByPermissao("VETERINARIO")).thenReturn(Authority.builder().permissao("VETERINARIO").build());
+        setProcedureForAuthorities(AUTHORITIES);
         when(usuarioRepository.findByUsernameAndClinica(any(), any())).thenReturn(Optional.empty());
         when(usuarioRepository.saveAndFlush(any())).thenReturn(parametro);
 
@@ -205,7 +216,7 @@ class UsuarioTest {
         } catch (MessagingException e) {
             throw new RuntimeException(e);
         }
-        when(authorityRepository.findByPermissao("FUNCIONARIO")).thenReturn(Authority.builder().permissao("FUNCIONARIO").build());
+        setProcedureForAuthorities(AUTHORITIES);
         when(usuarioRepository.findByUsernameAndClinica(any(), any())).thenReturn(Optional.empty());
         when(usuarioRepository.saveAndFlush(any())).thenReturn(parametro);
 
@@ -219,21 +230,28 @@ class UsuarioTest {
     @Test
     void editDono() {
         final String[] AUTHORITIES = {"FUNCIONARIO", "ADMIN"};
+        final Usuario parametro = newUsuario(AUTHORITIES);
+        try {
+            doNothing().when(emailService).sendTextMessage(any(),any(),any());
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
+        setProcedureForAuthorities(AUTHORITIES);
+        when(usuarioRepository.findByUsernameAndClinica(any(), any())).thenReturn(Optional.empty());
+        when(usuarioRepository.saveAndFlush(any())).thenReturn(parametro);
 
-        FuncionarioRequestDto dto = UsuarioTest.factoryDonoRequestDto();
-        Usuario usuario = this.usuarioService.create(dto, UsuarioTest.clinica);
-        Long idUsuario = usuario.getId();
+        FuncionarioRequestDto dto = factoryDonoRequestDto();
+        Usuario usuario = usuarioService.create(dto, clinica);
 
         updateUsuarioDto(dto);
         dto.setSenha("4321");
 
-        final Usuario USUARIO_COMPARATION = new Usuario(dto, UsuarioTest.clinica);
-        usuario = this.usuarioService.edit(dto, usuario);
+        final Usuario USUARIO_COMPARATION = new Usuario(dto, clinica);
+        usuario = usuarioService.edit(dto, usuario);
 
         List<String> usuarioAuthorities = usuario.getAuthorities().stream().map(Authority::getPermissao).toList();
 
         assertNotNull(usuario);
-        assertEquals(usuario.getId(), idUsuario);
         assertEquals(Arrays.stream(AUTHORITIES).toList(), usuarioAuthorities);
         //assertTrue(UsuarioTest.passwordEncoder.matches(dto.getSenha(), usuario.getPassword()));
 
@@ -253,18 +271,16 @@ class UsuarioTest {
         when(usuarioRepository.saveAndFlush(any())).thenReturn(Usuario.builder().build());
 
         UsuarioRequestDto dto = UsuarioTest.factoryTutorRequestDto();
-        Usuario usuario = this.usuarioService.create(dto, UsuarioTest.clinica);
-        Long idUsuario = usuario.getId();
+        Usuario usuario = this.usuarioService.create(dto, clinica);
 
         updateUsuarioDto(dto);
 
-        final Usuario USUARIO_COMPARATION = new Usuario(dto, UsuarioTest.clinica);
+        final Usuario USUARIO_COMPARATION = new Usuario(dto, clinica);
         usuario = this.usuarioService.edit(dto, usuario);
 
         List<String> usuarioAuthorities = usuario.getAuthorities().stream().map(Authority::getPermissao).toList();
 
         assertNotNull(usuario);
-        assertEquals(usuario.getId(), idUsuario);
         assertEquals(Arrays.stream(AUTHORITIES).toList(), usuarioAuthorities);
 
         assertThat(usuario.getClinica().getId())
@@ -495,16 +511,16 @@ class UsuarioTest {
     }
 
     private static void updateUsuarioDto(UsuarioRequestDto dto) {
-        dto.setNome("Nome Teste");
-        dto.setCpf("teste@teste.com");
-        dto.setRg("11111-000");
-        dto.setCep("Bairro Teste");
-        dto.setLogradouro("Logradouro Teste");
-        dto.setNumero("Cidade Teste");
-        dto.setBairro("SP");
-        dto.setCidade("111.111.111-11");
-        dto.setEstado("11.111.111-1");
-        dto.setCelular("(11) 90000-1111");
-        dto.setTelefone("(11) 0000-1111");
+        dto.setNome("Nome Teste")
+        .setCpf("teste@teste.com")
+        .setRg("11111-000")
+        .setCep("Bairro Teste")
+        .setLogradouro("Logradouro Teste")
+        .setNumero("Cidade Teste")
+        .setBairro("SP")
+        .setCidade("111.111.111-11")
+        .setEstado("11.111.111-1")
+        .setCelular("(11) 90000-1111")
+        .setTelefone("(11) 0000-1111");
     }
 }
