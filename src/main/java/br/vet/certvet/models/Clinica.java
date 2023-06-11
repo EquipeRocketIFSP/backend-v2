@@ -4,7 +4,9 @@ import br.vet.certvet.dto.requests.ClinicaInicialRequestDto;
 import br.vet.certvet.dto.requests.ClinicaRequestDto;
 import br.vet.certvet.models.contracts.Fillable;
 import lombok.*;
+import net.bytebuddy.utility.RandomString;
 import org.hibernate.Hibernate;
+import org.hibernate.validator.constraints.br.CNPJ;
 
 import javax.persistence.*;
 import java.util.List;
@@ -25,112 +27,120 @@ public class Clinica implements Fillable<ClinicaRequestDto> {
 
     @Setter
     @Column(nullable = false)
-    public String nomeFantasia;
+    private String nomeFantasia;
 
     @Setter
     @Column(nullable = false)
     private String razaoSocial;
 
     @Setter
-    @Column(nullable = false, length = 18)
-    public String cnpj;
+    @Column(nullable = false, unique = true)
+    @CNPJ
+    private String cnpj;
 
     @Setter
     @Column(nullable = false)
-    public String cnae;
+    private String cnae;
 
     @Setter
     @Column(nullable = false, length = 9)
-    public String cep;
+    private String cep;
 
     @Setter
     @Column(nullable = false)
-    public String logradouro;
+    private String logradouro;
 
     @Setter
     @Column(nullable = false, length = 6)
-    public String numero;
+    private String numero;
 
     @Setter
     @Column(nullable = false)
-    public String bairro;
+    private String bairro;
 
     @Setter
     @Column(nullable = false)
-    public String cidade;
+    private String cidade;
 
     @Setter
     @Column(nullable = false, length = 2)
-    public String estado;
+    private String estado;
 
     @Setter
     @Column(nullable = false, length = 15)
-    public String celular;
+    private String celular;
 
     @Setter
     @Column(length = 14)
-    public String telefone;
+    private String telefone;
 
     @Setter
     @Column(nullable = false)
-    public String email;
+    private String email;
+
+    @Column(nullable = false)
+    private String code;
 
     @OneToMany
     @JoinTable(
             name = "clinica_usuarios",
             joinColumns = @JoinColumn(name = "clinica_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "usuario_id", referencedColumnName = "id")
+            inverseJoinColumns = @JoinColumn(name = "usuario_id", referencedColumnName = "id"),
+            uniqueConstraints = { @UniqueConstraint(columnNames = {"clinica_id", "usuario_id"}) }
     )
     @ToString.Exclude
     private List<Usuario> usuarios;
 
     @Setter
     @OneToOne
+    @ToString.Exclude
     private Usuario responsavelTecnico;
-
-    @OneToMany
-    @ToString.Exclude
-    private List<Agendamento> agendamentos;
-
-    /*@OneToMany
-    @ToString.Exclude
-    private List<Estoque> estoque;*/
 
     @OneToMany
     @ToString.Exclude
     private List<Prontuario> prontuarios;
 
+    public void setProntuarios(List<Prontuario> prontuarios) {
+        this.prontuarios = prontuarios;
+    }
+
+    public void setUsuarios(List<Usuario> usuarios) {
+        this.usuarios = usuarios;
+    }
+
     public Clinica(ClinicaInicialRequestDto dto) {
-        this.nomeFantasia = dto.clinica_nome_fantasia;
-        this.razaoSocial = dto.clinica_razao_social;
-        this.cep = dto.clinica_cep;
-        this.logradouro = dto.clinica_logradouro;
-        this.numero = dto.clinica_numero;
-        this.bairro = dto.clinica_bairro;
-        this.cidade = dto.clinica_cidade;
-        this.estado = dto.clinica_estado;
-        this.cnae = dto.clinica_cnae;
-        this.cnpj = dto.clinica_cnpj;
-        this.email = dto.clinica_email;
-        this.celular = dto.clinica_celular;
-        this.telefone = dto.clinica_telefone;
+        this.nomeFantasia = dto.clinicaNomeFantasia();
+        this.razaoSocial = dto.clinicaRazaoSocial();
+        this.cep = dto.clinicaCep();
+        this.logradouro = dto.clinicaLogradouro();
+        this.numero = dto.clinicaNumero();
+        this.bairro = dto.clinicaBairro();
+        this.cidade = dto.clinicaCidade();
+        this.estado = dto.clinicaEstado();
+        this.cnae = dto.clinicaCnae();
+        this.cnpj = dto.clinicaCnpj();
+        this.email = dto.clinicaEmail();
+        this.celular = dto.clinicaCelular();
+        this.telefone = dto.clinicaTelefone();
+
+        this.code = RandomString.hashOf(this.cnpj);
     }
 
     @Override
     public void fill(ClinicaRequestDto dto) {
-        this.nomeFantasia = dto.nome_fantasia;
-        this.razaoSocial = dto.razao_social;
-        this.cep = dto.cep;
-        this.logradouro = dto.logradouro;
-        this.numero = dto.numero;
-        this.bairro = dto.bairro;
-        this.cidade = dto.cidade;
-        this.estado = dto.estado;
-        this.cnae = dto.cnae;
-        this.cnpj = dto.cnpj;
-        this.email = dto.email;
-        this.celular = dto.celular;
-        this.telefone = dto.telefone;
+        this.nomeFantasia = dto.nomeFantasia();
+        this.razaoSocial = dto.razaoSocial();
+        this.cep = dto.cep();
+        this.logradouro = dto.logradouro();
+        this.numero = dto.numero();
+        this.bairro = dto.bairro();
+        this.cidade = dto.cidade();
+        this.estado = dto.estado();
+        this.cnae = dto.cnae();
+        this.cnpj = dto.cnpj();
+        this.email = dto.email();
+        this.celular = dto.celular();
+        this.telefone = dto.telefone();
     }
 
     @Override

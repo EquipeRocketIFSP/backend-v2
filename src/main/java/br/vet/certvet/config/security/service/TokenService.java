@@ -79,7 +79,6 @@ public class TokenService {
 
     public Long getUsuarioId(String token) {
         String[] ids = jwtDecode(token).getBody().getSubject().split(":");
-
         return Long.parseLong(ids[USUARIO_ID_INDEX]);
     }
 
@@ -90,6 +89,7 @@ public class TokenService {
     }
 
     private Jws<Claims> jwtDecode(String token) {
+        if(token == null) throw new NullPointerException("Não existe token informado");
         token = token.startsWith("Bearer ") ? token.substring(7) : token;
 
         return Jwts.parser()

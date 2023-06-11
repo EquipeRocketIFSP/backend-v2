@@ -1,43 +1,81 @@
 package br.vet.certvet.models;
 
+import br.vet.certvet.dto.requests.EstoqueRequestDto;
+import br.vet.certvet.models.contracts.Fillable;
 import lombok.*;
+import lombok.experimental.Accessors;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 
-@Table(name = "MedicamentoEstoque")
+@Table(name = "Estoque")
+@Accessors(chain = true)
 @Entity
+@Setter
 @Getter
-@ToString
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Estoque {
+public class Estoque implements Fillable<EstoqueRequestDto> {
 
     @Id
+    @Setter(AccessLevel.NONE)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
     private Long id;
 
-    private int quantidade;
+    @Column(nullable = false)
+    private BigDecimal quantidade;
+
+    @Column(nullable = false)
     private String medida;
 
-    @ManyToOne
-    @JoinColumn(name = "clinica_id")
-    private Clinica clinica;
+    @Column(nullable = false)
+    private String lote;
+
+    @Column(nullable = false)
+    private LocalDate validade;
 
     @ManyToOne
     @JoinColumn(name = "medicamento_id")
     private Medicamento medicamento;
 
-    @ManyToOne
-    @JoinColumn(name = "procedimento_id")
-    private Procedimento procedimento;
+    @OneToMany//(mappedBy = "id")
+    @JoinTable(
+            name = "estoque_procedimentos",
+            joinColumns = @JoinColumn(name = "estoque_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "procedimentos_id", referencedColumnName = "id", unique = true)
+    )
+    private List<Procedimento> procedimentos;
 
-    @ManyToOne
-    @JoinColumn(name = "cirurgia_id")
-    private Cirurgia cirurgia;
+    @OneToMany(mappedBy = "estoque", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
+    private List<CirurgiaEstoqueMedicamento> cirugias;
+
+    @OneToMany(mappedBy = "estoque")
+    @ToString.Exclude
+    private List<EstoqueTransacao> transacoes;
+
+    public void setTransacoes(List<EstoqueTransacao> transacoes) {
+        this.transacoes = transacoes;
+    }
+
+    public Estoque(EstoqueRequestDto dto, Medicamento medicamento) {
+        this.fill(dto);
+        this.medicamento = medicamento;
+    }
+
+    @Override
+    public void fill(EstoqueRequestDto dto) {
+        this.quantidade = dto.quantidade();
+        this.lote = dto.lote();
+        this.validade = dto.validade();
+        this.medida = dto.medida();
+    }
 
     @Override
     public boolean equals(Object o) {

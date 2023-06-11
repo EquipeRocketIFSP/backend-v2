@@ -10,12 +10,14 @@ import br.vet.certvet.models.Usuario;
 import br.vet.certvet.services.ClinicaService;
 import br.vet.certvet.services.PasswordResetService;
 import br.vet.certvet.services.UsuarioService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +27,7 @@ import javax.validation.Valid;
 @RequestMapping("/api")
 @CrossOrigin
 @Slf4j
+@SecurityRequirement(name = "bearer-key")
 public class AuthController {
     @Autowired
     private ClinicaService clinicaService;
@@ -44,8 +47,14 @@ public class AuthController {
     @PostMapping("/auth")
     @SecurityRequirements(value = {})
     public ResponseEntity<TokenResponseDto> authenticate(@Validated @RequestBody LoginRequestDto dto) {
-        Authentication auth = authenticationManager.authenticate(dto.convert());
-        Clinica clinica = this.clinicaService.findById(dto.clinica);
+        Authentication auth;
+        try {
+            auth = authenticationManager.authenticate(dto.convert());
+            log.info("autenticado");
+        } catch (AuthenticationException e){
+            return ResponseEntity.badRequest().header("reason","Usuário ou senha inválidos").build();
+        }
+        Clinica clinica = this.clinicaService.findOne(dto.clinica);
         String token = tokenService.create(auth, clinica);
         Usuario usuario = usuarioService.findOne(dto.email, clinica);
 

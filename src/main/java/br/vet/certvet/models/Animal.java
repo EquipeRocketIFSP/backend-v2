@@ -2,10 +2,14 @@ package br.vet.certvet.models;
 
 import br.vet.certvet.dto.requests.AnimalRequestDto;
 import br.vet.certvet.enums.SexoAnimal;
+import br.vet.certvet.models.contracts.Fillable;
 import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -17,7 +21,7 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Animal {
+public class Animal implements Fillable<AnimalRequestDto> {
     @Transient
     private static final String MASCULINO = "MASCULINO";
 
@@ -32,7 +36,11 @@ public class Animal {
 
     @Setter
     @Column(nullable = false)
-    private int idade;
+    private int anoNascimento;
+
+    @Setter
+    @Column(nullable = false)
+    private float peso;
 
     @Setter
     @Column(nullable = false)
@@ -50,40 +58,20 @@ public class Animal {
     @Column(nullable = false)
     private SexoAnimal sexo;
 
-    @OneToMany(mappedBy = "id")
-    @ToString.Exclude
-    private List<ParentescoAnimal> parentescos;
+    private String formaIdentificacao;
 
     @ManyToMany
     @JoinTable(name = "animal_tutores",
             joinColumns = @JoinColumn(name = "animal_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "tutor_id", referencedColumnName = "id")
+            inverseJoinColumns = @JoinColumn(name = "tutor_id", referencedColumnName = "id"),
+            uniqueConstraints = { @UniqueConstraint(columnNames = {"animal_id", "tutor_id"}) }
     )
     @ToString.Exclude
     private List<Usuario> tutores;
 
-
-//    /**
-//     * Sempre a necessidade de invocar o método pelo menos duas vezes,
-//     * uma para cada elemento.
-//     * Cada animal pode ter seus pais, assim como os pais têm seus filhos.
-//     * O ideal é que apenas um nivel para cima ou para baixo sejam registradas,
-//     * pois podem ser encontradas navegando pelas entidades registradas.
-//     *
-//     * @param animal
-//     * @param grau
-//     * @return this
-//     */
-//    public Animal addParentesco(Animal animal, GrauParentesco grau){
-//        parentescos.add(
-//                Parentesco.builder()
-//                        .animal(this)
-//                        .parente(animal)
-//                        .grau(grau)
-//                        .build()
-//        );
-//        return this;
-//    }
+    public void setTutores(List<Usuario> tutores) {
+        this.tutores = tutores;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -99,17 +87,26 @@ public class Animal {
     }
 
     public Animal(AnimalRequestDto dto) {
-
-        System.out.println(dto.sexo);
-
-        this.nome = dto.nome;
-        this.especie = dto.especie;
-        this.sexo = SexoAnimal.valueOf(dto.sexo);
-        this.idade = dto.idade;
-        this.pelagem = dto.pelagem;
-        this.raca = dto.raca;
-
         this.tutores = new ArrayList<>();
-        this.parentescos = new ArrayList<>();
+
+        this.fill(dto);
+    }
+
+    @Override
+    public void fill(AnimalRequestDto dto) {
+        this.nome = dto.getNome();
+        this.especie = dto.getEspecie();
+        this.sexo = SexoAnimal.valueOf(dto.getSexo());
+        this.anoNascimento = dto.getAno_nascimento();
+        this.peso = dto.getPeso();
+        this.pelagem = dto.getPelagem();
+        this.raca = dto.getRaca();
+    }
+
+    public int getIdade() {
+        return Period.between(
+                LocalDate.of(anoNascimento, Month.of(1), 1),
+                LocalDate.now()
+        ).getYears();
     }
 }

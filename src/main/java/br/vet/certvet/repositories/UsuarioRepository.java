@@ -23,5 +23,11 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     List<Usuario> findAllByAuthoritiesAndClinica(Pageable pageable, Authority authority, Clinica clinica);
 
+    List<Usuario> findAllByNomeContainingAndAuthoritiesAndClinica(Pageable pageable, String search, Authority authority, Clinica clinica);
+
     Long countByAuthoritiesAndClinica(Authority authority, Clinica clinica);
+
+    Long countByNomeContainingAndAuthoritiesAndClinica(String search, Authority authority, Clinica clinica);
+
+    Optional<Usuario> findByCpf(String signerCpf);
 }

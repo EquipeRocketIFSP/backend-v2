@@ -1,16 +1,16 @@
 package br.vet.certvet.controllers;
 
 import br.vet.certvet.config.security.service.TokenService;
-import br.vet.certvet.dto.requests.FuncionarioRequestDto;
-import br.vet.certvet.dto.requests.UsuarioRequestDto;
-import br.vet.certvet.dto.requests.VeterinarioRequestDto;
-import br.vet.certvet.dto.responses.ClinicasFromUsuarioResponseDto;
+import br.vet.certvet.dto.requests.*;
 import br.vet.certvet.dto.responses.PaginatedResponse;
 import br.vet.certvet.dto.responses.UsuarioResponseDto;
+import br.vet.certvet.dto.responses.VeterinarioResponseDto;
 import br.vet.certvet.models.Clinica;
 import br.vet.certvet.models.Usuario;
 import br.vet.certvet.services.ClinicaService;
 import br.vet.certvet.services.UsuarioService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,13 +19,13 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import java.util.List;
-
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @RestController
 @CrossOrigin
 @RequestMapping("/api")
+@Slf4j
+@SecurityRequirement(name = "bearer-key")
 public class UsuarioController extends BaseController {
     @Autowired
     private TokenService tokenService;
@@ -92,6 +92,11 @@ public class UsuarioController extends BaseController {
         Usuario usuario = this.usuarioService.findOne(id, clinica);
         usuario = this.usuarioService.edit(dto, usuario);
 
+        if (dto.isTechnicalResponsible()) {
+            clinica.setResponsavelTecnico(usuario);
+            this.clinicaService.edit(clinica);
+        }
+
         return ResponseEntity.ok(new UsuarioResponseDto(usuario));
     }
 
@@ -108,7 +113,7 @@ public class UsuarioController extends BaseController {
         return ResponseEntity.ok(new UsuarioResponseDto(usuario));
     }
 
-    @GetMapping({"/funcionario/{id}", "/veterinario/{id}", "/tutor/{id}"})
+    @GetMapping({"/funcionario/{id}", "/tutor/{id}"})
     public ResponseEntity<UsuarioResponseDto> findOne(
             @RequestHeader(AUTHORIZATION) String token,
             @PathVariable("id") Long id
@@ -116,33 +121,25 @@ public class UsuarioController extends BaseController {
         Clinica clinica = this.tokenService.getClinica(token);
         Usuario usuario = this.usuarioService.findOne(id, clinica);
 
-        return ResponseEntity.ok(new UsuarioResponseDto(usuario));
-    }
-
-    @GetMapping({"/funcionario", "/veterinario", "/tutor"})
-    public ResponseEntity<PaginatedResponse<UsuarioResponseDto>> findAllVeterinarios(
-            @RequestHeader(AUTHORIZATION) String token,
-            @RequestParam(name = "pagina", defaultValue = "1") int page,
-            HttpServletRequest request
-    ) {
-        Clinica clinica = this.tokenService.getClinica(token);
-        PaginatedResponse<UsuarioResponseDto> response = this.usuarioService.findAll(page, request.getRequestURL().toString(), clinica);
+        UsuarioResponseDto response = (usuario.getCrmv() != null) ? new VeterinarioResponseDto(usuario) : new UsuarioResponseDto(usuario);
 
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/usuario/clinicas")
-    public ResponseEntity<List<ClinicasFromUsuarioResponseDto>> findClinicasFromUsuario(@RequestParam(name = "email") String email) {
-        List<ClinicasFromUsuarioResponseDto> clinicas = this.usuarioService
-                .findClinicasFromUsuario(email)
-                .stream()
-                .map((clinica) -> new ClinicasFromUsuarioResponseDto(clinica))
-                .toList();
+    @GetMapping({"/funcionario", "/tutor","/veterinario"})
+    public ResponseEntity<PaginatedResponse<UsuarioResponseDto>> findAllVeterinarios(
+            @RequestHeader(AUTHORIZATION) String token,
+            @RequestParam(name = "pagina", defaultValue = "1") int page,
+            @RequestParam(name = "buscar", defaultValue = "") String search,
+            HttpServletRequest request
+    ) {
+        Clinica clinica = this.tokenService.getClinica(token);
+        PaginatedResponse<UsuarioResponseDto> response = this.usuarioService.findAll(page, search, request.getRequestURL().toString(), clinica);
 
-        return ResponseEntity.ok(clinicas);
+        return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping({"/funcionario/{id}", "/veterinario/{id}", "/tutor/{id}"})
+    @DeleteMapping({"/funcionario/{id}", "/tutor/{id}"})
     public ResponseEntity<Void> delete(
             @RequestHeader(AUTHORIZATION) String token,
             @PathVariable("id") Long id
@@ -155,7 +152,7 @@ public class UsuarioController extends BaseController {
         return ResponseEntity.accepted().build();
     }
 
-    @PutMapping({"/funcionario/{id}/restaurar", "/veterinario/{id}/restaurar", "/tutor/{id}/restaurar"})
+    @PutMapping({"/funcionario/{id}/restaurar", "/tutor/{id}/restaurar"})
     public ResponseEntity<UsuarioResponseDto> recover(
             @RequestHeader(AUTHORIZATION) String token,
             @PathVariable("id") Long id

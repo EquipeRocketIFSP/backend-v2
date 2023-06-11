@@ -13,5 +13,9 @@ public interface ClinicaService {
 
     Clinica findByCnpj(String cnpj);
 
+    Clinica findOne(String code);
+
+    Clinica edit(Clinica clinica);
+
     Clinica edit(ClinicaRequestDto dto, Clinica clinica);
 }

@@ -16,7 +16,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.*;
 
 @EnableWebSecurity
 @NoArgsConstructor
@@ -41,30 +41,45 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http
 //                .requiresChannel().anyRequest().requiresSecure().and()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/hello").permitAll()
-                .antMatchers(HttpMethod.GET, "/ping").permitAll()
-                .antMatchers(HttpMethod.POST, "/auth").permitAll()
-                .antMatchers(HttpMethod.GET, "/actuator/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/db/*").permitAll()
-                .antMatchers(HttpMethod.GET, "/db/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/auth/*").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/clinica/*").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/clinica/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/usuario/clinicas/*").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/usuario/clinicas/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/esqueci-minha-senha/*").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/esqueci-minha-senha/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/redefinir-senha/*").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/redefinir-senha/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/error",
+                        "/hello",
+                        "/ping",
+                        "/swagger-ui.html",
+                        "/swagger-ui/**",
+                        "/v3/api-docs/**",
+                        "/actuator/**",
+                        "/db/*",
+                        "/db/**",
+                        "/api/usuario/clinicas/*",
+                        "/api/usuario/clinicas/**"
+                ).permitAll()
+                .antMatchers(HttpMethod.POST, "/api/auth/*",
+                        "/api/auth/**",
+                        "/api/clinica/*",
+                        "/api/clinica/**",
+                        "/api/esqueci-minha-senha/*",
+                        "/api/esqueci-minha-senha/**",
+                        "/api/redefinir-senha/*",
+                        "/api/redefinir-senha/**"
+                ).permitAll()
                 .anyRequest().authenticated()
-                .and().headers().frameOptions().sameOrigin()
-                //.and().authorizeRequests().anyRequest().permitAll() // TODO: Comentar essa linha ao ativar SSL
+//                .and().authorizeRequests().anyRequest().permitAll() // TODO: Comentar essa linha ao ativar SSL
                 .and().cors()
                 .and().csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and().addFilterBefore(new TokenAuthenticationFilter(tokenService, repository), UsernamePasswordAuthenticationFilter.class);
+                .and().addFilterBefore(new TokenAuthenticationFilter(tokenService, repository), UsernamePasswordAuthenticationFilter.class)
+//                .formLogin().loginPage("/api/auth").permitAll().successHandler(loginSuccessHandler()).failureHandler(loginFailureHandler()).and()
+//                .logout().permitAll().logoutSuccessUrl("/api/auth")
+                ;
     }
+//
+//    private AuthenticationSuccessHandler loginSuccessHandler() {
+//        return new SimpleUrlAuthenticationSuccessHandler();
+//    }
+//
+//    private AuthenticationFailureHandler loginFailureHandler() {
+//        return new SimpleUrlAuthenticationFailureHandler();
+//    }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -76,4 +91,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity web) throws Exception {
         super.configure(web);
     }
+
+//    public static void main(String[] args) {
+//        System.out.println(new BCryptPasswordEncoder().encode("123"));
+//    }
 }

@@ -1,8 +1,6 @@
 package br.vet.certvet.models;
 
-import br.vet.certvet.dto.requests.FuncionarioRequestDto;
-import br.vet.certvet.dto.requests.UsuarioRequestDto;
-import br.vet.certvet.dto.requests.VeterinarioRequestDto;
+import br.vet.certvet.dto.requests.*;
 import br.vet.certvet.models.contracts.Fillable;
 import lombok.*;
 import org.hibernate.Hibernate;
@@ -27,58 +25,59 @@ import java.util.Objects;
 public class Usuario implements UserDetails, Fillable<UsuarioRequestDto> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+//    @Column(name = "id")
     private Long id;
 
     @Email
     @Setter
     @Column(nullable = false)
     private String username;
+
     private String password;
 
     @Setter
     @Column(nullable = false)
-    public String nome;
+    private String nome;
 
     @Setter
     @Column(nullable = false, length = 14)
-    public String cpf;
+    private String cpf;
 
     @Setter
     @Column(nullable = false)
-    public String rg;
+    private String rg;
 
     @Setter
     @Column(nullable = false, length = 9)
-    public String cep;
+    private String cep;
 
     @Setter
     @Column(nullable = false)
-    public String logradouro;
+    private String logradouro;
 
     @Setter
     @Column(nullable = false, length = 6)
-    public String numero;
+    private String numero;
 
     @Setter
     @Column(nullable = false)
-    public String bairro;
+    private String bairro;
 
     @Setter
     @Column(nullable = false)
-    public String cidade;
+    private String cidade;
 
     @Setter
     @Column(nullable = false, length = 2)
-    public String estado;
+    private String estado;
 
     @Setter
     @Column(nullable = false, length = 15)
-    public String celular;
+    private String celular;
 
     @Setter
     @Column(length = 15)
-    public String telefone;
+    private String telefone;
 
     @Setter
     private String crmv;
@@ -92,14 +91,35 @@ public class Usuario implements UserDetails, Fillable<UsuarioRequestDto> {
     @NotNull
     @ManyToOne
     @JoinColumn(name = "clinica_id", nullable = false)
+    @ToString.Exclude
     private Clinica clinica;
 
+    @ToString.Exclude
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "Usuario_authorities",
             joinColumns = @JoinColumn(name = "users_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "authorities_id", referencedColumnName = "id"))
-    @ToString.Exclude
+            inverseJoinColumns = @JoinColumn(name = "authorities_id", referencedColumnName = "id"),
+            uniqueConstraints = { @UniqueConstraint(columnNames = {"users_id", "authorities_id"}) }
+    )
     private List<Authority> authorities;
+    private String email;
+
+    @ManyToMany
+    @ToString.Exclude
+    private List<Documento> documentosAssinados;
+
+    @ToString.Exclude
+    @OneToMany
+    @JoinTable(name = "Usuario_prescricoesAssinadas",
+            joinColumns = @JoinColumn(name = "users_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "prescicao_id", referencedColumnName = "id"),
+            uniqueConstraints = { @UniqueConstraint(columnNames = {"users_id", "prescicao_id"}) }
+    )
+    private List<Prescricao> prescricoesAssinadas;
+
+    public void setDocumentosAssinados(List<Documento> documentosAssinados) {
+        this.documentosAssinados = documentosAssinados;
+    }
 
     public Usuario(UsuarioRequestDto dto, Clinica clinica) {
         this.clinica = clinica;
@@ -111,41 +131,43 @@ public class Usuario implements UserDetails, Fillable<UsuarioRequestDto> {
 
     @Override
     public void fill(UsuarioRequestDto dto) {
-        this.username = dto.email;
-        this.nome = dto.nome;
-        this.cpf = dto.cpf;
-        this.rg = dto.rg;
-        this.cep = dto.cep;
-        this.logradouro = dto.logradouro;
-        this.numero = dto.numero;
-        this.bairro = dto.bairro;
-        this.cidade = dto.cidade;
-        this.estado = dto.estado;
-        this.celular = dto.celular;
-        this.telefone = dto.telefone;
+        this.username = dto.getEmail();
+        this.nome = dto.getNome();
+        this.cpf = dto.getCpf();
+        this.rg = dto.getRg();
+        this.cep = dto.getCep();
+        this.logradouro = dto.getLogradouro();
+        this.numero = dto.getNumero();
+        this.bairro = dto.getBairro();
+        this.cidade = dto.getCidade();
+        this.estado = dto.getEstado();
+        this.celular = dto.getCelular();
+        this.telefone = dto.getTelefone();
         this.crmv = null;
-        this.password = null;
 
-        if (dto instanceof FuncionarioRequestDto)
-            this.setPassword(((FuncionarioRequestDto) dto).senha);
+        if (!(dto instanceof FuncionarioRequestDto))
+            this.password = null;
+
+        if (dto instanceof FuncionarioRequestDto && ((FuncionarioRequestDto) dto).getSenha() != null && !((FuncionarioRequestDto) dto).getSenha().isEmpty())
+            this.setPassword(((FuncionarioRequestDto) dto).getSenha());
 
         if (dto instanceof VeterinarioRequestDto)
-            this.crmv = ((VeterinarioRequestDto) dto).crmv;
+            this.crmv = ((VeterinarioRequestDto) dto).getCrmv();
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return this.deletedAt == null;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return this.deletedAt == null;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return this.deletedAt == null;
     }
 
     @Override
@@ -168,5 +190,17 @@ public class Usuario implements UserDetails, Fillable<UsuarioRequestDto> {
 
     public void setPassword(String password) {
         this.password = new BCryptPasswordEncoder().encode(password);
+    }
+
+    public String getRegistroCRMV() {
+        return this.crmv;
+    }
+
+    public String getEmail() {
+        return this.email;
+    }
+
+    public String getEnderecoCompleto(){
+        return String.format("%s, %s - CEP: %s - %s - %s/%s", logradouro, numero, cep, bairro, cidade, estado);
     }
 }

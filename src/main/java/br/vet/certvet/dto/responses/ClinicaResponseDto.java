@@ -1,22 +1,53 @@
 package br.vet.certvet.dto.responses;
 
 import br.vet.certvet.models.Clinica;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ClinicaResponseDto {
-    public Long id;
-    public String nome_fantasia;
-    public String razao_social;
-    public String cnpj;
-    public String cnae;
-    public String cep;
-    public String logradouro;
-    public String numero;
-    public String bairro;
-    public String cidade;
-    public String estado;
-    public String celular;
-    public String telefone;
-    public String email;
+    @JsonProperty("id")
+    private Long id;
+
+    @JsonProperty("nome_fantasia")
+    private String nome_fantasia;
+
+    @JsonProperty("razao_social")
+    private String razao_social;
+
+    @JsonProperty("cnpj")
+    private String cnpj;
+
+    @JsonProperty("cnae")
+    private String cnae;
+
+    @JsonProperty("cep")
+    private String cep;
+
+    @JsonProperty("logradouro")
+    private String logradouro;
+
+    @JsonProperty("numero")
+    private String numero;
+
+    @JsonProperty("bairro")
+    private String bairro;
+
+    @JsonProperty("cidade")
+    private String cidade;
+
+    @JsonProperty("estado")
+    private String estado;
+
+    @JsonProperty("celular")
+    private String celular;
+
+    @JsonProperty("telefone")
+    private String telefone;
+
+    @JsonProperty("email")
+    private String email;
+
+    @JsonProperty("code")
+    private String code;
 
     public ClinicaResponseDto(Clinica clinica) {
         this.id = clinica.getId();
@@ -33,5 +64,6 @@ public class ClinicaResponseDto {
         this.celular = clinica.getCelular();
         this.telefone = clinica.getTelefone();
         this.cep = clinica.getCep();
+        this.code = clinica.getCode();
     }
 }
