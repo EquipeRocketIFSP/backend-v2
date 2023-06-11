@@ -8,41 +8,44 @@ import br.vet.certvet.exceptions.NotFoundException;
 import br.vet.certvet.models.Authority;
 import br.vet.certvet.models.Clinica;
 import br.vet.certvet.models.Usuario;
+import br.vet.certvet.repositories.AuthorityRepository;
+import br.vet.certvet.repositories.ClinicaRepository;
 import br.vet.certvet.repositories.UsuarioRepository;
-import br.vet.certvet.services.implementation.ClinicaServiceImpl;
+import br.vet.certvet.services.EmailService;
 import br.vet.certvet.services.implementation.UsuarioServiceImpl;
-import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import javax.mail.MessagingException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @ActiveProfiles("test")
-//@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @EnableConfigurationProperties
-@ExtendWith(SpringExtension.class)
-public class UsuarioTest {
+class UsuarioTest {
+    @Mock private UsuarioRepository usuarioRepository;
+    @Mock private ClinicaRepository clinicaRepository;
+    @Mock private AuthorityRepository authorityRepository;
 
-    private UsuarioRepository usuarioRepository = mock(UsuarioRepository.class);
+    @Mock private EmailService emailService;
 
-
-    private UsuarioServiceImpl usuarioService = mock(UsuarioServiceImpl.class);
-
-
-    private ClinicaServiceImpl clinicaService = mock(ClinicaServiceImpl.class);
-
+    @InjectMocks
+    private UsuarioServiceImpl usuarioService;
     private static Clinica clinica;
-    private  BCryptPasswordEncoder passwordEncoder;
 
     private static ClinicaInicialRequestDto factoryClinicaInicialRequestDto() {
         return new ClinicaInicialRequestDto(
@@ -59,7 +62,6 @@ public class UsuarioTest {
                 "(11) 91111-1111",
                 "(11) 1111-1111",
                 "clinica@teste.com",
-
                 "Camaeon",
                 "920.137.300-71",
                 "13.764.333-0",
@@ -77,25 +79,50 @@ public class UsuarioTest {
         );
     }
 
+    private Clinica newClinica(){
+        return Clinica.builder()
+                .celular("(11) 91111-1111")
+                .email("clinica@teste.com")
+                .id(1L)
+                .cep("57490-970")
+                .cidade("Água Branca")
+                .razaoSocial("Razão social")
+                .nomeFantasia("Nome fantasia")
+                .cnpj("11.243.612/0001-21")
+                .cnae("15378")
+                .code("logico12")
+                .estado("AL")
+                .bairro("Centro")
+                .build();
+    }
     @BeforeEach
-    public void setup() {
-       passwordEncoder = new BCryptPasswordEncoder();
+    public void setUp() {
+        clinica = newClinica();
     }
 
     @AfterEach
-    void truncateTable() {
-        this.usuarioRepository.deleteAll();
+    void tearDown() {
+        clinica = null;
     }
 
     @Test
-    void createDono() {
+    void whenDonoWithoutActiveVet_thenCreateUser() {
         final String[] AUTHORITIES = {"FUNCIONARIO", "ADMIN"};
+        final Usuario parametro = newUsuario();
+        try {
+            doNothing().when(emailService).sendTextMessage(any(),any(),any());
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
+        when(authorityRepository.findByPermissao("FUNCIONARIO")).thenReturn(Authority.builder().id(3L).permissao("FUNCIONARIO").build());
+        when(authorityRepository.findByPermissao("VETERINARIO")).thenReturn(Authority.builder().id(2L).permissao("VETERINARIO").build());
+        when(usuarioRepository.findByUsernameAndClinica(any(), any())).thenReturn(Optional.empty());
+        when(usuarioRepository.saveAndFlush(any())).thenReturn(parametro);
 
-        Usuario usuario = this.usuarioService.create(UsuarioTest.factoryDonoRequestDto(), UsuarioTest.clinica);
-        List<String> usuarioAuthorities = usuario.getAuthorities().stream().map(Authority::getPermissao).toList();
+        final Usuario usuario = usuarioService.create(factoryDonoRequestDto(), clinica);
+        final List<String> usuarioAuthorities = usuario.getAuthorities().stream().map(Authority::getPermissao).toList();
 
-        assertNotNull(usuario);
-        assertNotNull(usuario.getId());
+        assertEquals(parametro, usuario);
         assertEquals(Arrays.stream(AUTHORITIES).toList(), usuarioAuthorities);
     }
 
@@ -143,7 +170,7 @@ public class UsuarioTest {
         Usuario usuario = this.usuarioService.create(dto, UsuarioTest.clinica);
         Long idUsuario = usuario.getId();
 
-        UsuarioTest.updateUsuarioDto(dto);
+        updateUsuarioDto(dto);
         dto.setSenha("4321");
 
         final Usuario USUARIO_COMPARATION = new Usuario(dto, UsuarioTest.clinica);
@@ -165,15 +192,46 @@ public class UsuarioTest {
                 .isEqualTo(USUARIO_COMPARATION);
     }
 
+    private Usuario newUsuario(){
+        return Usuario.builder()
+                .id(null)
+                .username("camaeon@teste.com")
+                .password("$2a$10$B1JCg6ULYTAj2dikHO3jWON0oWNkxQ8D5O/ryn7jj9cODipZj/qP2")
+                .nome("Camaeon")
+                .cpf("920.137.300-71")
+                .rg("13.764.333-0")
+                .cep("057490-970")
+                .logradouro("Rua Doutor Miguel Torres 19")
+                .numero("45")
+                .bairro("Centro")
+                .cidade("Água Branca")
+                .estado("AL")
+                .celular("(11) 91111-1111")
+                .telefone("(11) 2211-1111")
+                .crmv(null)
+                .deletedAt(null)
+                .resetPasswordToken(null)
+                .email(null)
+                .authorities(
+                        List.of(
+                                Authority.builder().id(3L).permissao("FUNCIONARIO").build(),
+                                Authority.builder().id(2L).permissao("ADMIN").build()
+                        )
+                )
+                .build();
+    }
+
     @Test
     void editTutor() {
         final String[] AUTHORITIES = {"TUTOR"};
+
+        when(usuarioRepository.saveAndFlush(any())).thenReturn(Usuario.builder().build());
 
         UsuarioRequestDto dto = UsuarioTest.factoryTutorRequestDto();
         Usuario usuario = this.usuarioService.create(dto, UsuarioTest.clinica);
         Long idUsuario = usuario.getId();
 
-        UsuarioTest.updateUsuarioDto(dto);
+        updateUsuarioDto(dto);
 
         final Usuario USUARIO_COMPARATION = new Usuario(dto, UsuarioTest.clinica);
         usuario = this.usuarioService.edit(dto, usuario);
@@ -351,24 +409,21 @@ public class UsuarioTest {
     }
 
     private static FuncionarioRequestDto factoryDonoRequestDto() {
-        FuncionarioRequestDto dto = new FuncionarioRequestDto();
-
-        dto.setNome("Camaeon");
-        dto.setCpf("920.137.300-71");
-        dto.setRg("13.764.333-0");
-        dto.setCep("57490-970");
-        dto.setLogradouro("Rua Doutor Miguel Torres 19");
-        dto.setNumero("45");
-        dto.setBairro("Centro");
-        dto.setCidade("Água Branca");
-        dto.setEstado("AL");
-        dto.setCelular("(11) 92222-1111");
-        dto.setTelefone("(11) 2211-1111");
-        dto.setEmail("camaeon@teste.com");
-        dto.setSenha("1234");
-        dto.setAdmin(true);
-
-        return dto;
+        return (FuncionarioRequestDto) new FuncionarioRequestDto()
+                .setSenha("1234")
+                .setAdmin(true)
+                .setNome("Camaeon")
+                .setCpf("920.137.300-71")
+                .setRg("13.764.333-0")
+                .setCep("57490-970")
+                .setLogradouro("Rua Doutor Miguel Torres 19")
+                .setNumero("45")
+                .setBairro("Centro")
+                .setCidade("Água Branca")
+                .setEstado("AL")
+                .setCelular("(11) 92222-1111")
+                .setTelefone("(11) 2211-1111")
+                .setEmail("camaeon@teste.com");
     }
 
     private static FuncionarioRequestDto factoryFuncionarioRequestDto() {

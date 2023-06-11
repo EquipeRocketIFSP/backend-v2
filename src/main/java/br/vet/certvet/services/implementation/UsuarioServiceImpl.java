@@ -20,7 +20,6 @@ import br.vet.certvet.services.EmailService;
 import br.vet.certvet.services.UsuarioService;
 import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.utility.RandomString;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -39,19 +38,23 @@ public class UsuarioServiceImpl implements UsuarioService {
     private static final String VETERINARIO = "VETERINARIO";
     private static final String ADMIN = "ADMIN";
     private static final String USER_NOT_FOUND = "Usuário não encontrado";
-    @Autowired
-    private ClinicaRepository clinicaRepository;
-
-    @Autowired
-    private UsuarioRepository usuarioRepository;
-
-    @Autowired
-    private AuthorityRepository authorityRepository;
-
-    @Autowired
-    private EmailService emailService;
-
+    private final ClinicaRepository clinicaRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final AuthorityRepository authorityRepository;
+    private final EmailService emailService;
     private static final short RESPONSE_LIMIT = 30;
+
+    public UsuarioServiceImpl(
+            ClinicaRepository clinicaRepository,
+            UsuarioRepository usuarioRepository,
+            AuthorityRepository authorityRepository,
+            EmailService emailService
+    ) {
+        this.clinicaRepository = clinicaRepository;
+        this.usuarioRepository = usuarioRepository;
+        this.authorityRepository = authorityRepository;
+        this.emailService = emailService;
+    }
 
     @Override
     public Usuario initialResgistration(FuncionarioRequestDto dto, Clinica clinica) {
@@ -72,8 +75,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     public Usuario create(UsuarioRequestDto dto, Clinica clinica) {
         Usuario usuario = new Usuario(dto, clinica);
-        Authority authority = this.authorityRepository.findByPermissao("TUTOR");
-        log.info("create: " + usuario.toString());
+        Authority authority = authorityRepository.findByPermissao("TUTOR");
         usuario.getAuthorities().add(authority);
 
         return this.save(usuario, clinica);

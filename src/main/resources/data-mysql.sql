@@ -1,5 +1,5 @@
 insert into authority
-    (authority)
+    (permissao)
 values
     ('ADMIN'),
     ('VETERINARIO'),
