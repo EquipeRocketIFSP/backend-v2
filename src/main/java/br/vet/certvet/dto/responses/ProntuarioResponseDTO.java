@@ -166,7 +166,7 @@ public class ProntuarioResponseDTO {
         if (prontuario.getPrescricoes() != null)
             this.prescricoes = prontuario.getPrescricoes()
                     .stream()
-                    .filter((prescricao) -> prescricao.getDataExclusao() == null)
+                    .filter(prescricao -> prescricao.getDataExclusao() == null)
                     .map(PrescricaoResponseDTO::new).toList();
 
         if (prontuario.getCirurgia() != null)

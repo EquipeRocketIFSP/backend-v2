@@ -21,7 +21,7 @@ import java.util.NoSuchElementException;
 @AllArgsConstructor
 @Slf4j
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
-    private final static String TYPE = "Bearer ";
+    private static final String TYPE = "Bearer ";
 
     private TokenService tokenService;
 

@@ -322,9 +322,8 @@ public class Prontuario {
         return this.codigo;
     }
 
-    @Deprecated(forRemoval = false)
     public Prontuario setCodigo(LocalDateTime now) {
-        this.codigo = "VT-P-" + now.format(DateTimeFormatter.ofPattern("yyyy_MM_dd_hh_mm_ss"));
+        this.codigo = createCodigo(now);
         return this;
     }
 

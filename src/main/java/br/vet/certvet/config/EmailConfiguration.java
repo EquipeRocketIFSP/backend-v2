@@ -30,9 +30,6 @@ public class EmailConfiguration {
     @Value("${spring.mail.properties.mail.smtp.starttls.enable}")
     private String mailServerStartTls;
 
-//    @Value("${spring.mail.templates.path}")
-//    private String mailTemplatesPath;
-
     @Bean
     public JavaMailSender getJavaMailSender() {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();

@@ -171,7 +171,7 @@ public class PrescricaoController extends BaseController {
                 .body(new MedicacaoPrescritaListDTO().of(
                         prontuario.getPrescricoes()
                                 .stream()
-                                .filter((prescricao) -> prescricao.getDataExclusao() == null)
+                                .filter(prescricao -> prescricao.getDataExclusao() == null)
                                 .filter(prescricao -> prescricao.getVersao() == max)
                                 .map(p -> new MedicacaoPrescritaDTO().of(p))
                                 .toList()

@@ -29,7 +29,7 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class AnimalServiceImplTest {
+class AnimalServiceImplTest {
 
     @Mock
     private UsuarioService usuarioService;

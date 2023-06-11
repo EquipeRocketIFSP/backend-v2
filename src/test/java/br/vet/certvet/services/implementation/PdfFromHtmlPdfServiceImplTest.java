@@ -241,7 +241,7 @@ public class PdfFromHtmlPdfServiceImplTest {
     }
 
     @Test
-    public void retrievingProntuarioFromRepository() throws IOException {
+    void retrievingProntuarioFromRepository() throws IOException {
         Prontuario prontuario = getDocumentoInstance("Sanitario").getProntuario();
         byte[] retrievedProntuario = service.retrieveFromRepository(prontuario);
 

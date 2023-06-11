@@ -140,13 +140,13 @@ public class UsuarioServiceImpl implements UsuarioService {
         List<Authority> authoritiesUsuario = usuario.getAuthorities();
         authoritiesUsuario.clear();
 
-        authoritiesUsuario.add(this.authorityRepository.findByPermissao("FUNCIONARIO"));
+        authoritiesUsuario.add(this.authorityRepository.findByPermissao(FUNCIONARIO));
 
         if (dto instanceof VeterinarioRequestDto)
-            authoritiesUsuario.add(this.authorityRepository.findByPermissao("VETERINARIO"));
+            authoritiesUsuario.add(this.authorityRepository.findByPermissao(VETERINARIO));
 
         if (dto.isAdmin())
-            authoritiesUsuario.add(this.authorityRepository.findByPermissao("ADMIN"));
+            authoritiesUsuario.add(this.authorityRepository.findByPermissao(ADMIN));
 
         usuario.fill(dto);
 
