@@ -34,6 +34,12 @@ public abstract class BaseController {
                 .orElseThrow(ProntuarioNotFoundException::new);
     }
 
+    protected Prontuario findProntuarioEClinica(String auth, String prontuarioCodigo) {
+        return prontuarioService.findByCodigo(prontuarioCodigo)
+                .filter(p -> p.getClinica().getId().equals(getClinicaIdFromRequester(auth)))
+                .orElseThrow(()->new ProntuarioNotFoundException("O prontuário buscado não foi identificado na base de dados"));
+    }
+
     protected void throwExceptionFromController(RuntimeException e) throws RuntimeException {
         log.error(e.getLocalizedMessage());
         throw e;

@@ -45,18 +45,18 @@ public class DocumentoController extends BaseController {
     @Autowired
     private PdfService pdfService;
 
-    private Prontuario findProntuarioEClinica(String auth, String prontuarioCodigo) {
-        return prontuarioService.findByCodigo(prontuarioCodigo)
-                .filter(p -> p.getClinica().getId().equals(getClinicaIdFromRequester(auth)))
-                .orElseThrow(()->new ProntuarioNotFoundException("O prontuário buscado não foi identificado na base de dados"));
-    }
-
     @GetMapping
     public ResponseEntity<List<Documento>> getDocumentosByTipo(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String auth,
             @RequestParam("tipo") String tipo,
             @RequestParam("prontuario") String prontuarioCodigo
     ){
-        List<Documento> documentosProntuario = prontuarioService.getDocumentosFromProntuarioByTipo(prontuarioCodigo, tipo);
+        Prontuario prontuario = findProntuarioEClinica(auth, prontuarioCodigo);
+        List<Documento> documentosProntuario = prontuario.getDocumentos()
+                .stream()
+                .filter(
+                        documento -> documento.getTipo().equals(tipo))
+                .toList();
         return documentosProntuario.isEmpty()
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.ok(documentosProntuario);
@@ -83,6 +83,7 @@ public class DocumentoController extends BaseController {
             OptimisticLockingFailureException,
             IOException {
         Prontuario prontuario = findProntuarioEClinica(auth, prontuarioCodigo);
+
 //        Versão abaixo dá suporte para a documentação, mas está comentada para podermos prosseguir ocm a implementação
 //        Documento documento = documentoService.save(documentoPdfDto.toDocumento(prontuario, tipo));
 //        return ResponseEntity.ok(
