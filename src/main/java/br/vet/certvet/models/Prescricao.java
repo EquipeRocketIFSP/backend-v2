@@ -3,7 +3,6 @@ package br.vet.certvet.models;
 import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -33,7 +32,6 @@ public class Prescricao {
     private String observacoes;
 
 
-    //TODO: Corrigir associação
     @Setter
     @ManyToOne
     @ToString.Exclude
@@ -92,12 +90,6 @@ public class Prescricao {
 
     public Prescricao delete() {
         this.dataExclusao = LocalDateTime.now();
-        return this;
-    }
-
-    public Prescricao firstVersion() {
-        this.versao = 1;
-        this.dataCriacao = LocalDateTime.now();
         return this;
     }
 

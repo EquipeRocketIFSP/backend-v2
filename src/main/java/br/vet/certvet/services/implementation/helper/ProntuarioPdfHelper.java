@@ -14,13 +14,25 @@ import java.util.Optional;
 
 public class ProntuarioPdfHelper {
 
+    private static final String ANIMAL_NOME = "animal.nome";
+    private static final String ANIMAL_ESPECIE = "animal.especie";
+    private static final String ANIMAL_SEXO = "animal.sexo";
+    private static final String ANIMAL_IDADE = "animal.idade";
+    private static final String CLINICA_RAZAOSOCIAL = "clinica.razaoSocial";
+    private static final String TUTOR_NOME = "tutor.nome";
+    private static final String TUTOR_CPF = "tutor.cpf";
+    private static final String VETERINARIO_NOME = "veterinario.nome";
+    private static final String VETERINARIO_CRMV = "veterinario.crmv";
+
+    private ProntuarioPdfHelper(){}
+
     private static String getObservacaoTutor(List<Documento> documentos) {
         return documentos.stream()
                 .map(Documento::getObservacaoTutor)
                 .filter(Objects::nonNull)
                 .toList()
                 .toString()
-                .replaceAll("\\[]", "");
+                .replace("\\[]", "");
     }
 
     private static String getObservacaoVet(List<Documento> documentos) {
@@ -29,7 +41,7 @@ public class ProntuarioPdfHelper {
                 .filter(Objects::nonNull)
                 .toList()
                 .toString()
-                .replaceAll("\\[]", "");
+                .replace("\\[]", "");
     }
 
     private static String getDocumentoTipo(List<Documento> documentos, String tipo) {
@@ -38,7 +50,7 @@ public class ProntuarioPdfHelper {
                 .filter(documento -> documento.getTipo().equals(tipo))
                 .toList()
                 .toString()
-                .replaceAll("\\[]", "");
+                .replace("\\[]", "");
     }
 
     private static Optional<Documento> getObito(Prontuario prontuario) {
@@ -58,13 +70,13 @@ public class ProntuarioPdfHelper {
         final Optional<Documento> obito = getObito(prontuario);
 
         ImmutableMap.Builder<String, String> builder = ImmutableMap.<String, String>builder()
-                .put("animal.nome",                     animal.getNome())
-                .put("animal.especie",                  animal.getEspecie())
+                .put(ANIMAL_NOME,                     animal.getNome())
+                .put(ANIMAL_ESPECIE,                  animal.getEspecie())
                 .put("animal.raca",                     animal.getRaca())
-                .put("animal.sexo",                     animal.getSexo().name().toLowerCase())
-                .put("animal.idade",                    String.valueOf(animal.getIdade()))
+                .put(ANIMAL_SEXO,                     animal.getSexo().name().toLowerCase())
+                .put(ANIMAL_IDADE,                    String.valueOf(animal.getIdade()))
                 .put("animal.pelagem",                  animal.getPelagem())
-                .put("clinica.razaoSocial",             clinica.getRazaoSocial())
+                .put(CLINICA_RAZAOSOCIAL,             clinica.getRazaoSocial())
                 .put("clinica.telefone",                clinica.getCelular())
                 .put("cidade",                          clinica.getCidade())
                 .put("documento.observacaoVet",         getObservacaoVet(documentos))
@@ -75,11 +87,11 @@ public class ProntuarioPdfHelper {
                 .put("data.dia",                        String.valueOf(prontuario.getDataAtendimento().getDayOfMonth()))
                 .put("data.mes",                        prontuario.getMonthAtendimento())
                 .put("data.ano",                        String.valueOf(prontuario.getDataAtendimento().getYear()))
-                .put("tutor.nome",                      tutor.getNome())
-                .put("tutor.cpf",                       tutor.getCpf())
+                .put(TUTOR_NOME,                      tutor.getNome())
+                .put(TUTOR_CPF,                       tutor.getCpf())
                 .put("tutor.endereco",                  tutor.getEnderecoCompleto())
-                .put("veterinario.nome",                veterinario.getNome())
-                .put("veterinario.crmv",                veterinario.getRegistroCRMV());
+                .put(VETERINARIO_NOME,                veterinario.getNome())
+                .put(VETERINARIO_CRMV,                veterinario.getRegistroCRMV());
         if(prontuario.getExames()!=null)
             builder.put("prontuario.exames",               prontuario.getExames().toString().replace("\\[]", ""));
         if(prontuario.getCirurgia()!=null)
@@ -130,23 +142,23 @@ public class ProntuarioPdfHelper {
                 : "";
 
         ImmutableMap.Builder<String, String> builder = ImmutableMap.<String, String>builder()
-                .put("clinica.razaoSocial",             clinica.getRazaoSocial())
+                .put(CLINICA_RAZAOSOCIAL,             clinica.getRazaoSocial())
                 .put("clinica.telefone",                clinica.getCelular())
-                .put("veterinario.nome",                veterinario.getNome())
-                .put("veterinario.crmv",                veterinario.getRegistroCRMV())
+                .put(VETERINARIO_NOME,                veterinario.getNome())
+                .put(VETERINARIO_CRMV,                veterinario.getRegistroCRMV())
                 .put("prontuario.codigo",               prontuario.getCodigo())
                 .put("documento.observacaoVet",         getObservacaoVet(documentos))
                 .put("documento.observacaoTutor",       getObservacaoTutor(documentos))
                 .put("prontuario.anestesia",            getDocumentoTipo(documentos, "anestesia"))
                 .put("prontuario.terapias",             getDocumentoTipo(documentos, "terapeutico"))
-                .put("animal.nome",                     animal.getNome())
-                .put("animal.especie",                  animal.getEspecie())
+                .put(ANIMAL_NOME,                     animal.getNome())
+                .put(ANIMAL_ESPECIE,                  animal.getEspecie())
                 .put("animal.raca",                     animal.getRaca())
-                .put("animal.sexo",                     animal.getSexo().name().toLowerCase())
-                .put("animal.idade",                    String.valueOf(animal.getIdade()))
+                .put(ANIMAL_SEXO,                     animal.getSexo().name().toLowerCase())
+                .put(ANIMAL_IDADE,                    String.valueOf(animal.getIdade()))
                 .put("animal.pelagem",                  animal.getPelagem())
-                .put("tutor.nome",                      tutor.getNome())
-                .put("tutor.cpf",                       tutor.getCpf())
+                .put(TUTOR_NOME,                      tutor.getNome())
+                .put(TUTOR_CPF,                       tutor.getCpf())
                 .put("tutor.endereco",                  tutor.getEnderecoCompleto())
                 .put("cidade",                          clinica.getCidade())
                 .put("data.dia",                        String.valueOf(prontuario.getDataAtendimento().getDayOfMonth()))
@@ -166,23 +178,23 @@ public class ProntuarioPdfHelper {
             }
         return new StringSubstitutor(builder.build()).replace(layout);
     }
-    public static String fillLayoutFieldsForPrescricao(Prontuario prontuario, String layout) {
+    public static String fillLayoutFieldsForPrescricao(String layout, Prontuario prontuario) {
         final Animal animal = prontuario.getAnimal();
         final Usuario veterinario = prontuario.getVeterinario();
         final Usuario tutor = prontuario.getTutor();
         final Clinica clinica = prontuario.getClinica();
 
         return new StringSubstitutor(ImmutableMap.<String, String>builder()
-                .put("animal.nome",         animal.getNome())
-                .put("animal.especie",      animal.getEspecie())
-                .put("animal.sexo",         animal.getSexo().name().toLowerCase())
-                .put("animal.idade",        String.valueOf(animal.getIdade()))
-                .put("clinica.razaoSocial", clinica.getRazaoSocial())
-                .put("tutor.nome",          tutor.getNome())
-                .put("tutor.cpf",           tutor.getCpf())
+                .put(ANIMAL_NOME,         animal.getNome())
+                .put(ANIMAL_ESPECIE,      animal.getEspecie())
+                .put(ANIMAL_SEXO,         animal.getSexo().name().toLowerCase())
+                .put(ANIMAL_IDADE,        String.valueOf(animal.getIdade()))
+                .put(CLINICA_RAZAOSOCIAL, clinica.getRazaoSocial())
+                .put(TUTOR_NOME,          tutor.getNome())
+                .put(TUTOR_CPF,           tutor.getCpf())
                 .put("tutor.telefone",      tutor.getTelefone())
-                .put("veterinario.nome",    veterinario.getNome())
-                .put("veterinario.crmv",    veterinario.getRegistroCRMV())
+                .put(VETERINARIO_NOME,    veterinario.getNome())
+                .put(VETERINARIO_CRMV,    veterinario.getRegistroCRMV())
                 .build()
         ).replace(layout);
     }

@@ -2,7 +2,7 @@ package br.vet.certvet.services.implementation;
 
 import br.vet.certvet.contracts.apis.anvisa.MedicationAPIResponse;
 import br.vet.certvet.contracts.apis.anvisa.RegisterNumberAPIResponse;
-import br.vet.certvet.exceptions.specializations.anvisaApi.AnvisaAPIBadGatewayException;
+import br.vet.certvet.exceptions.specializations.anvisa_api.AnvisaAPIBadGatewayException;
 import br.vet.certvet.helpers.Https;
 import br.vet.certvet.services.AnvisaAPIService;
 import com.fasterxml.jackson.databind.ObjectMapper;

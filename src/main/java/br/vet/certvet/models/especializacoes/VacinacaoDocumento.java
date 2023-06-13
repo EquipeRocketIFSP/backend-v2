@@ -1,10 +1,6 @@
 package br.vet.certvet.models.especializacoes;
 
-import br.vet.certvet.exceptions.NotSupportedDocumentoTipoException;
 import br.vet.certvet.models.Documento;
-
-import javax.persistence.*;
-import java.time.LocalDateTime;
 
 
 public class VacinacaoDocumento extends Doc {

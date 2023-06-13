@@ -124,7 +124,7 @@ public class Documento {
     }
 
     public Documento caminhoArquivo(String urlFullPath){
-        this.caminhoArquivo = caminhoArquivo;
+        this.caminhoArquivo = urlFullPath;
         return this;
     }
 
@@ -159,6 +159,11 @@ public class Documento {
         result = 31 * result + (etag != null ? etag.hashCode() : 0);
         result = 31 * result + (algorithm != null ? algorithm.hashCode() : 0);
         return result;
+    }
+
+    public Documento versao(Integer versao) {
+        this.versao = versao;
+        return this;
     }
 
     public Documento fromProntuario(Prontuario prontuario) {

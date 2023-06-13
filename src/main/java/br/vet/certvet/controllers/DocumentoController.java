@@ -1,6 +1,6 @@
 package br.vet.certvet.controllers;
 
-import br.vet.certvet.contracts.apis.ipcBr.IcpResponse;
+import br.vet.certvet.contracts.apis.ipc_br.IcpResponse;
 import br.vet.certvet.dto.responses.DocumentoResponse;
 import br.vet.certvet.exceptions.DocumentoNotFoundException;
 import br.vet.certvet.exceptions.DocumentoNotPersistedException;
@@ -45,18 +45,18 @@ public class DocumentoController extends BaseController {
     @Autowired
     private PdfService pdfService;
 
-    private Prontuario findProntuarioEClinica(String auth, String prontuarioCodigo) {
-        return prontuarioService.findByCodigo(prontuarioCodigo)
-                .filter(p -> p.getClinica().getId().equals(getClinicaIdFromRequester(auth)))
-                .orElseThrow(()->new ProntuarioNotFoundException("O prontuário buscado não foi identificado na base de dados"));
-    }
-
     @GetMapping
     public ResponseEntity<List<Documento>> getDocumentosByTipo(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String auth,
             @RequestParam("tipo") String tipo,
             @RequestParam("prontuario") String prontuarioCodigo
     ){
-        List<Documento> documentosProntuario = prontuarioService.getDocumentosFromProntuarioByTipo(prontuarioCodigo, tipo);
+        Prontuario prontuario = findProntuarioEClinica(auth, prontuarioCodigo);
+        List<Documento> documentosProntuario = prontuario.getDocumentos()
+                .stream()
+                .filter(
+                        documento -> documento.getTipo().equals(tipo))
+                .toList();
         return documentosProntuario.isEmpty()
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.ok(documentosProntuario);
@@ -72,20 +72,35 @@ public class DocumentoController extends BaseController {
      * @throws OptimisticLockingFailureException
      * @throws IOException
      */
-    @GetMapping(value = "/novo")
+    @GetMapping("/novo")
     public ResponseEntity<byte[]> getDocumentoEmBranco(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String auth,
             @RequestParam("tipo") String tipo,
-            @RequestParam("prontuario") String prontuarioCodigo
+            @RequestParam("prontuario") String prontuarioCodigo//,
+//            @RequestBody DocumentoPdfDto documentoPdfDto
     ) throws ProntuarioNotFoundException,
             DocumentoNotPersistedException,
             OptimisticLockingFailureException,
             IOException {
         Prontuario prontuario = findProntuarioEClinica(auth, prontuarioCodigo);
-        return ResponseEntity.ok()
-                .header("content", MediaType.APPLICATION_PDF_VALUE)
-                .body(pdfService.writePdfDocumentoEmBranco(
-                        prontuario, documentoService.provideLayout(tipo))
+
+//        Versão abaixo dá suporte para a documentação, mas está comentada para podermos prosseguir ocm a implementação
+//        Documento documento = documentoService.save(documentoPdfDto.toDocumento(prontuario, tipo));
+//        return ResponseEntity.ok(
+//                pdfService.writePdfDocumentoEmBranco(
+//                        documento, documentoService.provideLayout(tipo)
+//                )
+//        );
+        return ResponseEntity.ok(
+                pdfService.writePdfDocumentoEmBranco(
+//                        prontuario.getDocumentos()
+//                                .stream()
+//                                .filter(documento -> documento.getTipo().equals("sanitario"))
+//                                .findFirst()
+//                                .orElseThrow(()->new DocumentoNotFoundException("O tipo de documento precisa ser Sanitário")),
+                        prontuario,
+                        documentoService.provideLayout(tipo)
+                )
         );
     }
 
@@ -113,10 +128,9 @@ public class DocumentoController extends BaseController {
                 .filter(p -> p.getCodigo().equals(documentoCodigo))
                 .findFirst()
                 .orElseThrow(() -> new DocumentoNotFoundException("Não foi possível identificar o id do documento na base de dados"));
-
         // Disponibiliza o arquivo na AWS para que possa ser validado pelo serviço do ICP-BR
         ObjectMetadata awsResponse = pdfService.saveDocumentoPdfInBucket(documento, version, documentoPdf);
-        // Obtém dados convecionados para salvar o arquivo
+        // Obtém dados convencionados para salvar o arquivo
         final String bucket = S3BucketServiceRepository.getConventionedBucketName(documento.getClinica().getCnpj());
         final String fileName = ProntuarioServiceImpl.writeNomeArquivo(documento, version);
         IcpResponse icpResponse = pdfService.getIcpBrValidation(bucket, fileName);

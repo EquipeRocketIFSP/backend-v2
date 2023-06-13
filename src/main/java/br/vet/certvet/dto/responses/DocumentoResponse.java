@@ -5,7 +5,6 @@ import br.vet.certvet.models.Usuario;
 
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public record DocumentoResponse(
         String tipo,
@@ -28,7 +27,7 @@ public record DocumentoResponse(
             documento.getAssinadores()
                     .stream()
                     .map(Usuario::getNome)
-                    .collect(Collectors.toList()),
+                    .toList(),
             documento.getProntuario().getCodigo()
         );
     }

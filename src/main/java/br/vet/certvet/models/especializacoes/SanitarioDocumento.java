@@ -2,10 +2,6 @@ package br.vet.certvet.models.especializacoes;
 
 import br.vet.certvet.models.Documento;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.Transient;
-import java.time.LocalDateTime;
 
 public class SanitarioDocumento extends Doc {
     public SanitarioDocumento(Documento documento){

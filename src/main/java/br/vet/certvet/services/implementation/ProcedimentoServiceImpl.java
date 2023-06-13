@@ -19,7 +19,7 @@ import java.util.List;
 
 @Service
 public class ProcedimentoServiceImpl implements ProcedimentoService {
-    final private ProcedimentoRepository procedimentoRepository;
+    private final ProcedimentoRepository procedimentoRepository;
 
     public ProcedimentoServiceImpl(final ProcedimentoRepository procedimentoRepository) {
         this.procedimentoRepository = procedimentoRepository;
@@ -42,7 +42,7 @@ public class ProcedimentoServiceImpl implements ProcedimentoService {
 
         List<Procedimento> procedimentos = dto.getProcedimentos()
                 .stream()
-                .map((procedimentoDTO) -> {
+                .map(procedimentoDTO -> {
                     if (procedimentoDTO.getMedicamento() != null && procedimentoDTO.getDose() != null && procedimentoDTO.getLote() != null) {
                         final BigDecimal dose = procedimentoDTO.getDose();
                         final Medicamento medicamento = this.medicamentoService.findOne(procedimentoDTO.getMedicamento(), clinica);
@@ -63,7 +63,7 @@ public class ProcedimentoServiceImpl implements ProcedimentoService {
                     return ProcedimentoFactory.factory(procedimentoDTO, prontuario);
                 }).toList();
 
-        prontuario.getProcedimentos().forEach((procedimento) -> {
+        prontuario.getProcedimentos().forEach(procedimento -> {
             final Estoque estoque = procedimento.getMedicamentoConsumido();
 
             if (estoque == null)

@@ -23,14 +23,15 @@ public class TokenService {
     private ClinicaService clinicaService;
 
     @Value("${app.jwt.expiration}")
-    private String EXPIRATION;
+    private String expiration;
 
     @Value("${app.jwt.secret}")
-    private String SECRET;
+    private String secret;
 
     private final Date today = new Date();
 
-    private static final int USUARIO_ID_INDEX = 0, CLINICA_ID_INDEX = 1;
+    private static final int USUARIO_ID_INDEX = 0;
+    private static final int CLINICA_ID_INDEX = 1;
 
     public String create(Authentication auth, Clinica clinica) {
         String subject = ((Usuario) auth.getPrincipal()).getId().toString() + ":" + clinica.getId().toString();
@@ -39,8 +40,8 @@ public class TokenService {
                 .setIssuer("CertVet")
                 .setSubject(subject)
                 .setIssuedAt(today)
-                .setExpiration(new Date(today.getTime() + Long.parseLong(EXPIRATION)))
-                .signWith(SignatureAlgorithm.HS256, SECRET)
+                .setExpiration(new Date(today.getTime() + Long.parseLong(expiration)))
+                .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();
     }
 
@@ -93,7 +94,7 @@ public class TokenService {
         token = token.startsWith("Bearer ") ? token.substring(7) : token;
 
         return Jwts.parser()
-                .setSigningKey(SECRET)
+                .setSigningKey(secret)
                 .parseClaimsJws(token);
     }
 }

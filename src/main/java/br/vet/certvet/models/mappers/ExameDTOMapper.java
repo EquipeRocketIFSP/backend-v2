@@ -4,6 +4,8 @@ import br.vet.certvet.dto.requests.prontuario.exame.ExameDTO;
 import br.vet.certvet.models.Exame;
 
 public class ExameDTOMapper {
+
+    private ExameDTOMapper(){}
     public static Exame assignToModel(ExameDTO dto, Exame model) {
         model.setTipoExame(dto.getTipoExame())
                 .setOutrosExames(dto.getExamesOutros())

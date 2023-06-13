@@ -1,5 +1,7 @@
 package br.vet.certvet.dto.requests;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -10,13 +12,16 @@ public class ExameRequestDto {
 
     @NotEmpty(message = "Infome o tipo do exame")
     @Size(max = 255, message = "O tamanho máximo do tipo exame é de 255 caracteres")
-    public String tipo_exame;
+    @JsonProperty("tipo_exame")
+    public String tipoExame;
 
     @Size(max = 2000, message = "O tamanho máximo do campo outros é de 2000 caracteres")
-    public String outros_exames;
+    @JsonProperty("outros_exames")
+    public String outrosExames;
 
     @Size(max = 2000, message = "O tamanho máximo do campo outros é de 2000 caracteres")
-    public String outros_citologia;
+    @JsonProperty("outros_citologia")
+    public String outrosCitologia;
 
     @Size(max = 255, message = "O tamanho máximo do campo bioquimico é de 255 caracteres")
     public String bioquimico;
@@ -31,20 +36,26 @@ public class ExameRequestDto {
     public String imagem;
 
     @Size(max = 255, message = "O tamanho máximo do campo imagem_regiao_cervical é de 255 caracteres")
-    public String imagem_regiao_cervical;
+    @JsonProperty("imagem_regiao_cervical")
+    public String imagemRegiaoCervical;
 
     @Size(max = 255, message = "O tamanho máximo do campo imagem_regiao_abdomen é de 255 caracteres")
-    public String imagem_regiao_abdomen;
+    @JsonProperty("imagem_regiao_abdomen")
+    public String imagemRegiaoAbdomen;
 
     @Size(max = 255, message = "O tamanho máximo do campo imagem_regiao_mtoracicos é de 255 caracteres")
-    public String imagem_regiao_mtoracicos;
+    @JsonProperty("imagem_regiao_mtoracicos")
+    public String imagemRegiaoMToracicos;
 
     @Size(max = 255, message = "O tamanho máximo do campo imagem_regiao_mpelvicos é de 255 caracteres")
-    public String imagem_regiao_mpelvicos;
+    @JsonProperty("imagem_regiao_mpelvicos")
+    public String imagemRegiaoMPelvicos;
 
     @NotNull(message = "Selecione uma opção")
-    public boolean imagem_regiao_cabeca;
+    @JsonProperty("imagem_regiao_cabeca")
+    public boolean imagemRegiaoCabeca;
 
     @NotNull(message = "Selecione uma opção")
-    public boolean imagem_regiao_torax;
+    @JsonProperty("imagem_regiao_torax")
+    public boolean imagemRegiaoTorax;
 }

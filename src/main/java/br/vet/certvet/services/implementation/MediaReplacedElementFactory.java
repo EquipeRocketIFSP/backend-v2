@@ -1,5 +1,7 @@
 package br.vet.certvet.services.implementation;
 
+import br.vet.certvet.exceptions.ElementoMauFormadoNoHtmlException;
+import br.vet.certvet.exceptions.PdfMauFormadoException;
 import com.lowagie.text.Image;
 import org.apache.pdfbox.io.IOUtils;
 import org.w3c.dom.Element;
@@ -46,21 +48,19 @@ public class MediaReplacedElementFactory implements ReplacedElementFactory {
         // binary data of `image.png` into the PDF.
         if ("div".equals(nodeName) && "media".equals(className)) {
             if (!element.hasAttribute("data-src")) {
-                throw new RuntimeException("An element with class `media` is missing a `data-src` attribute indicating the media file.");
+                throw new ElementoMauFormadoNoHtmlException("An element with class `media` is missing a `data-src` attribute indicating the media file.");
             }
 //            "src/main/java/br/vet/certvet/services/implementation/MediaReplacedElementFactory.java"
             try (InputStream input = new FileInputStream("src/main/resources/documents/consentimento/" + element.getAttribute("data-src"))){
                 final byte[] bytes = IOUtils.toByteArray(input);
                 final Image image = Image.getInstance(bytes);
                 final FSImage fsImage = new ITextFSImage(image);
-                if (fsImage != null) {
-                    if ((cssWidth != -1) || (cssHeight != -1)) {
-                        fsImage.scale(cssWidth, cssHeight);
-                    }
-                    return new ITextImageElement(fsImage);
+                if ((cssWidth != -1) || (cssHeight != -1)) {
+                    fsImage.scale(cssWidth, cssHeight);
                 }
+                return new ITextImageElement(fsImage);
             } catch (Exception e) {
-                throw new RuntimeException("There was a problem trying to read a template embedded graphic.", e);
+                throw new PdfMauFormadoException("There was a problem trying to read a template embedded graphic.", e);
             }
         }
         return this.superFactory.createReplacedElement(layoutContext, blockBox, userAgentCallback, cssWidth, cssHeight);

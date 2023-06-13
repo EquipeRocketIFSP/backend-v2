@@ -7,38 +7,47 @@ import br.vet.certvet.exceptions.NotFoundException;
 import br.vet.certvet.models.Clinica;
 import br.vet.certvet.models.Usuario;
 import br.vet.certvet.repositories.ClinicaRepository;
+import br.vet.certvet.services.EmailService;
 import br.vet.certvet.services.implementation.ClinicaServiceImpl;
 import br.vet.certvet.services.implementation.UsuarioServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import javax.mail.MessagingException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
 @EnableConfigurationProperties
 public class ClinicaTest {
-    private final ClinicaRepository clinicaRepository = mock(ClinicaRepository.class);
+    @Mock private ClinicaRepository clinicaRepository;// = mock(ClinicaRepository.class);
 
-    private final UsuarioServiceImpl usuarioService = mock(UsuarioServiceImpl.class);
+    @Mock private UsuarioServiceImpl usuarioService;// = mock(UsuarioServiceImpl.class);
+    @Mock private EmailService emailService;
 
     @InjectMocks
     private ClinicaServiceImpl clinicaService;
 
     @Test
-    public void createClinicaWithoutResponsavelTecnico() {
-        ClinicaInicialRequestDto dto = ClinicaTest.factoryClinicaInicialRequestDto();
+     void createClinicaWithoutResponsavelTecnico() {
+        ClinicaInicialRequestDto dto = factoryClinicaInicialRequestDto();
         final Clinica expected = new Clinica(dto);
 
+        when(clinicaRepository.findByCnpj(dto.clinicaCnpj())).thenReturn(Optional.empty());
         when(this.clinicaRepository.saveAndFlush(any())).thenReturn(expected);
+        when(usuarioService.initialResgistration(any(), any())).thenReturn(new Usuario(ClinicaServiceImpl.getDonoDto(dto), expected));
+        try {
+            doNothing().when(emailService).sendTextMessage(any(), any(), any());
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
 
         final Clinica actual = this.clinicaService.create(dto);
 
@@ -46,7 +55,7 @@ public class ClinicaTest {
     }
 
     @Test
-    public void createClinicaWithResponsavelTecnico() {
+     void createClinicaWithResponsavelTecnico() {
         ClinicaInicialRequestDto dto = ClinicaTest.factoryClinicaInicialRequestDto();
         //dto.dono_crmv = "SP-1234";
 
@@ -55,16 +64,21 @@ public class ClinicaTest {
 
         expected.setResponsavelTecnico(expectedDono);
 
+        when(usuarioService.initialResgistration(any(), any())).thenReturn(new Usuario(ClinicaServiceImpl.getDonoDto(dto), expected));
         when(this.clinicaRepository.saveAndFlush(any())).thenReturn(expected);
         when(this.usuarioService.create(any(FuncionarioRequestDto.class), any())).thenReturn(expectedDono);
-
+        try {
+            doNothing().when(emailService).sendTextMessage(any(), any(), any());
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
         Clinica actual = this.clinicaService.create(dto);
 
         assertEquals(expected, actual);
     }
 
     @Test
-    public void getExistentClinica() {
+     void getExistentClinica() {
         ClinicaInicialRequestDto dto = ClinicaTest.factoryClinicaInicialRequestDto();
         final Clinica expected = new Clinica(dto);
 
@@ -76,7 +90,7 @@ public class ClinicaTest {
     }
 
     @Test
-    public void getExistentClinicaByCnpj() {
+     void getExistentClinicaByCnpj() {
         ClinicaInicialRequestDto dto = ClinicaTest.factoryClinicaInicialRequestDto();
         final Clinica expected = new Clinica(dto);
 
@@ -88,19 +102,19 @@ public class ClinicaTest {
     }
 
     @Test
-    public void getNotExistentClinica() {
+     void getNotExistentClinica() {
         when(this.clinicaRepository.findById(any())).thenReturn(Optional.empty());
         assertThrowsExactly(NotFoundException.class, () -> this.clinicaService.findById(Long.parseLong("999999999")));
     }
 
     @Test
-    public void getNotExistentClinicaByCnpj() {
+     void getNotExistentClinicaByCnpj() {
         when(this.clinicaRepository.findByCnpj(any())).thenReturn(Optional.empty());
         assertThrowsExactly(NotFoundException.class, () -> this.clinicaService.findByCnpj("11.222.333/0001-11"));
     }
 
     @Test
-    public void editClinica() {
+     void editClinica() {
         final Clinica expected = new Clinica(ClinicaTest.factoryClinicaInicialRequestDto());
         expected.fill(ClinicaTest.factoryUpdatedClinicaDto());
 
@@ -115,7 +129,7 @@ public class ClinicaTest {
         assertEquals(expected, actual);
     }
 
-    public static ClinicaInicialRequestDto factoryClinicaInicialRequestDto() {
+    private static ClinicaInicialRequestDto factoryClinicaInicialRequestDto() {
         return new ClinicaInicialRequestDto(
                 "Nome fantasia",
                 "Razão social",

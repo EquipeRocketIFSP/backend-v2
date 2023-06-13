@@ -5,7 +5,9 @@ import br.vet.certvet.models.Prescricao;
 import java.util.List;
 
 public class PrescricaoDocumento {
-    final private static String dadosMedicos = """
+
+    private PrescricaoDocumento(){}
+    private static final String DADOS_MEDICOS = """
         <div class="dadosMedicos">
             <p class="posologia"><b>Medicamento: ${prescricao.nome_medicamento_prescrito}</b></p>
             <p>Uso: ${prescricao.uso}</p>
@@ -21,7 +23,7 @@ public class PrescricaoDocumento {
 
     public static String getDivLayout(List<Prescricao> prescricoes) {
         return prescricoes.stream()
-                .map(prescricao -> dadosMedicos)
+                .map(prescricao -> DADOS_MEDICOS)
                 .toList()
                 .toString();
     }

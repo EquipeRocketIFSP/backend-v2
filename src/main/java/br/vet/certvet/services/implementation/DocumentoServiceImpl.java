@@ -1,8 +1,6 @@
 package br.vet.certvet.services.implementation;
 
-import br.vet.certvet.exceptions.DocumentLayoutNotFound;
 import br.vet.certvet.models.Documento;
-import br.vet.certvet.models.especializacoes.*;
 import br.vet.certvet.repositories.DocumentoRepository;
 import br.vet.certvet.services.DocumentoService;
 import org.springframework.beans.factory.annotation.Autowired;

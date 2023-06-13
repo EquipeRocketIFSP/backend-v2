@@ -1,10 +1,12 @@
 package br.vet.certvet.controllers;
 
-import br.vet.certvet.contracts.apis.ipcBr.IcpResponse;
+import br.vet.certvet.contracts.apis.ipc_br.IcpResponse;
 import br.vet.certvet.dto.requests.prontuario.MedicacaoPrescritaDTO;
 import br.vet.certvet.dto.requests.prontuario.MedicacaoPrescritaListDTO;
 import br.vet.certvet.exceptions.AssinadorNaoCadastradoException;
+import br.vet.certvet.exceptions.ErroSalvarPdfAssinadoAwsException;
 import br.vet.certvet.exceptions.InvalidSignedDocumentoException;
+import br.vet.certvet.exceptions.NotMatchingFileTypeToPdfException;
 import br.vet.certvet.models.Prescricao;
 import br.vet.certvet.models.PrescricaoRepository;
 import br.vet.certvet.models.Prontuario;
@@ -20,11 +22,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.net.URI;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @RestController
 @RequestMapping("/api/prontuario/prescricao")
@@ -49,11 +52,12 @@ public class PrescricaoController extends BaseController {
             consumes = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<MedicacaoPrescritaListDTO> getPrescricao(
+            @RequestHeader(AUTHORIZATION) String auth,
             @PathVariable("prontuario") String prontuarioCodigo,
-            @RequestHeader(value = "version", required = false) Integer v
+            @RequestHeader(value = "versao", required = false) Integer versao
     ) {
-        final int version = null == v ? 1 : v;
-        Prontuario prontuario = findProntuario(prontuarioCodigo);
+        final int version = null == versao ? 1 : versao;
+        Prontuario prontuario = findProntuarioEClinica(auth, prontuarioCodigo);
         List<MedicacaoPrescritaDTO> prescricoes = prontuario.getPrescricoes(version)
                 .stream()
                 .map(prescricao -> new MedicacaoPrescritaDTO().of(prescricao))
@@ -67,7 +71,6 @@ public class PrescricaoController extends BaseController {
      * Se nenhum valor for informado para version, o valor default será 1
      *
      * @param prontuarioCodigo
-     * @param v
      * @return pdf
      */
     @GetMapping(
@@ -75,19 +78,12 @@ public class PrescricaoController extends BaseController {
             consumes = MediaType.APPLICATION_PDF_VALUE
     )
     public ResponseEntity<byte[]> getPrescricaoPdf(
-            @PathVariable("prontuario") String prontuarioCodigo,
-            @RequestHeader(value = "version", required = false) Integer v
+            @RequestHeader(AUTHORIZATION) String auth,
+            @PathVariable("prontuario") String prontuarioCodigo
     ) {
-        final int version = null == v ? 1 : v;
-        Prontuario prontuario = findProntuario(prontuarioCodigo);
-        Optional<byte[]> pdf;
-        try {
-            pdf = pdfService.writePrescricao(prontuario);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        Prontuario prontuario = findProntuarioEClinica(auth, prontuarioCodigo);
+        Optional<byte[]> pdf = pdfService.writePrescricao(prontuario);
 
-//        Optional<byte[]> pdf = pdfService.getPrescricaoPdf(prontuario, version);
         return pdf.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.noContent().build());
     }
@@ -97,14 +93,20 @@ public class PrescricaoController extends BaseController {
             consumes = MediaType.APPLICATION_PDF_VALUE
     )
     public ResponseEntity<MedicacaoPrescritaListDTO> setSignedPrescricao(
+            @RequestHeader(AUTHORIZATION) String auth,
             @PathVariable("prontuario") String prontuarioCodigo,
-//            @RequestHeader(value = "versao", required = false) Integer versao,
             @RequestBody byte[] medicacaoPrescritaPdf
-    ) throws IOException {
-        Prontuario prontuario = findProntuario(prontuarioCodigo);
+    ) {
+
+        if(!pdfService.isFileTypePdf(medicacaoPrescritaPdf))
+            throw new NotMatchingFileTypeToPdfException("O arquivo recebido não foi identificado como pdf. Revise e tente novamente.");
+
+        Prontuario prontuario = findProntuarioEClinica(auth, prontuarioCodigo);
         final int version = Integer.parseInt(prontuario.prescricaoLatestVersion());
         //Importante: passo necessário para adicionar o documento no repositório em nuvem para que o serviço icp-br possa realizar a validação do documento
         ObjectMetadata awsResponse = pdfService.savePrescricaoPdfInBucket(prontuario, version, medicacaoPrescritaPdf);
+        if(null == awsResponse)
+            throw new ErroSalvarPdfAssinadoAwsException("Não foi recebido nenhuma confirmação de que o arquivo foi salvo com sucesso. tente novamente");
 
         final String bucket = S3BucketServiceRepository.getConventionedBucketName(prontuario.getClinica().getCnpj());
         final String fileName = ProntuarioServiceImpl.writeNomeArquivoPrescricao(prontuario, version);
@@ -172,7 +174,7 @@ public class PrescricaoController extends BaseController {
                 .body(new MedicacaoPrescritaListDTO().of(
                         prontuario.getPrescricoes()
                                 .stream()
-                                .filter((prescricao) -> prescricao.getDataExclusao() == null)
+                                .filter(prescricao -> prescricao.getDataExclusao() == null)
                                 .filter(prescricao -> prescricao.getVersao() == max)
                                 .map(p -> new MedicacaoPrescritaDTO().of(p))
                                 .toList()

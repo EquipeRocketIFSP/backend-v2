@@ -21,5 +21,5 @@ public interface AnimalRepository extends JpaRepository<Animal, Long> {
     Long countByNomeContainingAndTutores(String search, Usuario tutor);
 
     @Query("select a from Animal a inner join a.tutores tutores where tutores.id = ?1 and a.nome = ?2")
-    Optional<Animal> findByTutores_idAndNome(Long id, String nome);
+    Optional<Animal> findByTutoridAndNome(Long id, String nome);
 }

@@ -27,7 +27,7 @@ public class ExameServiceImpl implements ExameService {
 
         List<Exame> exames = dto.getExames()
                 .stream()
-                .map((exameDTO) -> ExameFactory.factory(exameDTO, prontuario))
+                .map(exameDTO -> ExameFactory.factory(exameDTO, prontuario))
                 .toList();
 
         prontuario.getExames().clear();

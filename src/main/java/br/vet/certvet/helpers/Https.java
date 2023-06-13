@@ -12,6 +12,7 @@ import java.util.Map;
 
 public class Https {
 
+    private Https(){}
     public static String get(String uri) throws IOException {
         return Https.get(uri, new HashMap<>());
     }

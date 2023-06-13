@@ -1,7 +1,8 @@
 package br.vet.certvet.controllers;
 
-import br.vet.certvet.config.security.service.TokenService;
-import br.vet.certvet.dto.requests.*;
+import br.vet.certvet.dto.requests.FuncionarioRequestDto;
+import br.vet.certvet.dto.requests.UsuarioRequestDto;
+import br.vet.certvet.dto.requests.VeterinarioRequestDto;
 import br.vet.certvet.dto.responses.PaginatedResponse;
 import br.vet.certvet.dto.responses.UsuarioResponseDto;
 import br.vet.certvet.dto.responses.VeterinarioResponseDto;
@@ -27,8 +28,6 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @Slf4j
 @SecurityRequirement(name = "bearer-key")
 public class UsuarioController extends BaseController {
-    @Autowired
-    private TokenService tokenService;
 
     @Autowired
     private UsuarioService usuarioService;
