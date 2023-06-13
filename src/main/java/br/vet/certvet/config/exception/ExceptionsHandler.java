@@ -21,7 +21,8 @@ public class ExceptionsHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({
-            MethodArgumentNotValidException.class
+            MethodArgumentNotValidException.class,
+            NotMatchingFileTypeToPdfException.class
     })
     public Map<String, String> handleInvalidArgument(MethodArgumentNotValidException exception) {
         return exception.getBindingResult()
@@ -115,7 +116,8 @@ public class ExceptionsHandler {
             EscritaDocumentoPdfException.class,
             EscritaPrescricaoPdfException.class,
             ErroSalvarPdfAssinadoAwsException.class,
-            FalhaEnvioEmailException.class
+            FalhaEnvioEmailException.class,
+            ErroAoProcessarTipoDocumento.class
     })
     public ResponseEntity<String> handleInternalServerError(IOException e){
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

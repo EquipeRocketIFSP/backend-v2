@@ -40,7 +40,7 @@ class DocumentoServiceImplTest {
         final Documento expected = Documento.builder().codigo(codigo).build();
         when(documentoRepository.findByCodigo(any())).thenReturn(Optional.of(expected));
 
-        Documento actual = documentoService.getByCodigo(codigo).stream().findFirst().orElseThrow(IllegalArgumentException::new);
+        final Documento actual = documentoService.getByCodigo(codigo).stream().findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertEquals(expected, actual);
     }
@@ -50,7 +50,7 @@ class DocumentoServiceImplTest {
         final Documento expected = Documento.builder().build();
         when(documentoRepository.save(expected)).thenReturn(expected);
 
-        Documento actual = documentoService.save(expected);
+        final Documento actual = documentoService.save(expected);
 
         assertEquals(expected, actual);
     }

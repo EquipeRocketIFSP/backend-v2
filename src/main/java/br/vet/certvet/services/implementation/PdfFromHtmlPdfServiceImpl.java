@@ -100,10 +100,6 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
     private byte[] transformTxtToXmlToPdf(String htmlBase) {
         Document document = Jsoup.parse(htmlBase, "UTF-8");
         document.outputSettings().syntax(Document.OutputSettings.Syntax.xml);
-        return generatePdfFromHtml(document);
-    }
-
-    private static byte[] generatePdfFromHtml(Document document) {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             ITextRenderer renderer = new ITextRenderer();
             SharedContext sharedContext = renderer.getSharedContext();
@@ -158,7 +154,7 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
      * @throws PdfNaoReconhecidoException
      */
     @Override
-    public IcpResponse getIcpBrValidation(final String bucket, final String fileName) throws IOException, PdfNaoReconhecidoException {
+    public IcpResponse getIcpBrValidation(final String bucket, final String fileName) throws PdfNaoReconhecidoException {
         final String requestUrl = getSignValidationUrl(bucket, fileName);
         String json = ERRO;
         try {
@@ -224,10 +220,10 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
         }catch (IOException e){
             log.error(e.getLocalizedMessage());
             log.error(Arrays.toString(e.getStackTrace()));
-            throw new EscritaPrescricaoPdfException("Erro ao realizar ao ler o documento de referência para geração do pdf da prescrição.");
+            throw new EscritaPrescricaoPdfException("Erro ao ler o documento de referência para geração do pdf da prescrição.");
         }
         layout = ProntuarioPdfHelper.replaceWithDivsForPrescricao(layout, prontuario.getPrescricoes());
-        layout = ProntuarioPdfHelper.fillLayoutFieldsForPrescricao(prontuario, layout);
+        layout = ProntuarioPdfHelper.fillLayoutFieldsForPrescricao(layout, prontuario);
         return Optional.of(transformTxtToXmlToPdf(layout));
     }
 

@@ -178,7 +178,7 @@ public class ProntuarioPdfHelper {
             }
         return new StringSubstitutor(builder.build()).replace(layout);
     }
-    public static String fillLayoutFieldsForPrescricao(Prontuario prontuario, String layout) {
+    public static String fillLayoutFieldsForPrescricao(String layout, Prontuario prontuario) {
         final Animal animal = prontuario.getAnimal();
         final Usuario veterinario = prontuario.getVeterinario();
         final Usuario tutor = prontuario.getTutor();

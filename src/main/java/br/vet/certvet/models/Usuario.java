@@ -106,9 +106,9 @@ public class Usuario implements UserDetails, Fillable<UsuarioRequestDto> {
     private List<Authority> authorities;
     private String email;
 
-    @ManyToMany
+    @ManyToMany(mappedBy = "assinadores")
     @ToString.Exclude
-    private List<Documento> documentosAssinados = new ArrayList<>();
+    private List<Documento> documentosAssinados;
 
     @ToString.Exclude
     @OneToMany
