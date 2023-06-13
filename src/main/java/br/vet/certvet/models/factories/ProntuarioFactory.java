@@ -11,17 +11,20 @@ import java.util.Arrays;
 import java.util.Optional;
 
 public class ProntuarioFactory {
+
+    private ProntuarioFactory(){}
     public static Prontuario factory(ProntuarioDTO dto) {
         String className = dto.getClass().getSimpleName();
 
-        Method factory = Arrays.stream(ProntuarioFactory.class.getDeclaredMethods())
-                .filter((method) -> method.getName().equals("factoryFrom" + className))
-                .findFirst()
-                //isEmpty
-                .orElseThrow(UnprocessableEntityException::new);
+        Optional<Method> factory = Arrays.stream(ProntuarioFactory.class.getDeclaredMethods())
+                .filter(method -> method.getName().equals("factoryFrom" + className))
+                .findFirst();
+
+        if (factory.isEmpty())
+            throw new UnprocessableEntityException();
 
         try {
-            return (Prontuario) factory.invoke(null, dto);
+            return (Prontuario) factory.get().invoke(null, dto);
         } catch (Exception e) {
             throw new UnprocessableEntityException(e);
         }

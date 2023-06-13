@@ -27,11 +27,9 @@ public class TutorServiceImpl implements TutorService {
     @Override
     public Optional<Usuario> create(CadastroTutorDto tutorDto) {
         Usuario tutor = convert(tutorDto);
-        if (tutorRepository.existsByCpfAndClinica(tutor.getCpf(), tutor.getClinica()))
+        if (Boolean.TRUE.equals(tutorRepository.existsByCpfAndClinica(tutor.getCpf(), tutor.getClinica())))
             return Optional.empty();
-//        Clinica clinica = clinicaRepository.getReferenceById(tutor.getClinica().getId());
-//        tutor.setClinica(clinica.getId());
-        log.info("Tutor cadastrado: " + tutor);
+        log.debug("Tutor cadastrado: " + tutor);
         return Optional.of(tutorRepository.save(tutor));
     }
 

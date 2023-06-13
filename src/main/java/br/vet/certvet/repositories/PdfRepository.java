@@ -13,4 +13,5 @@ public interface PdfRepository {
     Boolean setPublicFileReadingPermission(final String bucket, Boolean allow);
 
     boolean exists(String cnpj, String fileName);
+
 }

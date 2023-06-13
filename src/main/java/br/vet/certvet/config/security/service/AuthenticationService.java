@@ -19,7 +19,7 @@ import java.util.Optional;
 @AllArgsConstructor
 @Slf4j
 public class AuthenticationService implements UserDetailsService {
-    final private static String NOT_AUTHORIZED = "Credenciais inválidas";
+    private static final String NOT_AUTHORIZED = "Credenciais inválidas";
 
     @Autowired
     private UsuarioRepository repository;

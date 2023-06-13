@@ -1,24 +1,31 @@
 package br.vet.certvet.dto.responses;
 
+import lombok.Getter;
+
 import java.util.Optional;
 
+@Getter
 public class Metadata {
-    public Long total;
-    public int limit, page, pages;
-    public String first, last;
-    public Optional<String> prev, next;
+    private static final String PAGINA_PARAM = "?pagina=";
+    private Long total;
+    private int limit;
+    private int page;
+    private int totalPages;
+    private String first;
+    private String last;
+    private Optional<String> prev;
+    private Optional<String> next;
 
     public Metadata(String pathname, int page, int limit, Long total) {
-        int totalPages = (int) Math.ceil((float) total / (float) limit);
 
         this.page = page;
-        this.pages = totalPages;
+        this.totalPages = (int) Math.ceil((float) total / (float) limit);
         this.limit = limit;
         this.total = total;
 
-        this.first = pathname + "?pagina=1";
-        this.last = pathname + "?pagina=" + totalPages;
-        this.next = (page + 1) > totalPages ? Optional.empty() : Optional.of(pathname + "?pagina=" + (page + 1));
-        this.prev = (page - 1) <= 0 ? Optional.empty() : Optional.of(pathname + "?pagina=" + (page - 1));
+        this.first = pathname + PAGINA_PARAM + 1;
+        this.last = pathname + PAGINA_PARAM + totalPages;
+        this.next = (page + 1) > totalPages ? Optional.empty() : Optional.of(pathname + PAGINA_PARAM + (page + 1));
+        this.prev = (page - 1) <= 0 ? Optional.empty() : Optional.of(pathname + PAGINA_PARAM + (page - 1));
     }
 }

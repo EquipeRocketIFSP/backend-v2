@@ -107,7 +107,7 @@ class ProntuarioServiceImplTest {
                         .escoreCorporal("escore corporal")
                         .frequenciaCardiaca(12)
                         .frequenciaRespiratoria(13)
-                        .temperatura(14)
+                        .temperatura(Byte.parseByte("14"))
                         .build()
         );
 
@@ -142,7 +142,7 @@ class ProntuarioServiceImplTest {
                         .escoreCorporal("escore corporal")
                         .frequenciaCardiaca(12)
                         .frequenciaRespiratoria(13)
-                        .temperatura(14)
+                        .temperatura(Byte.parseByte("14"))
                         .build()
         );
         when(prontuarioRepository.findById(any())).thenReturn(
@@ -162,7 +162,7 @@ class ProntuarioServiceImplTest {
                             .escoreCorporal("escore corporal")
                             .frequenciaCardiaca(12)
                             .frequenciaRespiratoria(13)
-                            .temperatura(14)
+                            .temperatura(Byte.parseByte("14"))
                             .build()
                 )
         );
@@ -194,7 +194,7 @@ class ProntuarioServiceImplTest {
                         .escoreCorporal("escore corporal")
                         .frequenciaCardiaca(12)
                         .frequenciaRespiratoria(13)
-                        .temperatura(14)
+                        .temperatura(Byte.parseByte("14"))
                         .build()
         );
         when(prontuarioRepository.findOneByIdAndAnimal(any(), any())).thenReturn(
@@ -214,7 +214,7 @@ class ProntuarioServiceImplTest {
                             .escoreCorporal("escore corporal")
                             .frequenciaCardiaca(12)
                             .frequenciaRespiratoria(13)
-                            .temperatura(14)
+                            .temperatura(Byte.parseByte("14"))
                             .build()
                 )
         );
@@ -344,7 +344,7 @@ class ProntuarioServiceImplTest {
         dto.setEscoreCorporal("Escore");
         dto.setFrequenciaCardiaca(12);
         dto.setFrequenciaRespiratoria(13);
-        dto.setTemperatura(14);
+        dto.setTemperatura(Byte.parseByte("14"));
 
         return dto;
     }
@@ -363,7 +363,7 @@ class ProntuarioServiceImplTest {
         dto.setEscoreCorporal("Escore");
         dto.setFrequenciaCardiaca(6);
         dto.setFrequenciaRespiratoria(7);
-        dto.setTemperatura(8);
+        dto.setTemperatura(Byte.parseByte("8"));
 
         return dto;
     }
@@ -385,7 +385,7 @@ class ProntuarioServiceImplTest {
     private Usuario getTutor() {
         Authority authority = Authority.builder()
                 .id(1L)
-                .authority("TUTOR")
+                .permissao("TUTOR")
                 .build();
         Clinica clinica = Clinica.builder()
                 .cidade("Cidade das Abelhas")
@@ -416,7 +416,7 @@ class ProntuarioServiceImplTest {
     private Usuario getVeterinario() {
         Authority authority = Authority.builder()
                 .id(2L)
-                .authority("VETERINARIO")
+                .permissao("VETERINARIO")
                 .build();
         Clinica clinica = Clinica.builder()
                 .cidade("Cidade das Abelhas")
@@ -453,11 +453,11 @@ class ProntuarioServiceImplTest {
                 .build();
         Authority authorityTutor = Authority.builder()
                 .id(1L)
-                .authority("TUTOR")
+                .permissao("TUTOR")
                 .build();
         Authority authorityVeterinario = Authority.builder()
                 .id(2L)
-                .authority("VETERINARIO")
+                .permissao("VETERINARIO")
                 .build();
         Usuario tutor = Usuario.builder()
                 .id(1L)

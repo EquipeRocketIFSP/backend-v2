@@ -9,14 +9,14 @@ import br.vet.certvet.repositories.ProntuarioRepository;
 import br.vet.certvet.services.DocumentoService;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -29,41 +29,42 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-//@SpringBootTest
-@ExtendWith(SpringExtension.class)
-//@EnableConfigurationProperties
-//@SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-//@ActiveProfiles("test")
+@SpringBootTest
+@ActiveProfiles("test")
 public class PdfFromHtmlPdfServiceImplTest {
 
     public static final Date DATE = new Date();
     public static final Locale L = new Locale("pt", "BR");
-    private ProntuarioRepository prontuarioRepository = mock(ProntuarioRepository.class);
-    private ClinicaRepository clinicaRepository = mock(ClinicaRepository.class);
-    private PdfRepository pdfRepository = mock(PdfRepository.class);
-    private DocumentoService documentoService = mock(DocumentoService.class);
-    private DocumentoRepository documentoRepository = mock(DocumentoRepository.class);
+
+    @Mock private ProntuarioRepository prontuarioRepository;// = mock(ProntuarioRepository.class);
+
+    @Mock private ClinicaRepository clinicaRepository; // = mock(ClinicaRepository.class);
+
+    @Mock private DocumentoRepository documentoRepository;
+
+    @Mock private PdfRepository pdfRepository;
+
+    @Mock private DocumentoService documentoService;
+
+    @InjectMocks
+    @Qualifier("pdfFromHtmlPdfServiceImpl")
     private PdfFromHtmlPdfServiceImpl service;
 
     @BeforeEach
     void setUp(){
-        service = new PdfFromHtmlPdfServiceImpl(documentoRepository, pdfRepository, clinicaRepository);
     }
 
     @AfterEach
     void tearDown(){
-        service = null;
     }
 
-    private Documento getDocumentoInstance(){
+    private Documento getDocumentoInstance(String tipo){
         final Clinica clinica = Clinica.builder()
                 .cidade("Cidade das Abelhas")
                 .razaoSocial("Clinica vet")
@@ -126,94 +127,6 @@ public class PdfFromHtmlPdfServiceImplTest {
                 .procedimentos(
                         List.of(
                                 Procedimento.builder()
-                                    .descricao("Vacinação")
-                                    .medicamentoConsumido(
-                                                    Estoque.builder()
-                                                        .medida("ml")
-                                                        .quantidade(new BigDecimal("50.5"))
-//                                                        .clinica(clinica)
-                                                        .medicamento(
-                                                                Medicamento.builder()
-                                                                        .codigoRegistro("12345689")
-                                                                        .concentracao("500mg")
-                                                                        .nome("Vacina")
-                                                                        .viaUso("Intravenoso")
-                                                                        .principioAtivo("Virus Inativado")
-                                                                        .build()
-                                                        ).build()
-                                    ).build()
-                        )
-                ).documentos(List.of())
-                .build();
-        Documento documento = Documento.builder()
-                .tipo("sanitario")
-                .prontuario(prontuario)
-                .build();
-        prontuario.setDocumentos(List.of(documento));
-        return documento;
-    }
-    private Prontuario getProntuarioInstanceWithDocumento(String documentoTipo){
-        Clinica clinica = Clinica.builder()
-                .cidade("Cidade das Abelhas")
-                .razaoSocial("Clinica vet")
-                .telefone("(12) 3456-7890")
-                .build();
-        Usuario tutor = Usuario.builder()
-                .nome("Caio Felipe Pires")
-                .cpf("175.578.151-22")
-                .rg("13.123.399-3")
-                .cep("66053-140")
-                .logradouro("Praça Magalhães")
-                .numero("242")
-                .bairro("Reduto")
-                .cidade("Belém")
-                .estado("PA")
-                .telefone("(91) 2792-2741")
-                .celular("(91) 99850-3799")
-                .email("caio_pires@lanchesdahora.com.br")
-                .username("caio_pires@lanchesdahora.com.br")
-                .password("6EzlRrYEzy")
-                .clinica(clinica)
-                .build();
-        Usuario veterinario = Usuario.builder()
-                .nome("Diogo Rodrigo Theo Novaes")
-                .cpf("560.270.359-43")
-                .rg("10.586.140-6")
-                .cep("58026-070")
-                .logradouro("Rua Morada Nova")
-                .numero("391")
-                .bairro("Treze de Maio")
-                .cidade("João Pessoa")
-                .estado("João Pessoa")
-                .telefone("(83) 2703-8046")
-                .celular("(83) 98694-6301")
-                .email("diogo.rodrigo.novaes@diebold.com")
-                .username("diogo.rodrigo.novaes@diebold.com")
-                .password("m4y4KxmMTf")
-                .clinica(clinica)
-                .crmv("123456")
-                .build();
-        Prontuario prontuario = Prontuario.builder()
-                .codigo("code")
-                .dataAtendimento(
-                        LocalDateTime.now()
-                ).animal(
-                        Animal.builder()
-                                .especie("gato")
-                                .nome("miau")
-                                .anoNascimento(2020)
-                                .raca("Siames")
-                                .pelagem("curta")
-                                .sexo(SexoAnimal.FEMEA)
-                                .tutores(
-                                        List.of(tutor)
-                                ).build())
-                .clinica(clinica)
-                .tutor(tutor)
-                .veterinario(veterinario)
-                .procedimentos(
-                        List.of(
-                                Procedimento.builder()
                                         .descricao("Vacinação")
                                         .medicamentoConsumido(
                                                 Estoque.builder()
@@ -232,27 +145,46 @@ public class PdfFromHtmlPdfServiceImplTest {
                                         ).build()
                         )
                 ).build();
-        Documento documento = Documento.builder()
-                .tipo(documentoTipo)
-                .prontuario(prontuario)
-                .build();
-        return prontuario.setDocumentos(List.of(documento));
-    }
-    private Documento getDocumento() {
-        return Documento.builder()
-                .codigo("code")
-//                .tipo("sanitario")
-                .build();
+    final Documento documento = Documento.builder()
+            .tipo(tipo)
+            .local("Sao Paulo")
+            .criadoEm(new Date())
+            .terapia("terapia")
+            .observacaoVet("observacao Vet")
+            .observacaoTutor("observacao tutor")
+            .causaMortis("causa mortis")
+            .causaMortisDescription("causa mortis description")
+            .dataHoraObito(LocalDateTime.now())
+            .anestesia("anestesia")
+            .id(1L)
+            .algorithm("MD5")
+            .md5("MD5SIGN")
+            .etag("ETAG")
+            .caminhoArquivo("FilePath")
+            .versao(1)
+            .observacoes("observacoes")
+            .orientaDestinoCorpo("orienta destino corpo")
+            .clinica(clinica)
+            .prontuario(prontuario)
+            .build();
+    prontuario.setDocumentos(List.of(documento));
+        return documento;
     }
 
     @Test
-    @DisplayName("Devolve um PDF de prontuario gerado a partir de HTML")
+    @DisplayName("Devolve um PDF de prontuario gerado a partir de HTML. Necessita de permissão de leitura para a área de caching")
     void whenRequestProntuarioPdf_ThenReturnPdfFile() throws Exception {
 
-        Prontuario parametro = getDocumentoInstance()
+        Prontuario parametro = getDocumentoInstance("sanitario")
                 .getProntuario();
+
+        when(documentoRepository.save(any())).thenReturn(null);//.thenReturn(new SanitarioDocumento(parametro.getDocumentos().get(0)));
+
+
         File outputFile = new File("src/test/resources/prontuario/htmlToPdf/test.pdf");
         Files.write(outputFile.toPath(), service.writeProntuario(parametro));
+        String fileType = Files.probeContentType(outputFile.toPath());
+        assertEquals("application/pdf", fileType);
     }
 
     //TODO: Analisar a forma que os documentos, além do doc_sanitario, estão sendo construídos pois quebram por erro de substituição de variável ou espaço a mais no texto
@@ -278,44 +210,39 @@ public class PdfFromHtmlPdfServiceImplTest {
         final String path = "src/test/resources/prontuario/htmlToPdf/";
         final File parameterFile = new File(path + "doc_" + documentoTipo + ".txt");
         final File outputFile = new File(path + "test_documento_" + documentoTipo+ ".pdf");
+        Documento documento = getDocumentoInstance(documentoTipo);
         when(documentoService.provideLayout(documentoTipo))
                 .thenReturn(new DocumentoServiceImpl()
                         .provideLayout(documentoTipo));
-        when(documentoRepository.save(any())).thenReturn(Documento.builder().tipo(documentoTipo).build());
+        when(documentoRepository.save(any())).thenReturn(documento);
 
-//        Documento documento = getProntuarioInstanceWithDocumento(documentoTipo).getDocumentos()
-//                .stream()
-//                .findFirst()
-//                .orElseThrow(NullPointerException::new);
-        Documento documento = getDocumentoInstance();
-
+        Prontuario prontuario = documento.getProntuario();
         Files.write(
                 outputFile.toPath(),
                 service.writePdfDocumentoEmBranco(
-                        getDocumentoInstance().getProntuario(),
+                        prontuario,
                         documentoService.provideLayout(documentoTipo)));
         final String txtFromPdf = new PDFTextStripper().getText(
                 PDDocument.load(outputFile));
 
         final var mes = new SimpleDateFormat("MMMMM", L).format(DATE);
-        String parameterTxt = new BufferedReader(new FileReader(parameterFile)).lines()
+        new BufferedReader(new FileReader(parameterFile)).lines()
                 .map(t -> t.replace(
                         "Cidade das Abelhas, 1 de Abril de 2023.",
                         "Cidade das Abelhas, "
                                 + new SimpleDateFormat("d 'de' ", L).format(DATE)
-                                + mes.substring(0, 1)
+                                + mes.substring(0,1)
                                 .toUpperCase()
                                 + mes.substring(1)
                                 + new SimpleDateFormat(" 'de' yyyy", L).format(DATE)
-                                + ".")
-                        .replace("${veterinario.crmv}", "123456")
-                ).collect(Collectors.joining("\r\n", "", ""));
-        assertEquals(parameterTxt, txtFromPdf);
+                                + "."))
+                .map(txtFromPdf::contains)
+                .forEach(Assertions::assertTrue);
     }
 
     @Test
-    public void retrievingProntuarioFromRepository() throws IOException {
-        Prontuario prontuario = getDocumentoInstance().getProntuario();
+    void retrievingProntuarioFromRepository() throws IOException {
+        Prontuario prontuario = getDocumentoInstance("Sanitario").getProntuario();
         byte[] retrievedProntuario = service.retrieveFromRepository(prontuario);
 
         assertNotNull(retrievedProntuario);

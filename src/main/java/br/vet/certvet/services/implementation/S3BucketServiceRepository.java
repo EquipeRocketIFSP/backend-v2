@@ -7,13 +7,15 @@ import com.amazonaws.AmazonServiceException;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.*;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
+import com.amazonaws.services.s3.model.DeletePublicAccessBlockRequest;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.StringSubstitutor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 
@@ -21,44 +23,46 @@ import java.util.Optional;
 @Slf4j
 @Service
 public class S3BucketServiceRepository implements PdfRepository {
-final static private String OPEN_POLICY = """
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "PublicReadGetObject",
-            "Effect": "Allow",
-            "Principal": "*",
-            "Action": ["s3:GetObject"],
-            "Resource": ["arn:aws:s3:::${bucketName}/*"]
-        }
-    ]
-}
-""";
+    private static final String OPEN_POLICY = """
+    {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Sid": "PublicReadGetObject",
+                "Effect": "Allow",
+                "Principal": "*",
+                "Action": ["s3:GetObject"],
+                "Resource": ["arn:aws:s3:::${bucketName}/*"]
+            }
+        ]
+    }
+    """.indent(4);
 
     private static final AmazonS3 s3 = AmazonS3ClientBuilder.standard()
             .withRegion(Regions.SA_EAST_1)
             .build();
-    private final String SUCESSFULLY_SAVED = "Arquivo salvo com sucesso: ";
-
-    @Value("app.temp.path")
-    private String RESOURCE_PATH;
+    private static final String SUCESSFULLY_SAVED = "Arquivo salvo com sucesso no bucket: ";
 
     @Override
     public Optional<byte[]> retrieveObject(String cnpj, String keyName) throws IOException {
         String bucketName = getConventionedBucketName(cnpj);
         byte[] arr = null;
         try {
+            setPublicFileReadingPermission(bucketName,true);
             if(!s3.doesBucketExistV2(bucketName)){
                 s3.createBucket(bucketName);
+                var delete = new DeletePublicAccessBlockRequest();
+                delete.setBucketName(bucketName);
+                s3.deletePublicAccessBlock(delete);
             }
             arr = s3.getObject(bucketName, keyName)
                     .getObjectContent()
                     .readAllBytes();
+            log.info(SUCESSFULLY_SAVED + bucketName);
         } catch (AmazonS3Exception e) {
             logAmazonError(e);
         }
-//        log.error("Nenhum arquivo identificado para o nome: " + keyName);
+        log.error("Nenhum arquivo identificado para o nome: " + keyName);
         return Optional.ofNullable(arr);
     }
 
@@ -66,7 +70,7 @@ final static private String OPEN_POLICY = """
     public Boolean setPublicFileReadingPermission(String bucketName, Boolean allow) {
 
         try {
-            if(allow) {
+            if(Boolean.TRUE.equals(allow)) {
                 s3.setBucketPolicy(bucketName, new StringSubstitutor(Map.of("bucketName", bucketName)).replace(OPEN_POLICY));
             } else{
                 s3.deleteBucketPolicy(bucketName);
@@ -93,7 +97,7 @@ final static private String OPEN_POLICY = """
     public ObjectMetadata putObject(String cnpj, String keyName, byte[] fileBinary) {
         final String bucketName = getConventionedBucketName(cnpj);
         log.info("bucketName: " + bucketName + ", keyName: " + keyName);
-        try{
+        try {
             if(!s3.doesBucketExistV2(bucketName)){
                 s3.createBucket(bucketName);
                 var delete = new DeletePublicAccessBlockRequest();
@@ -107,11 +111,13 @@ final static private String OPEN_POLICY = """
 
         try {
             setPublicFileReadingPermission(bucketName, true);
-            log.debug("s3.doesObjectExist(bucketName, keyName): " + s3.doesObjectExist(bucketName, keyName));
-            if (s3.doesObjectExist(bucketName, keyName)) {
+            boolean exists = s3.doesObjectExist(bucketName, keyName);
+            log.debug("s3.doesObjectExist(bucketName, keyName): " + exists);
+            if (exists) {
                 log.info("Arquivo identificado: " + keyName + ". Não será gravado");
-                log.debug("s3.getObject(bucketName, keyName): " + s3.getObject(bucketName, keyName));
-                return s3.getObject(bucketName, keyName).getObjectMetadata();
+                var object = s3.getObject(bucketName, keyName);
+                log.debug("s3.getObject(bucketName, keyName): " + object);
+                return object.getObjectMetadata();
             }
         } catch (AmazonServiceException e) {
             log.warn("Arquivo não identificado. Gravando...");
@@ -131,6 +137,7 @@ final static private String OPEN_POLICY = """
     }
 
     private static void logAmazonError(AmazonServiceException e) {
+
         log.error("Error Message:    " + e.getMessage());
         log.error("HTTP Status Code: " + e.getStatusCode());
         log.error("AWS Error Code:   " + e.getErrorCode());
@@ -141,7 +148,7 @@ final static private String OPEN_POLICY = """
     private static ObjectMetadata getObjectMetadata(byte[] storedFile) {
         ObjectMetadata o = new ObjectMetadata();
         o.setContentType("application/pdf");
-        o.setContentLength((long) storedFile.length);
+        o.setContentLength(storedFile.length);
         return o;
     }
 

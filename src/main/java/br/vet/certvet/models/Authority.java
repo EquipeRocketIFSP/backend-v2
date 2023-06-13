@@ -1,7 +1,6 @@
 package br.vet.certvet.models;
 
 import lombok.*;
-import org.hibernate.Hibernate;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
@@ -22,7 +21,7 @@ public class Authority implements GrantedAuthority {
     private Long id;
 
     @Column(unique = true)
-    private String authority;
+    private String permissao;
 
     @ManyToMany(mappedBy = "authorities")
     @ToString.Exclude
@@ -33,19 +32,28 @@ public class Authority implements GrantedAuthority {
     }
 
     public Authority(String authority) {
-        this.authority = authority;
+        this.permissao = authority;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
+
         Authority authority = (Authority) o;
-        return id != null && Objects.equals(id, authority.id);
+
+        if (!id.equals(authority.id)) return false;
+        if (!Objects.equals(permissao, authority.permissao)) return false;
+        return Objects.equals(users, authority.users);
     }
 
     @Override
     public int hashCode() {
         return getClass().hashCode();
+    }
+
+    @Override
+    public String getAuthority() {
+        return permissao;
     }
 }

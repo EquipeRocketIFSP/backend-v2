@@ -7,6 +7,8 @@ import br.vet.certvet.dto.requests.prontuario.SuspeitaDiagnosticaDTO;
 import br.vet.certvet.models.Prontuario;
 
 public class ProntuarioDTOMapper {
+
+    private ProntuarioDTOMapper(){}
     public static Prontuario assignToModel(ProntuarioDTO dto, Prontuario prontuario) {
         return DTOMapper.assignToModel(dto, prontuario, ProntuarioDTOMapper.class);
     }

@@ -1,6 +1,6 @@
 package br.vet.certvet.services.implementation;
 
-import br.vet.certvet.contracts.apis.ipcBr.IcpResponse;
+import br.vet.certvet.contracts.apis.ipc_br.IcpResponse;
 import br.vet.certvet.exceptions.*;
 import br.vet.certvet.helpers.Https;
 import br.vet.certvet.models.Documento;
@@ -40,36 +40,33 @@ import java.util.*;
 @Slf4j
 public class PdfFromHtmlPdfServiceImpl implements PdfService {
 
-    final static String ERRO = "{\"Error\":\"E022: Não foi possível baixar o arquivo da URL fornecida\"}";
+    private static final String ERRO = "{\"Error\":\"E022: Não foi possível baixar o arquivo da URL fornecida\"}";
 
     @Value("${app.default.pdf.password}")
-    private String OWNER_PASSWORD;
+    private String ownerPassword;
+    @Autowired
+    private DocumentoRepository documentoRepository;
 
-    private final DocumentoRepository documentoRepository;
+    @Autowired
+    private PdfRepository pdfRepository;
 
-    private final PdfRepository pdfRepository;
-
-    private final ClinicaRepository clinicaRepository;
+    @Autowired
+    private ClinicaRepository clinicaRepository;
 
     @Autowired
     private static UsuarioRepository usuarioRepository;
 
-    public PdfFromHtmlPdfServiceImpl(
-            DocumentoRepository documentoRepository,
-            PdfRepository pdfRepository,
-            ClinicaRepository clinicaRepository
-    ) {
-        this.documentoRepository = documentoRepository;
-        this.pdfRepository = pdfRepository;
-        this.clinicaRepository = clinicaRepository;
-    }
-
-
     @Override
-    public byte[] writeProntuario(Prontuario prontuario) throws Exception {
+    public byte[] writeProntuario(Prontuario prontuario) {
         final String layoutFile = "src/main/resources/documents/prontuario/ProntuarioLayout.html";
-//        String fileName = prontuario.getCodigo() + ".pdf";
-        String layout = Files.readString(Path.of(layoutFile));
+        String layout;
+        try{
+            layout = Files.readString(Path.of(layoutFile));
+        }catch (IOException e){
+            log.error(e.getLocalizedMessage());
+            log.error(Arrays.toString(e.getStackTrace()));
+            throw new EscritaProntuarioPdfException("Erro ao realizar ao ler o documento de referência para geração do pdf de Prontuário.");
+        }
         layout = ProntuarioPdfHelper.fillLayoutFieldsForProntuario(prontuario, layout);
         return transformTxtToXmlToPdf(layout);
     }
@@ -80,10 +77,17 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
             Doc documentoTipo
     ) throws
             DocumentoNotPersistedException,
-            OptimisticLockingFailureException,
-            IOException {
+            OptimisticLockingFailureException {
         final String from = "src/main/resources/documents/consentimento/ConsentimentoLayoutV2.html";
-        String layout = Files.readString(Path.of(from));
+
+        String layout;
+        try{
+            layout = Files.readString(Path.of(from));
+        }catch (IOException e){
+            log.error(e.getLocalizedMessage());
+            log.error(Arrays.toString(e.getStackTrace()));
+            throw new EscritaDocumentoPdfException("Erro ao realizar ao ler o documento de referência para geração do pdf de Documento de Autorização/Consentimento.");
+        }
 
         Documento documento = documentoRepository.save(documentoTipo.getDocumento().fromProntuario(prontuario));
 //        documento.prontuario(prontuario);
@@ -93,13 +97,9 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
         return transformTxtToXmlToPdf(layout);
     }
 
-    private byte[] transformTxtToXmlToPdf(String htmlBase) throws IOException {
+    private byte[] transformTxtToXmlToPdf(String htmlBase) {
         Document document = Jsoup.parse(htmlBase, "UTF-8");
         document.outputSettings().syntax(Document.OutputSettings.Syntax.xml);
-        return generatePdfFromHtml(document);
-    }
-
-    private static byte[] generatePdfFromHtml(Document document) throws IOException {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             ITextRenderer renderer = new ITextRenderer();
             SharedContext sharedContext = renderer.getSharedContext();
@@ -110,6 +110,10 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
             renderer.layout();
             renderer.createPDF(outputStream);
             return outputStream.toByteArray();
+        }catch (IOException e){
+            log.error(e.getLocalizedMessage());
+            log.error(Arrays.toString(e.getStackTrace()));
+            throw new RendezizacaoPDFException("Falha ao renderizar o PDF. Causa: " + e.getCause());
         }
     }
 
@@ -128,7 +132,7 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
                 try {
                     stamper.setEncryption(
                             getTutorPass(prontuario).getBytes(),
-                            OWNER_PASSWORD.getBytes(),
+                            ownerPassword.getBytes(),
                             PdfWriter.ALLOW_PRINTING,
                             PdfWriter.ENCRYPTION_AES_128
                     );
@@ -140,14 +144,21 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
         }
     }
 
+    /**
+     * Utiliza o serviço do iti para validar assinaturas.
+     * ex.: https://validar.iti.gov.br/validar?signature_files=https://certvet-signed.s3.us-east-1.amazonaws.com/test_documento_sanitario_assinado_assinado.pdf
+     * @param bucket
+     * @param fileName
+     * @return
+     * @throws IOException
+     * @throws PdfNaoReconhecidoException
+     */
     @Override
-    public IcpResponse getIcpBrValidation(final String bucket, final String fileName) throws IOException, PdfNaoReconhecidoException {
+    public IcpResponse getIcpBrValidation(final String bucket, final String fileName) throws PdfNaoReconhecidoException {
         final String requestUrl = getSignValidationUrl(bucket, fileName);
-//        String requestUrl = "https://validar.iti.gov.br/validar?signature_files=https://certvet-signed.s3.us-east-1.amazonaws.com/test_documento_sanitario_assinado_assinado.pdf";
         String json = ERRO;
         try {
-            if(pdfRepository.setPublicFileReadingPermission(bucket, true)) {// Libera objeto para que seja acessado publicamente na AWS
-//                Thread.sleep(1000);
+            if(Boolean.TRUE.equals(pdfRepository.setPublicFileReadingPermission(bucket, true))) {// Libera objeto para que seja acessado publicamente na AWS
                 json = Https.get(requestUrl, Map.of("Content-Type", "*/*", "Cache-Control", "no-cache"));
             } else {
                 throw new AwsPermissionDeniedException("A requisição para mudança de perfil de acesso foi negada pelo provedor");
@@ -201,18 +212,23 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
     }
 
     @Override
-    public Optional<byte[]> writePrescricao(Prontuario prontuario) throws IOException {
+    public Optional<byte[]> writePrescricao(Prontuario prontuario) {
         final String layoutFile = "src/main/resources/documents/prontuario/PrescricaoLayout.html";
-//        String fileName = prontuario.getCodigo() + ".pdf";
-        String layout = Files.readString(Path.of(layoutFile));
+        String layout;
+        try{
+            layout = Files.readString(Path.of(layoutFile));
+        }catch (IOException e){
+            log.error(e.getLocalizedMessage());
+            log.error(Arrays.toString(e.getStackTrace()));
+            throw new EscritaPrescricaoPdfException("Erro ao ler o documento de referência para geração do pdf da prescrição.");
+        }
         layout = ProntuarioPdfHelper.replaceWithDivsForPrescricao(layout, prontuario.getPrescricoes());
-        layout = ProntuarioPdfHelper.fillLayoutFieldsForPrescricao(prontuario, layout);
+        layout = ProntuarioPdfHelper.fillLayoutFieldsForPrescricao(layout, prontuario);
         return Optional.of(transformTxtToXmlToPdf(layout));
     }
 
     @Override
     public ObjectMetadata savePrescricaoPdfInBucket(final Prontuario prontuario, final int version, final byte[] medicacaoPrescritaPdf) {
-//        List<Prescricao> prescricoes = prontuario.getPrescricoes(version);
         return pdfRepository.putObject(
                 prontuario.getClinica().getCnpj(),
                 ProntuarioServiceImpl.writeNomeArquivoPrescricao(prontuario, version),

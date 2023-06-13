@@ -12,7 +12,6 @@ import br.vet.certvet.models.Usuario;
 import br.vet.certvet.repositories.AnimalRepository;
 import br.vet.certvet.services.AnimalService;
 import br.vet.certvet.services.UsuarioService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -81,14 +80,14 @@ public class AnimalServiceImpl implements AnimalService {
                 this.animalRepository.findAllByNomeContainingAndTutores(pageable, search, tutor);
 
         List<AnimalResponseDto> animalResponseDtos = animais.stream()
-                .map(AnimalResponseDto::new)
+                .map(AnimalResponseDto::of)
                 .toList();
 
         return new PaginatedResponse<>(metadata, animalResponseDtos);
     }
 
     private static void checkTutorAuthority(List<Usuario> tutores, UsuarioService usuarioService) throws ForbiddenException {
-        tutores.forEach((tutor) -> {
+        tutores.forEach(tutor -> {
             Optional<Authority> response = usuarioService.findUsuarioAuthority(tutor, "TUTOR");
 
             if (response.isEmpty())

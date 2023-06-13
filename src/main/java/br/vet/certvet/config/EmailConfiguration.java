@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.stereotype.Component;
 
 import java.util.Properties;
 
@@ -30,9 +29,6 @@ public class EmailConfiguration {
 
     @Value("${spring.mail.properties.mail.smtp.starttls.enable}")
     private String mailServerStartTls;
-
-//    @Value("${spring.mail.templates.path}")
-//    private String mailTemplatesPath;
 
     @Bean
     public JavaMailSender getJavaMailSender() {

@@ -11,12 +11,11 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.authentication.*;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
 @NoArgsConstructor
@@ -41,7 +40,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http
 //                .requiresChannel().anyRequest().requiresSecure().and()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/error",
+                .antMatchers(HttpMethod.GET,
+                        "/error",
                         "/hello",
                         "/ping",
                         "/swagger-ui.html",
@@ -53,7 +53,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         "/api/usuario/clinicas/*",
                         "/api/usuario/clinicas/**"
                 ).permitAll()
-                .antMatchers(HttpMethod.POST, "/api/auth/*",
+                .antMatchers(HttpMethod.POST,
+                        "/api/auth/*",
                         "/api/auth/**",
                         "/api/clinica/*",
                         "/api/clinica/**",
@@ -68,18 +69,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and().csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().addFilterBefore(new TokenAuthenticationFilter(tokenService, repository), UsernamePasswordAuthenticationFilter.class)
-//                .formLogin().loginPage("/api/auth").permitAll().successHandler(loginSuccessHandler()).failureHandler(loginFailureHandler()).and()
-//                .logout().permitAll().logoutSuccessUrl("/api/auth")
                 ;
     }
-//
-//    private AuthenticationSuccessHandler loginSuccessHandler() {
-//        return new SimpleUrlAuthenticationSuccessHandler();
-//    }
-//
-//    private AuthenticationFailureHandler loginFailureHandler() {
-//        return new SimpleUrlAuthenticationFailureHandler();
-//    }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -87,12 +78,4 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .passwordEncoder(new BCryptPasswordEncoder());
     }
 
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-        super.configure(web);
-    }
-
-//    public static void main(String[] args) {
-//        System.out.println(new BCryptPasswordEncoder().encode("123"));
-//    }
 }

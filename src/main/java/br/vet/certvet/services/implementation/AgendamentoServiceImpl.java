@@ -100,7 +100,8 @@ public class AgendamentoServiceImpl implements AgendamentoService {
             Usuario veterinario,
             Optional<Agendamento> agendamentoToBeRescheduled
     ) throws ConflictException {
-        LocalDateTime dataInicial = dto.dataConsulta().withMinute(0), dataFinal = dataInicial.plusHours(1);
+        LocalDateTime dataInicial = dto.dataConsulta().withMinute(0);
+        LocalDateTime dataFinal = dataInicial.plusHours(1);
 
         Optional<Agendamento> response = this.agendamentoRepository.findByAnimalAndDataConsultaBetween(animal, dataInicial, dataFinal);
 

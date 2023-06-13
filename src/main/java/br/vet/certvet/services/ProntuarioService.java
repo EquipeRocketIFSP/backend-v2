@@ -3,7 +3,10 @@ package br.vet.certvet.services;
 import br.vet.certvet.dto.requests.prontuario.ProntuarioDTO;
 import br.vet.certvet.dto.responses.PaginatedResponse;
 import br.vet.certvet.dto.responses.ProntuarioResponseDTO;
-import br.vet.certvet.models.*;
+import br.vet.certvet.models.Animal;
+import br.vet.certvet.models.Documento;
+import br.vet.certvet.models.Prontuario;
+import br.vet.certvet.models.Usuario;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import org.springframework.stereotype.Service;
 
@@ -43,7 +46,6 @@ public interface ProntuarioService {
     List<Documento> getDocumentosFromProntuarioByTipo(String prontuarioId, String tipo);
 
     Documento attachDocumentoAndPdfPersist(Documento documento, ObjectMetadata pdf, int version) throws SQLException;
-
     Optional<Prontuario> findByCodigo(String codigo);
 
 }

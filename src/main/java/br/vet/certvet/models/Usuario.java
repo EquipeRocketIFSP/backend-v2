@@ -1,6 +1,8 @@
 package br.vet.certvet.models;
 
-import br.vet.certvet.dto.requests.*;
+import br.vet.certvet.dto.requests.FuncionarioRequestDto;
+import br.vet.certvet.dto.requests.UsuarioRequestDto;
+import br.vet.certvet.dto.requests.VeterinarioRequestDto;
 import br.vet.certvet.models.contracts.Fillable;
 import lombok.*;
 import org.hibernate.Hibernate;
@@ -104,7 +106,7 @@ public class Usuario implements UserDetails, Fillable<UsuarioRequestDto> {
     private List<Authority> authorities;
     private String email;
 
-    @ManyToMany
+    @ManyToMany(mappedBy = "assinadores")
     @ToString.Exclude
     private List<Documento> documentosAssinados;
 
@@ -115,7 +117,7 @@ public class Usuario implements UserDetails, Fillable<UsuarioRequestDto> {
             inverseJoinColumns = @JoinColumn(name = "prescicao_id", referencedColumnName = "id"),
             uniqueConstraints = { @UniqueConstraint(columnNames = {"users_id", "prescicao_id"}) }
     )
-    private List<Prescricao> prescricoesAssinadas;
+    private List<Prescricao> prescricoesAssinadas = new ArrayList<>();
 
     public void setDocumentosAssinados(List<Documento> documentosAssinados) {
         this.documentosAssinados = documentosAssinados;
@@ -148,11 +150,13 @@ public class Usuario implements UserDetails, Fillable<UsuarioRequestDto> {
         if (!(dto instanceof FuncionarioRequestDto))
             this.password = null;
 
-        if (dto instanceof FuncionarioRequestDto && ((FuncionarioRequestDto) dto).getSenha() != null && !((FuncionarioRequestDto) dto).getSenha().isEmpty())
-            this.setPassword(((FuncionarioRequestDto) dto).getSenha());
+        if (dto instanceof FuncionarioRequestDto f
+                &&  f.getSenha() != null
+                && !f.getSenha().isEmpty())
+            this.setPassword(f.getSenha());
 
-        if (dto instanceof VeterinarioRequestDto)
-            this.crmv = ((VeterinarioRequestDto) dto).getCrmv();
+        if (dto instanceof VeterinarioRequestDto v)
+            this.crmv = v.getCrmv();
     }
 
     @Override

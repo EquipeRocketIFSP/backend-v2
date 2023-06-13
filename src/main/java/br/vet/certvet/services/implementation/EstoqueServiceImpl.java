@@ -1,20 +1,29 @@
 package br.vet.certvet.services.implementation;
 
-import br.vet.certvet.dto.requests.*;
-import br.vet.certvet.dto.responses.*;
+import br.vet.certvet.dto.requests.EstoqueRequestDto;
+import br.vet.certvet.dto.responses.EstoqueResponseDto;
+import br.vet.certvet.dto.responses.Metadata;
+import br.vet.certvet.dto.responses.PaginatedResponse;
 import br.vet.certvet.enums.TransacaoStatus;
-import br.vet.certvet.exceptions.*;
-import br.vet.certvet.models.*;
-import br.vet.certvet.repositories.*;
+import br.vet.certvet.exceptions.ConflictException;
+import br.vet.certvet.exceptions.ForbiddenException;
+import br.vet.certvet.exceptions.NotFoundException;
+import br.vet.certvet.models.Estoque;
+import br.vet.certvet.models.EstoqueTransacao;
+import br.vet.certvet.models.Medicamento;
+import br.vet.certvet.models.Usuario;
+import br.vet.certvet.repositories.EstoqueRepository;
+import br.vet.certvet.repositories.EstoqueTransacaoRepository;
 import br.vet.certvet.services.EstoqueService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EstoqueServiceImpl implements EstoqueService {

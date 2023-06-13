@@ -1,28 +1,31 @@
 package br.vet.certvet.services.implementation;
 
-import br.vet.certvet.dto.responses.*;
+import br.vet.certvet.dto.requests.prontuario.ProntuarioDTO;
+import br.vet.certvet.dto.responses.Metadata;
+import br.vet.certvet.dto.responses.PaginatedResponse;
+import br.vet.certvet.dto.responses.ProntuarioResponseDTO;
 import br.vet.certvet.enums.ProntuarioStatus;
 import br.vet.certvet.exceptions.*;
 import br.vet.certvet.models.*;
-import br.vet.certvet.repositories.*;
-import br.vet.certvet.services.*;
-import org.springframework.data.domain.*;
-import br.vet.certvet.dto.requests.prontuario.ProntuarioDTO;
 import br.vet.certvet.models.factories.ProntuarioFactory;
 import br.vet.certvet.models.mappers.ProntuarioDTOMapper;
+import br.vet.certvet.repositories.*;
+import br.vet.certvet.services.DocumentoService;
+import br.vet.certvet.services.EstoqueService;
+import br.vet.certvet.services.PdfService;
+import br.vet.certvet.services.ProntuarioService;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.io.IOException;
-
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -85,14 +88,13 @@ public class ProntuarioServiceImpl implements ProntuarioService {
     public Prontuario save(Prontuario prontuario) {
         if(null != prontuario.getCodigo())
             return prontuarioRepository.save(prontuario);
-//        log.info("prontuario: " + prontuario);
         Optional<Clinica> clinica = clinicaRepository.findById(prontuario.getClinica().getId());
         if (clinica.isEmpty()) throw new ClinicaNotFoundException("Clínica não cadastrada ou não identificada");
         Optional<Usuario> tutor = tutorRepository.findById(prontuario.getTutor().getId());
         if (tutor.isEmpty()) throw new TutorNotFoundException("Tutor não cadastrado ou não identificado");
-        Optional<Animal> animal = animalRepository.findByTutores_idAndNome(tutor.get().getId(), prontuario.getAnimal().getNome());
+        Optional<Animal> animal = animalRepository.findByTutoridAndNome(tutor.get().getId(), prontuario.getAnimal().getNome());
         if (animal.isEmpty()) throw new AnimalNotFoundException("Animal não cadastrado ou não identificado");
-//        log.debug("Iniciando persistência do prontuário");
+        log.debug("Iniciando persistência do prontuário");
 //        Documento doc = Documento.builder()
 //                .codigo(codigo)
 //                .versao(1)
@@ -222,7 +224,7 @@ public class ProntuarioServiceImpl implements ProntuarioService {
 
     @Override
     public List<Documento> getDocumentosFromProntuarioByTipo(String prontuarioCodigo, String tipo) {
-        return prontuarioRepository.findAllByCodigoAndDocumentos_tipo(prontuarioCodigo, tipo);
+        return prontuarioRepository.findAllByCodigoAndDocumentoTipo(prontuarioCodigo, tipo);
     }
 
     @Override
@@ -250,7 +252,6 @@ public class ProntuarioServiceImpl implements ProntuarioService {
     }
 
     public static String writeNomeArquivo(Documento documento, int version) {
-        //TODO: Verificar se como tornar dinâmico para versionamento
         return new StringBuilder()
                 .append(documento.getProntuario().getCodigo())
                 .append("-doc-")

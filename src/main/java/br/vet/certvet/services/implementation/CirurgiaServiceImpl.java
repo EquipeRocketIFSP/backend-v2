@@ -1,12 +1,16 @@
 package br.vet.certvet.services.implementation;
 
-import br.vet.certvet.dto.requests.prontuario.cirurgia.*;
+import br.vet.certvet.dto.requests.prontuario.cirurgia.CirurgiaDTO;
+import br.vet.certvet.dto.requests.prontuario.cirurgia.MedicamentoCirurgiaDTO;
 import br.vet.certvet.enums.ProntuarioStatus;
 import br.vet.certvet.models.*;
 import br.vet.certvet.models.factories.CirurgiaFactory;
 import br.vet.certvet.models.mappers.CirurgiaDTOMapper;
-import br.vet.certvet.repositories.*;
-import br.vet.certvet.services.*;
+import br.vet.certvet.repositories.CirurgiaEstoqueMedicamentoRepository;
+import br.vet.certvet.repositories.CirurgiaRepository;
+import br.vet.certvet.services.CirurgiaService;
+import br.vet.certvet.services.EstoqueService;
+import br.vet.certvet.services.MedicamentoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +22,7 @@ import java.util.Optional;
 
 @Service
 public class CirurgiaServiceImpl implements CirurgiaService {
+    private static final String DO_ANIMAL = " do animal ";
     @Autowired
     private CirurgiaRepository cirurgiaRepository;
 
@@ -42,12 +47,15 @@ public class CirurgiaServiceImpl implements CirurgiaService {
 
         this.removeMedications(dto, cirurgia, prontuario);
 
-        dto.getMedicamentos().forEach((medicamentoCirurgiaDTO) -> {
+        dto.getMedicamentos().forEach(medicamentoCirurgiaDTO -> {
             Optional<CirurgiaEstoqueMedicamento> estoqueMedicamentoOptional = cirurgia.getMedicamentosConsumidos()
                     .stream()
-                    .filter((cirurgiaEstoqueMedicamento) -> {
-                        return cirurgiaEstoqueMedicamento.getEstoque().getId().equals(medicamentoCirurgiaDTO.getLote());
-                    }).findFirst();
+                    .filter(
+                            cirurgiaEstoqueMedicamento -> cirurgiaEstoqueMedicamento.getEstoque()
+                                    .getId()
+                                    .equals(
+                                            medicamentoCirurgiaDTO.getLote()))
+                    .findFirst();
 
             final BigDecimal currentDose = medicamentoCirurgiaDTO.getDose();
 
@@ -65,7 +73,7 @@ public class CirurgiaServiceImpl implements CirurgiaService {
     private void removeMedications(CirurgiaDTO dto, Cirurgia cirurgia, Prontuario prontuario) {
         List<CirurgiaEstoqueMedicamento> medicamentosToRemove = cirurgia.getMedicamentosConsumidos()
                 .stream()
-                .filter((cirurgiaEstoqueMedicamento) -> {
+                .filter(cirurgiaEstoqueMedicamento -> {
                     boolean notFound = true;
 
                     for (MedicamentoCirurgiaDTO medicamentoCirurgiaDTO : dto.getMedicamentos()) {
@@ -78,12 +86,16 @@ public class CirurgiaServiceImpl implements CirurgiaService {
                     return notFound;
                 }).toList();
 
-        medicamentosToRemove.forEach((cirurgiaEstoqueMedicamento) -> {
+        medicamentosToRemove.forEach(cirurgiaEstoqueMedicamento -> {
             final Estoque estoque = cirurgiaEstoqueMedicamento.getEstoque();
             final BigDecimal dose = cirurgiaEstoqueMedicamento.getDose();
-            final String reason = new StringBuilder("Correção no prontuário ").append(prontuario.getCodigo())
-                    .append(" do animal ").append(prontuario.getAnimal().getNome()).append(". ")
-                    .append("Uso do medicamento foi retificado.")
+            final String reason = new StringBuilder("Correção no prontuário ")
+                    .append(prontuario.getCodigo())
+                    .append(DO_ANIMAL)
+                    .append(
+                            prontuario.getAnimal()
+                                    .getNome())
+                    .append(". Uso do medicamento foi retificado.")
                     .toString();
 
             this.estoqueService.add(dose, reason, estoque, prontuario.getVeterinario());
@@ -101,7 +113,7 @@ public class CirurgiaServiceImpl implements CirurgiaService {
 
         final String reason = new StringBuilder("Usado na cirurgia ").append(prontuario.getCirurgia().getDescricao())
                 .append(" no prontuário ").append(prontuario.getCodigo())
-                .append(" do animal ").append(prontuario.getAnimal().getNome()).append(". ")
+                .append(DO_ANIMAL).append(prontuario.getAnimal().getNome()).append(". ")
                 .append("Quantidade atualizada no prontuário: ").append(currentDose).append(" ")
                 .append("Quantidade anterior no prontuário: ").append(previousDose).append(". ")
                 .toString();
@@ -120,7 +132,7 @@ public class CirurgiaServiceImpl implements CirurgiaService {
                 .append(cirurgia.getDescricao())
                 .append(" no prontuário ")
                 .append(prontuario.getCodigo())
-                .append(" do animal ")
+                .append(DO_ANIMAL)
                 .append(prontuario.getAnimal().getNome()).toString();
 
         final CirurgiaEstoqueMedicamento cirurgiaEstoqueMedicamento = new CirurgiaEstoqueMedicamento()
