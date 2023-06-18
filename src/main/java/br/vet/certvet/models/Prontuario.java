@@ -9,7 +9,10 @@ import javax.persistence.*;
 import java.text.DateFormatSymbols;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -92,13 +95,16 @@ public class Prontuario {
 
     private LocalDateTime dataAtendimento;
 
+    @Setter(AccessLevel.NONE)
+    private String codigo;
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "animal_id", nullable = false)
     @ToString.Exclude
     private Animal animal;
 
     @ManyToOne
-    @JoinColumn(name = "usuario_id")
+    @JoinColumn(name = "veterinario_id")
     @ToString.Exclude
     private Usuario veterinario;
 
@@ -106,17 +112,15 @@ public class Prontuario {
     @ToString.Exclude
     private Cirurgia cirurgia;
 
-    @OneToMany(mappedBy = "prontuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "prontuario")
     @ToString.Exclude
     @Setter(AccessLevel.NONE)
-    private List<Procedimento> procedimentos = new ArrayList<>();
+    private List<Procedimento> procedimentos;
 
-    @OneToMany(mappedBy = "prontuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "prontuario")
     @ToString.Exclude
     @Setter(AccessLevel.NONE)
-    private List<Exame> exames = new ArrayList<>();
-    @Setter(AccessLevel.NONE)
-    private String codigo;
+    private List<Exame> exames;
 
     @ManyToOne
     @Accessors(chain = true)
@@ -127,16 +131,10 @@ public class Prontuario {
     @OneToMany(mappedBy = "id")
     @ToString.Exclude
     @Setter(AccessLevel.NONE)
-    private List<Documento> documentos = new ArrayList<>();
+    private List<Documento> documentos;
     private Date criadoEm;
 
-    @OneToMany
-    @JoinTable(
-            name = "prontuario_prescricoes",
-            joinColumns = @JoinColumn(name = "prontuario_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "prescricao_id", referencedColumnName = "id"),
-            uniqueConstraints = { @UniqueConstraint(columnNames = {"prontuario_id", "prescricao_id"}) }
-    )
+    @OneToMany(mappedBy = "id")
     @ToString.Exclude
     private List<Prescricao> prescricoes;
 
@@ -145,8 +143,9 @@ public class Prontuario {
         return this;
     }
 
-    public void setProcedimentos(List<Procedimento> procedimentos) {
+    public Prontuario setProcedimentos(List<Procedimento> procedimentos) {
         this.procedimentos = procedimentos;
+        return this;
     }
 
     public static String createCodigo(LocalDateTime now) {

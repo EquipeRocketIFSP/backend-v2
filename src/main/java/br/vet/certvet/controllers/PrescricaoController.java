@@ -121,7 +121,7 @@ public class PrescricaoController extends BaseController {
                                 .stream()
                                 .map(prescricao -> {
                                     if (prescricao.getVersao() == version) {
-                                        prescricao.setAssinador(
+                                        prescricao.setVeterinarioAssinador(
                                                 assinadores.stream()
                                                         .findFirst()
                                                         .orElseThrow(() -> new AssinadorNaoCadastradoException("Não foi possível identificar uma a assinatura válida."))

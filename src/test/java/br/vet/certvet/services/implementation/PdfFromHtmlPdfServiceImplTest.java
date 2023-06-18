@@ -164,7 +164,7 @@ public class PdfFromHtmlPdfServiceImplTest {
             .versao(1)
             .observacoes("observacoes")
             .orientaDestinoCorpo("orienta destino corpo")
-            .clinica(clinica)
+//            .clinica(clinica)
             .prontuario(prontuario)
             .build();
     prontuario.setDocumentos(List.of(documento));

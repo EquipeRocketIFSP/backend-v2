@@ -29,11 +29,21 @@ public class Procedimento {
     private LocalDate dataAplicacao;
 
     @ManyToOne
-    @JoinColumn(name = "prontuario_id")
+    @JoinTable(
+            name = "prontuario_procedimentos",
+            joinColumns = @JoinColumn(name = "prontuario_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "procedimentos_id", referencedColumnName = "id"),
+            uniqueConstraints = { @UniqueConstraint(columnNames = {"prontuario_id", "procedimentos_id"}) }
+    )
     private Prontuario prontuario;
 
     @ManyToOne
-    @JoinColumn(name = "estoque_id")
+    @JoinTable(
+            name = "estoque_procedimentos",
+            joinColumns = @JoinColumn(name = "procedimento_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "estoque_id", referencedColumnName = "id"),
+            uniqueConstraints = { @UniqueConstraint(columnNames = {"estoque_id", "procedimento_id"}) }
+    )
     private Estoque medicamentoConsumido;
 
     private BigDecimal doseMedicamento;

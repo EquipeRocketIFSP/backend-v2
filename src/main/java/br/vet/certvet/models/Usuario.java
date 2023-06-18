@@ -98,10 +98,10 @@ public class Usuario implements UserDetails, Fillable<UsuarioRequestDto> {
 
     @ToString.Exclude
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "Usuario_authorities",
+    @JoinTable(name = "Usuario_responsabilidades",
             joinColumns = @JoinColumn(name = "users_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "authorities_id", referencedColumnName = "id"),
-            uniqueConstraints = { @UniqueConstraint(columnNames = {"users_id", "authorities_id"}) }
+            inverseJoinColumns = @JoinColumn(name = "responsabilidades_id", referencedColumnName = "id"),
+            uniqueConstraints = { @UniqueConstraint(columnNames = {"users_id", "responsabilidades_id"}) }
     )
     private List<Authority> authorities;
     private String email;
@@ -111,13 +111,8 @@ public class Usuario implements UserDetails, Fillable<UsuarioRequestDto> {
     private List<Documento> documentosAssinados;
 
     @ToString.Exclude
-    @OneToMany
-    @JoinTable(name = "Usuario_prescricoesAssinadas",
-            joinColumns = @JoinColumn(name = "users_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "prescicao_id", referencedColumnName = "id"),
-            uniqueConstraints = { @UniqueConstraint(columnNames = {"users_id", "prescicao_id"}) }
-    )
-    private List<Prescricao> prescricoesAssinadas = new ArrayList<>();
+    @OneToMany(mappedBy = "veterinarioAssinador")
+    private List<Prescricao> prescricoesAssinadas;
 
     public void setDocumentosAssinados(List<Documento> documentosAssinados) {
         this.documentosAssinados = documentosAssinados;

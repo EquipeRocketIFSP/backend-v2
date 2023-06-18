@@ -19,7 +19,7 @@ public class Exame {
     @Id
     @Setter(AccessLevel.NONE)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column(nullable = false)
     private Long id;
 
     @Column(nullable = false)
@@ -38,8 +38,22 @@ public class Exame {
     private String imagemRegiaoCervical;
     private String imagemRegiaoAbdomen;
     private String imagemRegiaoMToracicos;
+    private String imagemRegiaoMPelvicos;
+    private String imagemObsRegioes;
+    private boolean imagemRegiaoCabeca;
+    private boolean imagemRegiaoTorax;
 
-    @Override
+    @ManyToOne
+    @JoinTable(
+            name = "prontuario_exames",
+            joinColumns = @JoinColumn(name = "exames_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "prontuario_id", referencedColumnName = "id"),
+            uniqueConstraints = { @UniqueConstraint(columnNames = {"prontuario_id", "exames_id"}) }
+    )
+//    @JsonBackReference
+    private Prontuario prontuario;
+
+
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -88,17 +102,6 @@ public class Exame {
         result = 31 * result + (imagemRegiaoTorax ? 1 : 0);
         return result;
     }
-
-    private String imagemRegiaoMPelvicos;
-    private String imagemObsRegioes;
-
-    private boolean imagemRegiaoCabeca;
-    private boolean imagemRegiaoTorax;
-
-    @ManyToOne
-    @JoinColumn(name = "prontuario_id")
-    private Prontuario prontuario;
-
     public Exame(Prontuario prontuario) {
         this.prontuario = prontuario;
     }
