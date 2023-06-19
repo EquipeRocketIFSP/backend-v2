@@ -66,7 +66,7 @@ public class Animal implements Fillable<AnimalRequestDto> {
     @JoinTable(name = "animal_tutores",
             joinColumns = @JoinColumn(name = "animal_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "tutor_id", referencedColumnName = "id"),
-            uniqueConstraints = { @UniqueConstraint(columnNames = {"animal_id", "tutor_id"}) }
+            uniqueConstraints = {@UniqueConstraint(columnNames = {"animal_id", "tutor_id"})}
     )
     @ToString.Exclude
     private List<Usuario> tutores;
@@ -98,7 +98,7 @@ public class Animal implements Fillable<AnimalRequestDto> {
     public void fill(AnimalRequestDto dto) {
         this.nome = dto.nome();
         this.especie = dto.especie();
-//        this.sexo = SexoAnimal.(dto.sexo());
+        this.sexo = dto.sexo().equals("MACHO") ? SexoAnimal.MACHO : SexoAnimal.FEMEA;
         this.anoNascimento = dto.anoNascimento();
         this.peso = dto.peso();
         this.pelagem = dto.pelagem();
