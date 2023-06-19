@@ -42,7 +42,7 @@ public class ProntuarioDTOMapper {
                 .setRegiaoTorax(dto.isTorax())
                 .setApetite(dto.getApetite())
                 .setRegioesObs(dto.getRegioesObs())
-                .setLinfonodos(dto.getLinfonodos())
+//                .setLinfonodos(dto.getLinfonodos())
                 .setLinfonodosObs(dto.getLinfonodosObs());
 
         if (dto.getMToracicos().length != 0)

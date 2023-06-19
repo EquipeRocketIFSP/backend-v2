@@ -64,7 +64,7 @@ public record ProntuarioRequest (
                 .sensibilidadeDor(sensibilidadeDor)
                 .lesoesNodulos(lesoesNodulos)
                 .apetite(apetite)
-                .linfonodos(linfonodos)
+//                .linfonodos(linfonodos)
                 .linfonodosObs(linfonodosObs)
                 .regiaoColuna(regiaoColuna)
                 .regiaoAbdomen(regiaoAbdomen)

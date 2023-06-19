@@ -23,7 +23,7 @@ public class Exame {
     private Long id;
 
     @Column(nullable = false)
-    private String tipoExame;
+    private String tipoExame;// TODO: Alterar para enum
 
     @Column(length = 2000)
     private String outrosExames;
@@ -31,10 +31,10 @@ public class Exame {
     @Column(length = 2000)
     private String outrosCitologia;
 
-    private String bioquimico;
-    private String hematologia;
-    private String citologia;
-    private String imagem;
+    private String bioquimico; // TODO: Alterar para enum
+    private String hematologia; // TODO: Alterar para enum
+    private String citologia; // TODO: Alterar para enum
+    private String imagem; // TODO: Alterar para enum
     private String imagemRegiaoCervical;
     private String imagemRegiaoAbdomen;
     private String imagemRegiaoMToracicos;

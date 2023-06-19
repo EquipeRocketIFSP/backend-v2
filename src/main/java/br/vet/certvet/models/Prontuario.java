@@ -22,6 +22,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Setter
+@Table(name = "prontuarios")
 public class Prontuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,63 +38,38 @@ public class Prontuario {
     private Clinica clinica;
 
     private int frequenciaCardiaca;
-
     private int frequenciaRespiratoria;
-
     private byte temperatura;
-
     private String peso;
-
     private String hidratacao;
-
     private String tpc;
-
     private String mucosa;
-
     private String conciencia;
-
     private String escoreCorporal;
+    private Date criadoEm;
 
     @Column(length = 2000)
     private String supeitaDiagnostica;
 
-    private boolean prostracao;
-
-    private boolean febre;
-
-    private boolean vomito;
-
-    private boolean diarreia;
-
-    private boolean espasmosConvulsao;
-
-    private boolean deambulacao;
-
-    private boolean sensibilidadeDor;
-
-    private boolean lesoesNodulos;
-
-    private String apetite;
-
-    private String linfonodos;
-
-    private String linfonodosObs;
-
-    private String regiaoColuna;
-
-    private String regiaoAbdomen;
-
-    private String regiaoMToracicos;
-
-    private String regiaoMPelvicos;
-
-    private boolean regiaoCabeca;
-
-    private boolean regiaoTorax;
-
-    private String regioesObs;
-
     private LocalDateTime dataAtendimento;
+    private boolean prostracao;
+    private boolean febre;
+    private boolean vomito;
+    private boolean diarreia;
+    private boolean espasmosConvulsao;
+    private boolean deambulacao;
+    private boolean sensibilidadeDor;
+    private boolean lesoesNodulos;
+    private String apetite;
+//    private String linfonodos;
+    private String linfonodosObs;
+    private String regiaoColuna;
+    private String regiaoAbdomen;
+    private String regiaoMToracicos;
+    private String regiaoMPelvicos;
+    private boolean regiaoCabeca;
+    private boolean regiaoTorax;
+    private String regioesObs;
 
     @Setter(AccessLevel.NONE)
     private String codigo;
@@ -132,7 +108,14 @@ public class Prontuario {
     @ToString.Exclude
     @Setter(AccessLevel.NONE)
     private List<Documento> documentos;
-    private Date criadoEm;
+
+    @ToString.Exclude
+    @OneToOne
+    private ManifestacoesClinicas manifestacoesClinicas;
+
+    @OneToMany(mappedBy = "prontuario")
+    @ToString.Exclude
+    private List<Linfonodo> linfonodos;
 
     @OneToMany(mappedBy = "id")
     @ToString.Exclude

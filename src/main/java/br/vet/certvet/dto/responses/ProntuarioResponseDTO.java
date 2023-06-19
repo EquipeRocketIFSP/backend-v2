@@ -149,7 +149,7 @@ public class ProntuarioResponseDTO {
         this.sensibilidadeDor = prontuario.isSensibilidadeDor();
         this.lesoesNodulos = prontuario.isLesoesNodulos();
         this.apetite = prontuario.getApetite();
-        this.linfonodos = prontuario.getLinfonodos();
+//        this.linfonodos = prontuario.getLinfonodos();
         this.linfonodosObs = prontuario.getLinfonodosObs();
         this.regiaoCabeca = prontuario.isRegiaoCabeca();
         this.regiaoTorax = prontuario.isRegiaoTorax();

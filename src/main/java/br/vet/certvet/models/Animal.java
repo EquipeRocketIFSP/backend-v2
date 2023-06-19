@@ -2,6 +2,7 @@ package br.vet.certvet.models;
 
 import br.vet.certvet.dto.requests.AnimalRequestDto;
 import br.vet.certvet.enums.SexoAnimal;
+import br.vet.certvet.enums.helper.SexoAnimalConverter;
 import br.vet.certvet.models.contracts.Fillable;
 import lombok.*;
 import org.hibernate.Hibernate;
@@ -56,6 +57,7 @@ public class Animal implements Fillable<AnimalRequestDto> {
 
     @Setter
     @Column(nullable = false)
+    @Convert(converter = SexoAnimalConverter.class)
     private SexoAnimal sexo;
 
     private String formaIdentificacao;

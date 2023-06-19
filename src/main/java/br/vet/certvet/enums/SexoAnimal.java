@@ -1,10 +1,7 @@
 package br.vet.certvet.enums;
 
-import br.vet.certvet.enums.helper.SexoAnimalConverter;
 
-import javax.persistence.Convert;
 
-@Convert(converter = SexoAnimalConverter.class)
 public enum SexoAnimal {
     MACHO("M", false),
     FEMEA("F", true);
@@ -25,3 +22,4 @@ public enum SexoAnimal {
         return bitValue;
     }
 }
+
