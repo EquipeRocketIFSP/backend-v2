@@ -9,10 +9,7 @@ import javax.persistence.*;
 import java.text.DateFormatSymbols;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
 @Getter
@@ -61,7 +58,7 @@ public class Prontuario {
     private boolean sensibilidadeDor;
     private boolean lesoesNodulos;
     private String apetite;
-//    private String linfonodos;
+    //    private String linfonodos;
     private String linfonodosObs;
     private String regiaoColuna;
     private String regiaoAbdomen;
@@ -91,12 +88,12 @@ public class Prontuario {
     @OneToMany(mappedBy = "prontuario")
     @ToString.Exclude
     @Setter(AccessLevel.NONE)
-    private List<Procedimento> procedimentos;
+    private List<Procedimento> procedimentos = new ArrayList<>();
 
     @OneToMany(mappedBy = "prontuario")
     @ToString.Exclude
     @Setter(AccessLevel.NONE)
-    private List<Exame> exames;
+    private List<Exame> exames = new ArrayList<>();
 
     @ManyToOne
     @Accessors(chain = true)
@@ -107,7 +104,7 @@ public class Prontuario {
     @OneToMany(mappedBy = "id")
     @ToString.Exclude
     @Setter(AccessLevel.NONE)
-    private List<Documento> documentos;
+    private List<Documento> documentos = new ArrayList<>();
 
     @ToString.Exclude
     @OneToOne
@@ -115,11 +112,11 @@ public class Prontuario {
 
     @OneToMany(mappedBy = "prontuario")
     @ToString.Exclude
-    private List<Linfonodo> linfonodos;
+    private List<Linfonodo> linfonodos = new ArrayList<>();
 
     @OneToMany(mappedBy = "id")
     @ToString.Exclude
-    private List<Prescricao> prescricoes;
+    private List<Prescricao> prescricoes = new ArrayList<>();
 
     public Prontuario setDocumentos(List<Documento> documentos) {
         this.documentos = documentos;
@@ -316,8 +313,8 @@ public class Prontuario {
     public String prescricaoLatestVersion() {
         return String.valueOf(
                 prescricoes.stream()
-                .mapToInt(Prescricao::getVersao)
-                .max()
-                .orElse(1));
+                        .mapToInt(Prescricao::getVersao)
+                        .max()
+                        .orElse(1));
     }
 }
