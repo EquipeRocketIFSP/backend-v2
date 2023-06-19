@@ -51,13 +51,13 @@ public class ExameResponseDTO {
 
     public ExameResponseDTO(Exame exame) {
         this.id = exame.getId();
-        this.tipoExame = exame.getTipoExame();
+        this.tipoExame = exame.getTipoExame().toString();
         this.outrosExames = exame.getOutrosExames();
         this.outrosCitologia = exame.getOutrosCitologia();
-        this.bioquimico = exame.getBioquimico();
-        this.hematologia = exame.getHematologia();
-        this.citologia = exame.getCitologia();
-        this.imagem = exame.getImagem();
+//        this.bioquimico = exame.getBioquimico();
+//        this.hematologia = exame.getHematologia();
+//        this.citologia = exame.getCitologia();
+//        this.imagem = exame.getImagem();
         this.imagemObsRegioes = exame.getImagemObsRegioes();
         this.imagemRegiaoCabeca = exame.isImagemRegiaoCabeca();
         this.imagemRegiaoTorax = exame.isImagemRegiaoTorax();

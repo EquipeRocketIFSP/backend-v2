@@ -28,6 +28,14 @@ VALUES
     ('Popiliteo'),
     ('Outras');
 
+INSERT INTO tipo_exame(tipo_exame_enum)
+VALUES
+    ('BIOQUIMICO'),
+    ('CITOLOGIA'),
+    ('HEMATOLOGIA'),
+    ('IMAGEM'),
+    ('OUTROS');
+
 
 insert into clinicas (
     id, bairro, celular, cep, cidade, cnae, cnpj, code, email, estado, logradouro, nome_fantasia, numero, razao_social, telefone, responsavel_tecnico_id

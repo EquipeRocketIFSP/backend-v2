@@ -22,19 +22,11 @@ public class Exame {
     @Column(nullable = false)
     private Long id;
 
-    @Column(nullable = false)
-    private String tipoExame;// TODO: Alterar para enum
-
     @Column(length = 2000)
     private String outrosExames;
 
     @Column(length = 2000)
     private String outrosCitologia;
-
-    private String bioquimico; // TODO: Alterar para enum
-    private String hematologia; // TODO: Alterar para enum
-    private String citologia; // TODO: Alterar para enum
-    private String imagem; // TODO: Alterar para enum
     private String imagemRegiaoCervical;
     private String imagemRegiaoAbdomen;
     private String imagemRegiaoMToracicos;
@@ -50,9 +42,16 @@ public class Exame {
             inverseJoinColumns = @JoinColumn(name = "prontuario_id", referencedColumnName = "id"),
             uniqueConstraints = { @UniqueConstraint(columnNames = {"prontuario_id", "exames_id"}) }
     )
-//    @JsonBackReference
     private Prontuario prontuario;
 
+    @ManyToOne
+    @JoinTable(
+            name = "exame_tipo",
+            joinColumns = @JoinColumn(name = "exames_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "tipo_id", referencedColumnName = "id"),
+            uniqueConstraints = { @UniqueConstraint(columnNames = {"exames_id", "tipo_id"}) }
+    )
+    private TipoExame tipoExame;
 
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -68,14 +67,14 @@ public class Exame {
             return false;
         if (!Objects.equals(outrosCitologia, exame.outrosCitologia))
             return false;
-        if (!Objects.equals(bioquimico, exame.bioquimico))
-            return false;
-        if (!Objects.equals(hematologia, exame.hematologia))
-            return false;
-        if (!Objects.equals(citologia, exame.citologia))
-            return false;
-        if (!Objects.equals(imagem, exame.imagem))
-            return false;
+//        if (!Objects.equals(bioquimico, exame.bioquimico))
+//            return false;
+//        if (!Objects.equals(hematologia, exame.hematologia))
+//            return false;
+//        if (!Objects.equals(citologia, exame.citologia))
+//            return false;
+//        if (!Objects.equals(imagem, exame.imagem))
+//            return false;
         if (!Objects.equals(imagemRegiaoCervical, exame.imagemRegiaoCervical))
             return false;
         if (!Objects.equals(imagemRegiaoAbdomen, exame.imagemRegiaoAbdomen))
@@ -90,10 +89,10 @@ public class Exame {
         int result = tipoExame != null ? tipoExame.hashCode() : 0;
         result = 31 * result + (outrosExames != null ? outrosExames.hashCode() : 0);
         result = 31 * result + (outrosCitologia != null ? outrosCitologia.hashCode() : 0);
-        result = 31 * result + (bioquimico != null ? bioquimico.hashCode() : 0);
-        result = 31 * result + (hematologia != null ? hematologia.hashCode() : 0);
-        result = 31 * result + (citologia != null ? citologia.hashCode() : 0);
-        result = 31 * result + (imagem != null ? imagem.hashCode() : 0);
+//        result = 31 * result + (bioquimico != null ? bioquimico.hashCode() : 0);
+//        result = 31 * result + (hematologia != null ? hematologia.hashCode() : 0);
+//        result = 31 * result + (citologia != null ? citologia.hashCode() : 0);
+//        result = 31 * result + (imagem != null ? imagem.hashCode() : 0);
         result = 31 * result + (imagemRegiaoCervical != null ? imagemRegiaoCervical.hashCode() : 0);
         result = 31 * result + (imagemRegiaoAbdomen != null ? imagemRegiaoAbdomen.hashCode() : 0);
         result = 31 * result + (imagemRegiaoMToracicos != null ? imagemRegiaoMToracicos.hashCode() : 0);
