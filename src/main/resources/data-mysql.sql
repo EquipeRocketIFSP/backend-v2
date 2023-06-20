@@ -60,7 +60,10 @@ insert into documento
 values
     (1, 'tipo', 'algorithm', 'caminho_arquivo', '2023-04-27 00:17:27', 'etag', 'md5', 1, 'VT-D-2023_05_03_10_26_39');
 
-INSERT INTO veterinario_documentos(usuario_id, documento_id) VALUES (1,1);
+INSERT INTO veterinario_documentos
+    (usuario_id, documento_id)
+VALUES
+    (1,1);
 
 INSERT INTO animal
     (id, especie, forma_identificacao, nome, pelagem, raca, sexo, ano_nascimento, peso)
@@ -68,9 +71,9 @@ VALUES
       (1, 'especie', 'forma_identificacao', 'nome', 'pelagem', 'raca',  1,  2020, 2.5);
 
 insert into prontuarioS
-    (id, apetite, codigo, conciencia, data_atendimento, deambulacao, diarreia, escore_corporal, espasmos_convulsao, febre, frequencia_cardiaca, frequencia_respiratoria, hidratacao, lesoes_nodulos, linfonodos, linfonodos_obs, mucosa, prostracao, regiao_abdomen, regiao_cabeca, regiaompelvicos, regiaomtoracicos, regiao_torax, sensibilidade_dor, supeita_diagnostica, temperatura, tpc, vomito, animal_id, clinica_id, tutor_id, veterinario_id, criado_em, versao, status)
+    (id, apetite, codigo, conciencia, data_atendimento, deambulacao, diarreia, escore_corporal, espasmos_convulsao, febre, frequencia_cardiaca, frequencia_respiratoria, hidratacao, lesoes_nodulos, linfonodos_obs, mucosa, prostracao, regiao_abdomen, regiao_cabeca, regiaompelvicos, regiaomtoracicos, regiao_torax, sensibilidade_dor, supeita_diagnostica, temperatura, tpc, vomito, animal_id, clinica_id, tutor_id, veterinario_id, criado_em, versao, status)
 values
-    (1, 'apetite', 'vet-132', 'conciencia', '2023-04-27 00:34:14', 0, 0, 'escore_corporal', 0, 0, '1', '1', 'hidratacao', 0, 'linfonodos', 'linfonodos_obs', 'mucosa', 0, 'regiao_abdomen', 0, 'regiaompelvicos', 'regiaomtoracicos', 0, 0, 'supeita_diagnostica', '2', 'tpc', 0, 1, 1, 1, 1, '2023-04-27 00:34:14', 1, 'PENDING');
+    (1, 'apetite', 'vet-132', 'conciencia', '2023-04-27 00:34:14', 0, 0, 'escore_corporal', 0, 0, '1', '1', 'hidratacao', 0, 'linfonodos_obs', 'mucosa', 0, 'regiao_abdomen', 0, 'regiaompelvicos', 'regiaomtoracicos', 0, 0, 'supeita_diagnostica', '2', 'tpc', 0, 1, 1, 1, 1, '2023-04-27 00:34:14', 1, 'PENDING');
 
 insert into prontuario_documentos
     (prontuario_id, documentos_id)
@@ -97,20 +100,22 @@ VALUES
     (1, "Bairro", '(11)987452541', '05856-160', 'Aracaju', '260.604.320-00', null, null, 'ilana.s@gmail.teste', 'SE', 'RUA ', 'Ilana Silveira', '23', null, null, '43.776.341-9', '(11)987452541', 'ilana.s@gmail.teste', 3),
     (2, 'Calhau','(98) 99967-5470','65071-485','São Luís','479.048.782-24',null,null,'julia.teresinha.mendes@vemter.com.br','MA','Rua Tremembes','Vera Ivanovna',114,null,null,'12.602.923-4','(98) 3708-8624','julia.teresinha.mendes@vemter.com.br',3);
 
-INSERT INTO certvet.animal (id, ano_nascimento, especie, forma_identificacao, nome, pelagem, peso, raca, sexo)
+INSERT INTO animal (id, ano_nascimento, especie, forma_identificacao, nome, pelagem, peso, raca, sexo)
 VALUES (2, 2017, 'Canina', null, 'Bidu', 'Longa', 10, 'SRD', 0),
        (3, 2015, 'Felina', null, 'Fifi', 'Curta', 3, 'Siames', 1),
        (4,2008,'Canina', null, 'toto', 'Longa', 1, 'Longa', 0);
 ;
 
-INSERT INTO certvet.prontuarioS (id, apetite, codigo, conciencia, criado_em, data_atendimento, deambulacao, diarreia,
-                                escore_corporal, espasmos_convulsao, febre, frequencia_cardiaca,
-                                frequencia_respiratoria, hidratacao, lesoes_nodulos, linfonodos, linfonodos_obs, mucosa,
-                                prostracao, regiao_abdomen, regiao_cabeca, regiaompelvicos,
-                                regiaomtoracicos, regiao_torax, sensibilidade_dor, supeita_diagnostica, temperatura,
-                                tpc, versao, vomito, animal_id, clinica_id, tutor_id, veterinario_id, status)
-VALUES (2, null, 'VET-123', 'Consciente', '2023-05-13 18:18:37.000000', null, true, false, 'Ideal', false, false, 112, 24,
-        '>= 3s', false, 'null', 'null', 'Rosácea', true, null, false, null, null, false, false,
+INSERT INTO prontuarios
+    (id, apetite, codigo, conciencia, criado_em, data_atendimento, deambulacao, diarreia,
+     escore_corporal, espasmos_convulsao, febre, frequencia_cardiaca,
+     frequencia_respiratoria, hidratacao, lesoes_nodulos, linfonodos_obs, mucosa,
+     prostracao, regiao_abdomen, regiao_cabeca, regiaompelvicos,
+     regiaomtoracicos, regiao_torax, sensibilidade_dor, supeita_diagnostica, temperatura,
+     tpc, versao, vomito, animal_id, clinica_id, tutor_id, veterinario_id, status)
+VALUES
+    (2, null, 'VET-123', 'Consciente', '2023-05-13 18:18:37.000000', null, true, false, 'Ideal', false, false, 112, 24,
+        '>= 3s', false, 'null', 'Rosácea', true, null, false, null, null, false, false,
         'Intoxicação por planta domestica', 38, '< 2s', 1, true, 3, 3, 6, null, 'PENDING');
 
 INSERT INTO procedimentos (id, descricao)
@@ -123,8 +128,8 @@ INSERT INTO animal_tutores (animal_id, tutor_id)
 VALUES(1,1),
       (4, 2);
 
-INSERT INTO prontuarioS(id, apetite, codigo, conciencia, criado_em, data_atendimento, deambulacao, diarreia, escore_corporal, espasmos_convulsao, febre, frequencia_cardiaca, frequencia_respiratoria, hidratacao, lesoes_nodulos, linfonodos, linfonodos_obs, mucosa, peso, prostracao, regiao_abdomen, regiao_cabeca, regiao_coluna, regiaompelvicos, regiaomtoracicos, regiao_torax, regioes_obs, sensibilidade_dor, status, supeita_diagnostica, temperatura, tpc, versao, vomito, animal_id, clinica_id, tutor_id, veterinario_id)
-VALUES(2, 'Normal', 'VT-P-2023_05_30_10_10_46', 'Conciente', '2023-05-30 22:10:56.712633', '2023-05-30 22:10:56.712633', FALSE, FALSE, 'Muito Abaixo do Peso', FALSE, FALSE, '100', '50', '< 3s (leve)', FALSE, 'Cervical', '', 'Rosácea', '1 kg', FALSE, '', FALSE, '', '', '', FALSE, '', FALSE, 'COMPLETED', '', '38', '< 2s', '0', FALSE, 4, 1, 2, 1);
+INSERT INTO prontuarioS(id, apetite, codigo, conciencia, criado_em, data_atendimento, deambulacao, diarreia, escore_corporal, espasmos_convulsao, febre, frequencia_cardiaca, frequencia_respiratoria, hidratacao, lesoes_nodulos, linfonodos_obs, mucosa, peso, prostracao, regiao_abdomen, regiao_cabeca, regiao_coluna, regiaompelvicos, regiaomtoracicos, regiao_torax, regioes_obs, sensibilidade_dor, status, supeita_diagnostica, temperatura, tpc, versao, vomito, animal_id, clinica_id, tutor_id, veterinario_id)
+VALUES(2, 'Normal', 'VT-P-2023_05_30_10_10_46', 'Conciente', '2023-05-30 22:10:56.712633', '2023-05-30 22:10:56.712633', FALSE, FALSE, 'Muito Abaixo do Peso', FALSE, FALSE, '100', '50', '< 3s (leve)', FALSE, '', 'Rosácea', '1 kg', FALSE, '', FALSE, '', '', '', FALSE, '', FALSE, 'COMPLETED', '', '38', '< 2s', '0', FALSE, 4, 1, 2, 1);
 
 
 INSERT INTO procedimentos
@@ -134,3 +139,13 @@ VALUES
 
 insert into prontuario_procedimentos(procedimentos_id, prontuario_id)
 values (2, 1);
+
+INSERT INTO prescricao
+    (ID, codigo, concentracao, data_criacao, data_exclusao, dose, duracao, forma_farmaceutica, frequencia, nome, observacoes, quando_aplicar, uso, versao)
+VALUES
+    (1, 'VET-P-202301', '25', NOW(), NULL, 'ML', '5 DIAS', 'PERMANGANATO DE POTÁSSIO', '1 VEZ AO DIA', 'PERMANGANATO DE POTÁSSIO', 'EVITAR MUCOSAS', '1X AO DIA', 'TÓPICO', 1);
+
+INSERT INTO prontuario_prescricoes
+    (prescricoes_id, prontuario_id)
+VALUES
+    (1, 1);
