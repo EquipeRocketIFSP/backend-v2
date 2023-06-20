@@ -37,7 +37,7 @@ public record ProntuarioRequest (
         Animal animal,
         Usuario veterinario,
         Cirurgia cirurgia,
-        List<Procedimento>procedimentos,
+        List<Procedimento> procedimentos,
         List<Exame> exames,
         String codigo,
         Usuario tutor,

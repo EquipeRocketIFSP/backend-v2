@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 
 public class ProcedimentoResponseDTO {
     @JsonProperty("procedimento")
-    private String procedimento;
+    private Long procedimento;
 
     @JsonProperty("procedimento_outros")
     private String procedimentoOutros;
@@ -22,7 +22,7 @@ public class ProcedimentoResponseDTO {
     private MedicamentoResponseDto medicamento;
 
     public ProcedimentoResponseDTO(Procedimento model) {
-        this.procedimento = model.getDescricao();
+        this.procedimento = model.getProcedimentoTipo().getId();
         this.procedimentoOutros = model.getOutros();
 
         if (model.getMedicamentoConsumido() != null) {

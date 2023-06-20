@@ -7,8 +7,7 @@ public class ProcedimentoDTOMapper {
 
     private ProcedimentoDTOMapper(){}
     public static Procedimento assignToModel(ProcedimentoDTO dto, Procedimento model) {
-        model.setDescricao(dto.getProcedimento())
-                .setOutros(dto.getProcedimentoOutros());
+        model.setOutros(dto.getProcedimentoOutros());
 
         return model;
     }

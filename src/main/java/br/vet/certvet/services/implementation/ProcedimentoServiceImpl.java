@@ -2,9 +2,11 @@ package br.vet.certvet.services.implementation;
 
 import br.vet.certvet.dto.requests.prontuario.procedimento.ProcedimentoListDTO;
 import br.vet.certvet.enums.ProntuarioStatus;
+import br.vet.certvet.exceptions.NotFoundException;
 import br.vet.certvet.models.*;
 import br.vet.certvet.models.factories.ProcedimentoFactory;
 import br.vet.certvet.repositories.ProcedimentoRepository;
+import br.vet.certvet.repositories.ProcedimentoTipoRepository;
 import br.vet.certvet.repositories.ProntuarioRepository;
 import br.vet.certvet.services.EstoqueService;
 import br.vet.certvet.services.MedicamentoService;
@@ -16,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProcedimentoServiceImpl implements ProcedimentoService {
@@ -24,6 +27,9 @@ public class ProcedimentoServiceImpl implements ProcedimentoService {
     public ProcedimentoServiceImpl(final ProcedimentoRepository procedimentoRepository) {
         this.procedimentoRepository = procedimentoRepository;
     }
+
+    @Autowired
+    private ProcedimentoTipoRepository procedimentoTipoRepository;
 
     @Autowired
     private ProntuarioRepository prontuarioRepository;
@@ -40,16 +46,28 @@ public class ProcedimentoServiceImpl implements ProcedimentoService {
         if (prontuario.getStatus() == ProntuarioStatus.COMPLETED)
             prontuario.setStatus(ProntuarioStatus.UPDATING);
 
+        List<ProcedimentoTipo> tipos = this.procedimentoTipoRepository.findAll();
+
         List<Procedimento> procedimentos = dto.getProcedimentos()
                 .stream()
                 .map(procedimentoDTO -> {
+                    final Optional<ProcedimentoTipo> tipo = tipos.stream()
+                            .filter((t) -> t.getId().equals(procedimentoDTO.getProcedimento()))
+                            .findFirst();
+
+                    if (tipo.isEmpty())
+                        throw new NotFoundException("Procedimento não encontrado");
+
                     if (procedimentoDTO.getMedicamento() != null && procedimentoDTO.getDose() != null && procedimentoDTO.getLote() != null) {
                         final BigDecimal dose = procedimentoDTO.getDose();
                         final Medicamento medicamento = this.medicamentoService.findOne(procedimentoDTO.getMedicamento(), clinica);
                         final Estoque estoque = this.estoqueService.findOne(procedimentoDTO.getLote(), medicamento);
-                        final Procedimento procedimento = ProcedimentoFactory.factory(procedimentoDTO, estoque, prontuario);
+                        final Procedimento procedimento = ProcedimentoFactory
+                                .factory(procedimentoDTO, estoque, prontuario)
+                                .setProcedimentoTipo(tipo.get());
+
                         final String reason = new StringBuilder("Usado no procedimento ")
-                                .append(procedimento.getDescricao())
+                                .append(procedimento.getProcedimentoTipo().getDescricao())
                                 .append(" no prontuário ")
                                 .append(prontuario.getCodigo())
                                 .append(" do animal ")
@@ -60,7 +78,8 @@ public class ProcedimentoServiceImpl implements ProcedimentoService {
                         return procedimento;
                     }
 
-                    return ProcedimentoFactory.factory(procedimentoDTO, prontuario);
+                    return ProcedimentoFactory.factory(procedimentoDTO, prontuario)
+                            .setProcedimentoTipo(tipo.get());
                 }).toList();
 
         prontuario.getProcedimentos().forEach(procedimento -> {
