@@ -17,6 +17,7 @@ public class Linfonodo {
     private int id;
 
     @Enumerated(EnumType.STRING)
+    @Column(unique = true)
     private LinfonodosEnum linfonodo;
 
     @ManyToOne

@@ -20,5 +20,6 @@ public class ProcedimentoTipo {
     @Column(nullable = false)
     private Long id;
 
+    @Column(unique = true)
     private String descricao;
 }
