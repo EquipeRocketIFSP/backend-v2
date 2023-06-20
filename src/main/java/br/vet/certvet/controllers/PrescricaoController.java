@@ -64,7 +64,7 @@ public class PrescricaoController extends BaseController {
                 .toList();
         return prescricoes.isEmpty()
                 ? ResponseEntity.noContent().build()
-                : ResponseEntity.ok(new MedicacaoPrescritaListDTO().of(prescricoes));
+                : ResponseEntity.ok(new MedicacaoPrescritaListDTO().of(prontuario));
     }
 
     /**
@@ -172,12 +172,7 @@ public class PrescricaoController extends BaseController {
                         URI.create("/api/prontuario/prescricao/" + prontuarioCodigo))
                 .header("version", prontuario.prescricaoLatestVersion())
                 .body(new MedicacaoPrescritaListDTO().of(
-                        prontuario.getPrescricoes()
-                                .stream()
-                                .filter(prescricao -> prescricao.getDataExclusao() == null)
-                                .filter(prescricao -> prescricao.getVersao() == max)
-                                .map(p -> new MedicacaoPrescritaDTO().of(p))
-                                .toList()
+                        prontuario
                 ));
     }
 

@@ -50,7 +50,7 @@ public class AuthController {
         Authentication auth;
         try {
             auth = authenticationManager.authenticate(dto.convert());
-            log.info("autenticado");
+//            log.info("autenticado");
         } catch (AuthenticationException e){
             return ResponseEntity.badRequest().header("reason","Usuário ou senha inválidos").build();
         }

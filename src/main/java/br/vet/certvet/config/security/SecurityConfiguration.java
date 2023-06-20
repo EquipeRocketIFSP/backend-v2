@@ -3,6 +3,7 @@ package br.vet.certvet.config.security;
 import br.vet.certvet.config.security.filter.TokenAuthenticationFilter;
 import br.vet.certvet.config.security.service.AuthenticationService;
 import br.vet.certvet.config.security.service.TokenService;
+import br.vet.certvet.repositories.ProntuarioRepository;
 import br.vet.certvet.repositories.UsuarioRepository;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private TokenService tokenService;
 
     @Autowired
-    private UsuarioRepository repository;
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private ProntuarioRepository prontuarioRepository;
 
     @Override
     @Bean
@@ -68,7 +72,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and().cors()
                 .and().csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and().addFilterBefore(new TokenAuthenticationFilter(tokenService, repository), UsernamePasswordAuthenticationFilter.class)
+                .and().addFilterBefore(new TokenAuthenticationFilter(tokenService, usuarioRepository, prontuarioRepository), UsernamePasswordAuthenticationFilter.class)
                 ;
     }
 
