@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @Getter
 public class ProcedimentoDTO extends ProntuarioDTO {
     @JsonProperty("procedimento")
-    private Long procedimento;
+    private String procedimento;
 
     @JsonProperty("procedimento_outros")
     private String procedimentoOutros;
