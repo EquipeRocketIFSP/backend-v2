@@ -21,5 +21,5 @@ public class ProcedimentoTipo {
     private Long id;
 
     @Column(unique = true)
-    private String descricao;
+    private String nome;
 }

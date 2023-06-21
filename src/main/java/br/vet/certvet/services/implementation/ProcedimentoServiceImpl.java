@@ -67,7 +67,7 @@ public class ProcedimentoServiceImpl implements ProcedimentoService {
                                 .setProcedimentoTipo(tipo.get());
 
                         final String reason = new StringBuilder("Usado no procedimento ")
-                                .append(procedimento.getProcedimentoTipo().getDescricao())
+                                .append(procedimento.getProcedimentoTipo().getNome())
                                 .append(" no prontuário ")
                                 .append(prontuario.getCodigo())
                                 .append(" do animal ")

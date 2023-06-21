@@ -49,24 +49,6 @@ public class Prontuario {
     private String supeitaDiagnostica;
 
     private LocalDateTime dataAtendimento;
-    private boolean prostracao;
-    private boolean febre;
-    private boolean vomito;
-    private boolean diarreia;
-    private boolean espasmosConvulsao;
-    private boolean deambulacao;
-    private boolean sensibilidadeDor;
-    private boolean lesoesNodulos;
-    private String apetite;
-    //    private String linfonodos;
-    private String linfonodosObs;
-    private String regiaoColuna;
-    private String regiaoAbdomen;
-    private String regiaoMToracicos;
-    private String regiaoMPelvicos;
-    private boolean regiaoCabeca;
-    private boolean regiaoTorax;
-    private String regioesObs;
 
     @Setter(AccessLevel.NONE)
     private String codigo;
@@ -106,12 +88,48 @@ public class Prontuario {
     private List<Documento> documentos = new ArrayList<>();
 
     @ToString.Exclude
-    @OneToOne
+    @OneToOne(mappedBy = "prontuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private ManifestacoesClinicas manifestacoesClinicas;
 
-    @OneToMany(mappedBy = "prontuario")
+    @ManyToMany(cascade = CascadeType.ALL)
     @ToString.Exclude
+    @JoinTable(
+            name = "prontuario_linfonodos",
+            joinColumns = @JoinColumn(name = "prontuario_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "linfonodo_id", referencedColumnName = "id"),
+            uniqueConstraints = {@UniqueConstraint(columnNames = {"prontuario_id", "linfonodo_id"})}
+    )
     private List<Linfonodo> linfonodos = new ArrayList<>();
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @JoinTable(
+            name = "prontuario_musculos",
+            joinColumns = @JoinColumn(name = "prontuario_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "musculos_id", referencedColumnName = "id"),
+            uniqueConstraints = {@UniqueConstraint(columnNames = {"prontuario_id", "musculos_id"})}
+    )
+    private List<Musculo> musculos = new ArrayList<>();
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @JoinTable(
+            name = "prontuario_coluna_regioes",
+            joinColumns = @JoinColumn(name = "prontuario_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "coluna_regioes_id", referencedColumnName = "id"),
+            uniqueConstraints = {@UniqueConstraint(columnNames = {"prontuario_id", "coluna_regioes_id"})}
+    )
+    private List<ColunaRegioes> colunaRegioes = new ArrayList<>();
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @JoinTable(
+            name = "prontuario_abdomen_regioes",
+            joinColumns = @JoinColumn(name = "prontuario_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "abdomen_regioes_id", referencedColumnName = "id"),
+            uniqueConstraints = {@UniqueConstraint(columnNames = {"prontuario_id", "abdomen_regioes_id"})}
+    )
+    private List<AbdomenRegioes> abdomenRegioes = new ArrayList<>();
 
     @OneToMany(mappedBy = "id")
     @ToString.Exclude
@@ -195,16 +213,6 @@ public class Prontuario {
         if (frequenciaCardiaca != that.frequenciaCardiaca) return false;
         if (frequenciaRespiratoria != that.frequenciaRespiratoria) return false;
         if (temperatura != that.temperatura) return false;
-        if (prostracao != that.prostracao) return false;
-        if (febre != that.febre) return false;
-        if (vomito != that.vomito) return false;
-        if (diarreia != that.diarreia) return false;
-        if (espasmosConvulsao != that.espasmosConvulsao) return false;
-        if (deambulacao != that.deambulacao) return false;
-        if (sensibilidadeDor != that.sensibilidadeDor) return false;
-        if (lesoesNodulos != that.lesoesNodulos) return false;
-        if (regiaoCabeca != that.regiaoCabeca) return false;
-        if (regiaoTorax != that.regiaoTorax) return false;
         if (!Objects.equals(versao, that.versao))
             return false;
         if (!Objects.equals(clinica, that.clinica))
@@ -223,21 +231,7 @@ public class Prontuario {
             return false;
         if (!Objects.equals(supeitaDiagnostica, that.supeitaDiagnostica))
             return false;
-        if (!Objects.equals(apetite, that.apetite))
-            return false;
         if (!Objects.equals(linfonodos, that.linfonodos))
-            return false;
-        if (!Objects.equals(linfonodosObs, that.linfonodosObs))
-            return false;
-        if (!Objects.equals(regiaoColuna, that.regiaoColuna))
-            return false;
-        if (!Objects.equals(regiaoAbdomen, that.regiaoAbdomen))
-            return false;
-        if (!Objects.equals(regiaoMToracicos, that.regiaoMToracicos))
-            return false;
-        if (!Objects.equals(regiaoMPelvicos, that.regiaoMPelvicos))
-            return false;
-        if (!Objects.equals(regioesObs, that.regioesObs))
             return false;
         if (!Objects.equals(dataAtendimento, that.dataAtendimento))
             return false;
@@ -268,24 +262,7 @@ public class Prontuario {
         result = 31 * result + (conciencia != null ? conciencia.hashCode() : 0);
         result = 31 * result + (escoreCorporal != null ? escoreCorporal.hashCode() : 0);
         result = 31 * result + (supeitaDiagnostica != null ? supeitaDiagnostica.hashCode() : 0);
-        result = 31 * result + (prostracao ? 1 : 0);
-        result = 31 * result + (febre ? 1 : 0);
-        result = 31 * result + (vomito ? 1 : 0);
-        result = 31 * result + (diarreia ? 1 : 0);
-        result = 31 * result + (espasmosConvulsao ? 1 : 0);
-        result = 31 * result + (deambulacao ? 1 : 0);
-        result = 31 * result + (sensibilidadeDor ? 1 : 0);
-        result = 31 * result + (lesoesNodulos ? 1 : 0);
-        result = 31 * result + (apetite != null ? apetite.hashCode() : 0);
         result = 31 * result + (linfonodos != null ? linfonodos.hashCode() : 0);
-        result = 31 * result + (linfonodosObs != null ? linfonodosObs.hashCode() : 0);
-        result = 31 * result + (regiaoColuna != null ? regiaoColuna.hashCode() : 0);
-        result = 31 * result + (regiaoAbdomen != null ? regiaoAbdomen.hashCode() : 0);
-        result = 31 * result + (regiaoMToracicos != null ? regiaoMToracicos.hashCode() : 0);
-        result = 31 * result + (regiaoMPelvicos != null ? regiaoMPelvicos.hashCode() : 0);
-        result = 31 * result + (regiaoCabeca ? 1 : 0);
-        result = 31 * result + (regiaoTorax ? 1 : 0);
-        result = 31 * result + (regioesObs != null ? regioesObs.hashCode() : 0);
         result = 31 * result + (dataAtendimento != null ? dataAtendimento.hashCode() : 0);
         result = 31 * result + (animal != null ? animal.hashCode() : 0);
         result = 31 * result + (veterinario != null ? veterinario.hashCode() : 0);

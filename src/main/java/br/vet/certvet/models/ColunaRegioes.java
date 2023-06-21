@@ -1,26 +1,26 @@
 package br.vet.certvet.models;
 
-import br.vet.certvet.models.manifestacoes_clinicas.LinfonodosEnum;
 import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "linfonodos")
+@Table(name = "coluna_regioes")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Builder
-public class Linfonodo {
+public class ColunaRegioes {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Column(unique = true)
-    private String linfonodo;
+    private String nome;
 
-    @ManyToMany(mappedBy = "linfonodos")
+
+    @ManyToMany(mappedBy = "colunaRegioes")
     @ToString.Exclude
     private List<Prontuario> prontuarios;
 

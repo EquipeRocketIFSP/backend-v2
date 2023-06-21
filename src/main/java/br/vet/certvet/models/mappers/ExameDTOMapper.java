@@ -11,7 +11,7 @@ public class ExameDTOMapper {
     public static Exame assignToModel(ExameDTO dto, Exame model) {
         model.setTipoExame(
                 TipoExame.builder()
-                        .tipoExameEnum(
+                        .nome(
                                 TipoExameEnum.valueOf(
                                         dto.getTipoExame()))
                         .build())

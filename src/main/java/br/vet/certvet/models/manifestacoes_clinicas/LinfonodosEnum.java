@@ -4,8 +4,8 @@ import lombok.Getter;
 
 @Getter
 public enum LinfonodosEnum {
-    MANDIBULAR("Mandibular"),
-    CERVICAL( "Cervical"),
+    Mandibular("Mandibular"),
+    Cervical("Cervical"),
     MAMARIOS("Mamários"),
     INGUINAL("Inguinal"),
     POPILITEO("Popiliteo"),

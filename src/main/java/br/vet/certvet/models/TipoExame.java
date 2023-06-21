@@ -19,5 +19,5 @@ public class TipoExame {
     private Integer id;
 
     @Enumerated(EnumType.STRING)
-    private TipoExameEnum tipoExameEnum;
+    private TipoExameEnum nome;
 }

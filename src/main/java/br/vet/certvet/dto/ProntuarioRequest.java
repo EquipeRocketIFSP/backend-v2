@@ -55,7 +55,7 @@ public record ProntuarioRequest (
                 .conciencia(conciencia)
                 .escoreCorporal(escoreCorporal)
                 .supeitaDiagnostica(supeitaDiagnostica)
-                .prostracao(prostracao)
+/*                .prostracao(prostracao)
                 .febre(febre)
                 .vomito(vomito)
                 .diarreia(diarreia)
@@ -71,7 +71,7 @@ public record ProntuarioRequest (
                 .regiaoMToracicos(regiaoMToracicos)
                 .regiaoMPelvicos(regiaoMPelvicos)
                 .regiaoCabeca(regiaoCabeca)
-                .regiaoTorax(regiaoTorax)
+                .regiaoTorax(regiaoTorax)*/
                 .dataAtendimento(dataAtendimento)
                 .animal(animal)
                 .veterinario(veterinario)

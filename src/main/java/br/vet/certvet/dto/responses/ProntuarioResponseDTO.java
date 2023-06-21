@@ -1,7 +1,7 @@
 package br.vet.certvet.dto.responses;
 
 import br.vet.certvet.enums.ProntuarioStatus;
-import br.vet.certvet.models.Prontuario;
+import br.vet.certvet.models.*;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
@@ -75,16 +75,16 @@ public class ProntuarioResponseDTO {
     private String linfonodosObs;
 
     @JsonProperty("coluna")
-    private String[] regiaoColuna = {};
+    private Object[] regiaoColuna = {};
 
     @JsonProperty("abdomen")
-    private String[] regiaoAbdomen = {};
+    private Object[] regiaoAbdomen = {};
 
     @JsonProperty("m_toracicos")
-    private String[] regiaoMToracicos = {};
+    private Object[] regiaoMToracicos = {};
 
     @JsonProperty("m_pelvicos")
-    private String[] regiaoMPelvicos = {};
+    private Object[] regiaoMPelvicos = {};
 
     @JsonProperty("regioes_obs")
     private String regioesObs;
@@ -140,20 +140,41 @@ public class ProntuarioResponseDTO {
         this.conciencia = prontuario.getConciencia();
         this.escoreCorporal = prontuario.getEscoreCorporal();
         this.supeitaDiagnostica = prontuario.getSupeitaDiagnostica();
-        this.prostracao = prontuario.isProstracao();
-        this.febre = prontuario.isFebre();
-        this.vomito = prontuario.isVomito();
-        this.diarreia = prontuario.isDiarreia();
-        this.espasmosConvulsao = prontuario.isEspasmosConvulsao();
-        this.deambulacao = prontuario.isDeambulacao();
-        this.sensibilidadeDor = prontuario.isSensibilidadeDor();
-        this.lesoesNodulos = prontuario.isLesoesNodulos();
-        this.apetite = prontuario.getApetite();
-//        this.linfonodos = prontuario.getLinfonodos();
-        this.linfonodosObs = prontuario.getLinfonodosObs();
-        this.regiaoCabeca = prontuario.isRegiaoCabeca();
-        this.regiaoTorax = prontuario.isRegiaoTorax();
-        this.regioesObs = prontuario.getRegioesObs();
+        this.regiaoColuna = prontuario.getColunaRegioes().stream().map(ColunaRegioes::getNome).toArray();
+        this.regiaoAbdomen = prontuario.getAbdomenRegioes().stream().map(AbdomenRegioes::getNome).toArray();
+        this.regiaoMToracicos = prontuario
+                .getMusculos()
+                .stream()
+                .filter(musculo -> musculo.getNome().matches("(.*)Torácico(.*)"))
+                .map(musculo -> musculo.getNome().replace("Torácico ", ""))
+                .toArray();
+
+        this.regiaoMPelvicos = prontuario
+                .getMusculos()
+                .stream()
+                .filter(musculo -> musculo.getNome().matches("(.*)Pélvicos(.*)"))
+                .map(musculo -> musculo.getNome().replace("Pélvicos ", ""))
+                .toArray();
+
+        final ManifestacoesClinicas manifestacoesClinicas = prontuario.getManifestacoesClinicas();
+
+        if (manifestacoesClinicas != null) {
+            this.prostracao = manifestacoesClinicas.isProstracao();
+            this.febre = manifestacoesClinicas.isFebre();
+            this.vomito = manifestacoesClinicas.isVomito();
+            this.diarreia = manifestacoesClinicas.isDiarreia();
+            this.espasmosConvulsao = manifestacoesClinicas.isEspasmosConvulsao();
+            this.deambulacao = manifestacoesClinicas.isDeambulacao();
+            this.sensibilidadeDor = manifestacoesClinicas.isSensibilidadeDor();
+            this.lesoesNodulos = manifestacoesClinicas.isLesoesNodulos();
+            this.apetite = manifestacoesClinicas.getApetite().getStatus().getStatus();
+            this.linfonodos = !prontuario.getLinfonodos().isEmpty() ? prontuario.getLinfonodos().get(0).getLinfonodo() : null;
+            //this.linfonodosObs = manifestacoesClinicas.getLinfonodosObs();
+            this.regiaoCabeca = manifestacoesClinicas.isRegiaoCabeca();
+            this.regiaoTorax = manifestacoesClinicas.isRegiaoTorax();
+            this.regioesObs = manifestacoesClinicas.getRegioesObs();
+        }
+
         this.codigo = prontuario.getCodigo();
         this.animal = AnimalResponseDto.of(prontuario.getAnimal());
         this.tutor = new UsuarioResponseDto(prontuario.getTutor());
@@ -171,18 +192,6 @@ public class ProntuarioResponseDTO {
 
         if (prontuario.getCirurgia() != null)
             this.cirurgia = new CirurgiaResponseDTO(prontuario.getCirurgia());
-
-        if (prontuario.getRegiaoColuna() != null)
-            this.regiaoColuna = prontuario.getRegiaoColuna().split(";");
-
-        if (prontuario.getRegiaoAbdomen() != null)
-            this.regiaoAbdomen = prontuario.getRegiaoAbdomen().split(";");
-
-        if (prontuario.getRegiaoMToracicos() != null)
-            this.regiaoMToracicos = prontuario.getRegiaoMToracicos().split(";");
-
-        if (prontuario.getRegiaoMPelvicos() != null)
-            this.regiaoMPelvicos = prontuario.getRegiaoMPelvicos().split(";");
 
         if (prontuario.getDataAtendimento() != null)
             this.dataAtendimento = prontuario.getDataAtendimento().toString();

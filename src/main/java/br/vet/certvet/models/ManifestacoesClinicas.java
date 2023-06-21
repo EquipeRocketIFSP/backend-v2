@@ -1,9 +1,7 @@
 package br.vet.certvet.models;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 
@@ -12,11 +10,14 @@ import javax.persistence.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Accessors(chain = true)
 @Getter
+@Setter
 public class ManifestacoesClinicas {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(columnDefinition = "TINYINT")
     private boolean prostracao;
     @Column(columnDefinition = "TINYINT")
@@ -38,10 +39,6 @@ public class ManifestacoesClinicas {
     @Column(columnDefinition = "TINYINT")
     private boolean regiaoTorax;
 
-    private String regiaoColuna;
-    private String regiaoAbdomen;
-    private String regiaoMToracicos;
-    private String regiaoMPelvicos;
     private String regioesObs;
 
     @ManyToOne

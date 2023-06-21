@@ -1,5 +1,6 @@
 package br.vet.certvet.services.implementation;
 
+import br.vet.certvet.dto.requests.prontuario.ManifestacoesClinicasDTO;
 import br.vet.certvet.dto.requests.prontuario.ProntuarioDTO;
 import br.vet.certvet.dto.responses.Metadata;
 import br.vet.certvet.dto.responses.PaginatedResponse;
@@ -26,6 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,6 +52,21 @@ public class ProntuarioServiceImpl implements ProntuarioService {
     private final AnimalRepository animalRepository;
 
     private final DocumentoService documentoService;
+
+    @Autowired
+    private ApetiteRepository apetiteRepository;
+
+    @Autowired
+    private LinfonodoRepository linfonodoRepository;
+
+    @Autowired
+    private MusculoRepository musculoRepository;
+
+    @Autowired
+    private AbdomenRegioesRepository abdomenRegioesRepository;
+
+    @Autowired
+    private ColunaRegioesRepository colunaRegioesRepository;
 
     public ProntuarioServiceImpl(ProntuarioRepository prontuarioRepository, PdfRepository pdfRepository, CirurgiaRepository cirurgiaRepository, TutorRepository tutorRepository, DocumentoRepository documentoRepository, PdfService pdfService, ClinicaRepository clinicaRepository, AnimalRepository animalRepository, DocumentoService documentoService) {
         this.prontuarioRepository = prontuarioRepository;
@@ -86,7 +104,7 @@ public class ProntuarioServiceImpl implements ProntuarioService {
 
     @Override
     public Prontuario save(Prontuario prontuario) {
-        if(null != prontuario.getCodigo())
+        if (null != prontuario.getCodigo())
             return prontuarioRepository.save(prontuario);
         Optional<Clinica> clinica = clinicaRepository.findById(prontuario.getClinica().getId());
         if (clinica.isEmpty()) throw new ClinicaNotFoundException("Clínica não cadastrada ou não identificada");
@@ -150,8 +168,72 @@ public class ProntuarioServiceImpl implements ProntuarioService {
     }
 
     @Override
+    @Transactional(rollbackFor = {SQLException.class, RuntimeException.class})
     public Prontuario edit(ProntuarioDTO dto, Prontuario prontuario) {
         ProntuarioDTOMapper.assignToModel(dto, prontuario);
+
+        if (dto instanceof ManifestacoesClinicasDTO) {
+            prontuario.getColunaRegioes().clear();
+            prontuario.getAbdomenRegioes().clear();
+            prontuario.getMusculos().clear();
+            prontuario.getLinfonodos().clear();
+
+            List<ApetiteModel> apetiteModelList = this.apetiteRepository.findAll();
+            List<Linfonodo> linfonodos = this.linfonodoRepository.findAll();
+            List<Musculo> musculos = this.musculoRepository.findAll();
+            List<AbdomenRegioes> abdomenRegioes = this.abdomenRegioesRepository.findAll();
+            List<ColunaRegioes> colunaRegioes = this.colunaRegioesRepository.findAll();
+
+            List<Linfonodo> selectedLinfonodos = linfonodos
+                    .stream()
+                    .filter(model -> model.getLinfonodo().equals(((ManifestacoesClinicasDTO) dto).getLinfonodos()))
+                    .toList();
+
+            Optional<ApetiteModel> apetite = apetiteModelList
+                    .stream()
+                    .filter(
+                            apetiteModel -> apetiteModel
+                                    .getStatus().getStatus()
+                                    .equals(((ManifestacoesClinicasDTO) dto)
+                                            .getApetite()
+                                            .toLowerCase()))
+                    .findFirst();
+
+
+            List<String> colunas = ((ManifestacoesClinicasDTO) dto).getColuna();
+            List<String> abdomen = ((ManifestacoesClinicasDTO) dto).getAbdomen();
+            List<String> mPelvicos = ((ManifestacoesClinicasDTO) dto).getMPelvicos().stream().map((str) -> "Pélvicos " + str).toList();
+            List<String> mToracicos = ((ManifestacoesClinicasDTO) dto).getMToracicos().stream().map((str) -> "Torácico " + str).toList();
+
+            List<ColunaRegioes> selectedColunas = colunaRegioes
+                    .stream()
+                    .filter(model -> colunas.contains(model.getNome()))
+                    .toList();
+
+            List<AbdomenRegioes> selectedAbdomens = abdomenRegioes
+                    .stream()
+                    .filter(model -> abdomen.contains(model.getNome()))
+                    .toList();
+
+            List<Musculo> selectedMusculos = new ArrayList<>();
+
+            selectedMusculos.addAll(
+                    musculos.stream()
+                            .filter(model -> mPelvicos.contains(model.getNome()))
+                            .toList());
+
+            selectedMusculos.addAll(
+                    musculos.stream()
+                            .filter(model -> mToracicos.contains(model.getNome()))
+                            .toList());
+
+            apetite.ifPresent(apetiteModel -> prontuario.getManifestacoesClinicas().setApetite(apetiteModel));
+
+            prontuario.getColunaRegioes().addAll(colunaRegioes);
+            prontuario.getAbdomenRegioes().addAll(abdomenRegioes);
+            prontuario.getMusculos().addAll(selectedMusculos);
+            prontuario.getLinfonodos().addAll(selectedLinfonodos);
+        }
 
         if (prontuario.getStatus() == ProntuarioStatus.COMPLETED)
             prontuario.setStatus(ProntuarioStatus.UPDATING);

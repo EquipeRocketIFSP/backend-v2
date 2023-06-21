@@ -3,6 +3,9 @@ package br.vet.certvet.dto.requests.prontuario;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 public class ManifestacoesClinicasDTO extends ProntuarioDTO {
     @JsonProperty("prostracao")
@@ -48,14 +51,14 @@ public class ManifestacoesClinicasDTO extends ProntuarioDTO {
     private String linfonodosObs;
 
     @JsonProperty("coluna")
-    private String[] coluna = {};
+    private List<String> coluna = new ArrayList<>();
 
     @JsonProperty("abdomen")
-    private String[] abdomen = {};
+    private List<String> abdomen = new ArrayList<>();
 
     @JsonProperty("m_toracicos")
-    private String[] mToracicos = {};
+    private List<String> mToracicos = new ArrayList<>();
 
     @JsonProperty("m_pelvicos")
-    private String[] mPelvicos = {};
+    private List<String> mPelvicos = new ArrayList<>();
 }
