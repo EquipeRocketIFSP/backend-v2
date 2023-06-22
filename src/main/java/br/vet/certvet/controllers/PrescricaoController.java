@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,8 +49,7 @@ public class PrescricaoController extends BaseController {
     }
 
     @GetMapping(
-            value = "/{prontuario}",
-            consumes = MediaType.APPLICATION_JSON_VALUE
+            value = "/{prontuario}"
     )
     public ResponseEntity<MedicacaoPrescritaListDTO> getPrescricao(
             @RequestHeader(AUTHORIZATION) String auth,
@@ -75,14 +75,20 @@ public class PrescricaoController extends BaseController {
      */
     @GetMapping(
             value = "/{prontuario}",
-            consumes = MediaType.APPLICATION_PDF_VALUE
+            consumes = MediaType.APPLICATION_PDF_VALUE,
+            produces = MediaType.APPLICATION_PDF_VALUE
     )
     public ResponseEntity<byte[]> getPrescricaoPdf(
             @RequestHeader(AUTHORIZATION) String auth,
             @PathVariable("prontuario") String prontuarioCodigo
     ) {
         Prontuario prontuario = findProntuarioEClinica(auth, prontuarioCodigo);
-        Optional<byte[]> pdf = pdfService.writePrescricao(prontuario);
+        final int max = prontuario.getPrescricoes()
+                .stream()
+                .mapToInt(Prescricao::getVersao)
+                .max()
+                .orElse(0);
+        Optional<byte[]> pdf = pdfService.writePrescricao(prontuario, max);
 
         return pdf.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.noContent().build());
@@ -98,7 +104,7 @@ public class PrescricaoController extends BaseController {
             @RequestBody byte[] medicacaoPrescritaPdf
     ) {
 
-        if(!pdfService.isFileTypePdf(medicacaoPrescritaPdf))
+        if(Boolean.FALSE.equals(pdfService.isFileTypePdf(medicacaoPrescritaPdf)))
             throw new NotMatchingFileTypeToPdfException("O arquivo recebido não foi identificado como pdf. Revise e tente novamente.");
 
         Prontuario prontuario = findProntuarioEClinica(auth, prontuarioCodigo);
@@ -132,7 +138,8 @@ public class PrescricaoController extends BaseController {
         );
 
         return null != signedPrescricao
-                ? ResponseEntity.created(URI.create(""))
+                ? ResponseEntity.created(
+                        URI.create(""))
                 .header("version", prontuario.prescricaoLatestVersion())
                 .build()
                 : ResponseEntity.internalServerError().build();
@@ -143,36 +150,31 @@ public class PrescricaoController extends BaseController {
             @PathVariable("prontuario") String prontuarioCodigo,
             @RequestBody MedicacaoPrescritaListDTO medicacaoPrescritaList
     ) {
-        //TODO: testar ser versionamento esta correspondendo a expectativa
         final Prontuario prontuario = findProntuario(prontuarioCodigo);
         final int max = prontuario.getPrescricoes()
                 .stream()
                 .mapToInt(Prescricao::getVersao)
                 .max()
-                .orElse(1);
-        medicacaoPrescritaList.getMedicacoesPrescritas()
-                .stream()
-                .map(medicacaoPrescrita -> medicacaoPrescrita.translate(prontuario))
-                .map(prescricao -> prescricao.setProntuario(prontuario))
-                .forEach(prescricao -> {
-                    prescricao.setVersao(max);
-                    List<Prescricao> p = prontuario.getPrescricoes();
-                    if (!p.contains(prescricao)) p.add(prescricao.setDataCriacao());
-                });
-//        List<Prescricao> prescricoesARemover = prontuario.getPrescricoes()
-//                .stream()
-//                .map(prescricao -> new MedicacaoPrescritaDTO().of(prescricao))
-//                .filter(prescricao -> !medicacaoPrescritaList.getMedicacoesPrescritas().contains(prescricao))
-//                .map(medicacaoPrescrita -> medicacaoPrescrita.translate(prontuario))
-//                .map(prescricao -> prescricao.setProntuario(prontuario))
-//                .toList();
-//        prescricoesARemover.forEach(prescricao -> prescricaoRepository.save(prontuario.getPrescricoes().getprescricao.delete()));
-        prescricaoRepository.saveAll(prontuario.getPrescricoes());
+                .orElse(0);
+        List<Prescricao> prescricoesAtualizadas = new ArrayList<>();
+        for (Prescricao p : prontuario.getPrescricoes()){
+            if(!medicacaoPrescritaList.getMedicacoesPrescritas().contains(new MedicacaoPrescritaDTO().of(p))){
+                p.setVersao(max).delete();
+            }
+            prescricoesAtualizadas.add(p);
+        }
+        for(MedicacaoPrescritaDTO newPrescription : medicacaoPrescritaList.getMedicacoesPrescritas()){
+            if(!prontuario.getPrescricoes().contains(newPrescription.translate(prontuario))){
+                prescricoesAtualizadas.add(newPrescription.translate(prontuario).setVersao(max));
+            }
+        }
         return ResponseEntity.created(
                         URI.create("/api/prontuario/prescricao/" + prontuarioCodigo))
                 .header("version", prontuario.prescricaoLatestVersion())
                 .body(new MedicacaoPrescritaListDTO().of(
-                        prontuario
+                        prontuarioService.save(
+                                prontuario.setPrescricoes(
+                                        prescricaoRepository.saveAllAndFlush(prescricoesAtualizadas)))
                 ));
     }
 

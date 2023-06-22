@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -105,7 +104,7 @@ public class ProntuarioServiceImpl implements ProntuarioService {
     @Override
     public Prontuario save(Prontuario prontuario) {
         if (null != prontuario.getCodigo())
-            return prontuarioRepository.save(prontuario);
+            return prontuarioRepository.saveAndFlush(prontuario);
         Optional<Clinica> clinica = clinicaRepository.findById(prontuario.getClinica().getId());
         if (clinica.isEmpty()) throw new ClinicaNotFoundException("Clínica não cadastrada ou não identificada");
         Optional<Usuario> tutor = tutorRepository.findById(prontuario.getTutor().getId());
@@ -113,36 +112,12 @@ public class ProntuarioServiceImpl implements ProntuarioService {
         Optional<Animal> animal = animalRepository.findByTutoridAndNome(tutor.get().getId(), prontuario.getAnimal().getNome());
         if (animal.isEmpty()) throw new AnimalNotFoundException("Animal não cadastrado ou não identificado");
         log.debug("Iniciando persistência do prontuário");
-//        Documento doc = Documento.builder()
-//                .codigo(codigo)
-//                .versao(1)
-//                .criadoEm(now)
-//                .veterinario(prontuario.getVeterinario())
-//                .clinica(clinica.get())
-//                .caminhoArquivo("/" + S3BucketServiceRepository.getConventionedBucketName(prontuario.getClinica().getCnpj()) + "/" + prontuario.getCodigo() + ".pdf")
-//                .build();
-////        log.debug("doc a ser persistido: " + doc);
-//        Documento tempDoc = documentoRepository.save(doc);
-//        log.debug("doc persistido");
-//        Prontuario p = prontuario.setDocumentoDetails(tempDoc);
-//        log.debug("Prontuario atualizado");
-        return prontuarioRepository.save(
+        return prontuarioRepository.saveAndFlush(
                 prontuario.setClinica(clinica.get())
                         .setTutor(tutor.get())
                         .setAnimal(animal.get())
                         .setCodigo(Prontuario.createCodigo(LocalDateTime.now()))
         );
-//        log.debug("prontuario persistido");
-//        documentoRepository.save(tempDoc.prontuario(p));
-//        log.debug("documento persistido");
-//        try {
-//            pdfService.writeProntuario(p);
-//            log.debug("Processo de gravação de PDF finalizado");
-//        } catch (SQLException e) {
-//            log.error("\"Erro de validação SQL do ID da Clínica\": " + e.getMessage());
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
     }
 
     @Override

@@ -41,7 +41,7 @@ public interface PdfService {
 
     Optional<byte[]> getPrescricaoPdf(Prontuario prontuario, int version);
 
-    Optional<byte[]> writePrescricao(Prontuario prontuario);
+    Optional<byte[]> writePrescricao(Prontuario prontuario, int version);
 
     ObjectMetadata savePrescricaoPdfInBucket(Prontuario prontuario, int version, byte[] medicacaoPrescritaPdf);
 }

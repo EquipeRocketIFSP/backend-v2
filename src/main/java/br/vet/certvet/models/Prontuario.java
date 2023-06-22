@@ -131,9 +131,9 @@ public class Prontuario {
     )
     private List<AbdomenRegioes> abdomenRegioes = new ArrayList<>();
 
-    @OneToMany(mappedBy = "id")
+    @OneToMany(mappedBy = "prontuario")
     @ToString.Exclude
-    private List<Prescricao> prescricoes = new ArrayList<>();
+    private List<Prescricao> prescricoes;
 
     public Prontuario setDocumentos(List<Documento> documentos) {
         this.documentos = documentos;
@@ -152,6 +152,7 @@ public class Prontuario {
 
     public List<Prescricao> getPrescricoes(int versao) {
         return prescricoes.stream()
+                .filter(prescricao -> !prescricao.isDeleted())
                 .filter(prescricao -> prescricao.getVersao() == versao)
                 .toList();
     }

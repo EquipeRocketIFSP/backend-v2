@@ -212,7 +212,7 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
     }
 
     @Override
-    public Optional<byte[]> writePrescricao(Prontuario prontuario) {
+    public Optional<byte[]> writePrescricao(Prontuario prontuario, int version) {
         final String layoutFile = "src/main/resources/documents/prontuario/PrescricaoLayout.html";
         String layout;
         try{
@@ -222,7 +222,7 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
             log.error(Arrays.toString(e.getStackTrace()));
             throw new EscritaPrescricaoPdfException("Erro ao ler o documento de referência para geração do pdf da prescrição.");
         }
-        layout = ProntuarioPdfHelper.replaceWithDivsForPrescricao(layout, prontuario.getPrescricoes());
+        layout = ProntuarioPdfHelper.replaceWithDivsForPrescricao(layout, prontuario.getPrescricoes(version));
         layout = ProntuarioPdfHelper.fillLayoutFieldsForPrescricao(layout, prontuario);
         return Optional.of(transformTxtToXmlToPdf(layout));
     }

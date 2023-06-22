@@ -54,8 +54,8 @@ public class Prescricao {
     @ToString.Exclude
     @JoinTable(
             name = "prontuario_prescricoes",
-            joinColumns = @JoinColumn(name = "prontuario_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "prescricoes_id", referencedColumnName = "id"),
+            joinColumns = @JoinColumn(name = "prescricoes_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "prontuario_id", referencedColumnName = "id"),
             uniqueConstraints = { @UniqueConstraint(columnNames = {"prontuario_id", "prescricoes_id"}) }
     )
     private Prontuario prontuario;
