@@ -71,7 +71,7 @@ public class Prontuario {
     @ToString.Exclude
     private List<Procedimento> procedimentos = new ArrayList<>();
 
-    @OneToMany(mappedBy = "prontuario")
+    @OneToMany(mappedBy = "prontuario", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     @Setter(AccessLevel.NONE)
     private List<Exame> exames = new ArrayList<>();

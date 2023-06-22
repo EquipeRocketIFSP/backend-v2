@@ -36,21 +36,10 @@ public class Exame {
     private boolean imagemRegiaoTorax;
 
     @ManyToOne
-    @JoinTable(
-            name = "prontuario_exames",
-            joinColumns = @JoinColumn(name = "exames_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "prontuario_id", referencedColumnName = "id"),
-            uniqueConstraints = { @UniqueConstraint(columnNames = {"prontuario_id", "exames_id"}) }
-    )
+    @JoinColumn(name = "prontuario_id")
     private Prontuario prontuario;
 
-    @ManyToOne
-    @JoinTable(
-            name = "exame_tipo",
-            joinColumns = @JoinColumn(name = "exames_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "tipo_id", referencedColumnName = "id"),
-            uniqueConstraints = { @UniqueConstraint(columnNames = {"exames_id", "tipo_id"}) }
-    )
+    @OneToOne
     private TipoExame tipoExame;
 
     public boolean equals(Object o) {

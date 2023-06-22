@@ -12,14 +12,8 @@ public class ExameDTO extends ProntuarioDTO {
     @JsonProperty("tipo_exame")
     private String tipoExame;
 
-    @JsonProperty("bioquimico")
-    private String bioquimico;
-
-    @JsonProperty("citologia")
-    private String citologia;
-
-    @JsonProperty("hematologia")
-    private String hematologia;
+    @JsonProperty("subtipo_exame")
+    private String subTipoExame;
 
     @JsonProperty("exames_outros")
     @Size(max = 2000)
@@ -28,9 +22,6 @@ public class ExameDTO extends ProntuarioDTO {
     @JsonProperty("outros_citologia")
     @Size(max = 2000)
     private String citologiaOutros;
-
-    @JsonProperty("imagem")
-    private String imagem;
 
     @JsonProperty("cabeca")
     private boolean cabeca;

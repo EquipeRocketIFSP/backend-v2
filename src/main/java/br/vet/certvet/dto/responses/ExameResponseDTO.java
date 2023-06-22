@@ -3,6 +3,8 @@ package br.vet.certvet.dto.responses;
 import br.vet.certvet.models.Exame;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Optional;
+
 public class ExameResponseDTO {
     @JsonProperty("id")
     private Long id;
@@ -10,7 +12,10 @@ public class ExameResponseDTO {
     @JsonProperty("tipo_exame")
     private String tipoExame;
 
-    @JsonProperty("outros_exames")
+    @JsonProperty("subtipo_exame")
+    private Optional<String> subTipoExame;
+
+    @JsonProperty("exames_outros")
     private String outrosExames;
 
     @JsonProperty("outros_citologia")
@@ -51,13 +56,17 @@ public class ExameResponseDTO {
 
     public ExameResponseDTO(Exame exame) {
         this.id = exame.getId();
-        this.tipoExame = exame.getTipoExame().toString();
+
+        if (exame.getTipoExame().getPai() == null) {
+            this.tipoExame = exame.getTipoExame().getNome();
+            this.subTipoExame = Optional.empty();
+        } else {
+            this.tipoExame = exame.getTipoExame().getPai().getNome();
+            this.subTipoExame = Optional.of(exame.getTipoExame().getNome());
+        }
+
         this.outrosExames = exame.getOutrosExames();
         this.outrosCitologia = exame.getOutrosCitologia();
-//        this.bioquimico = exame.getBioquimico();
-//        this.hematologia = exame.getHematologia();
-//        this.citologia = exame.getCitologia();
-//        this.imagem = exame.getImagem();
         this.imagemObsRegioes = exame.getImagemObsRegioes();
         this.imagemRegiaoCabeca = exame.isImagemRegiaoCabeca();
         this.imagemRegiaoTorax = exame.isImagemRegiaoTorax();

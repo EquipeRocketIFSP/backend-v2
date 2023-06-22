@@ -7,20 +7,12 @@ import br.vet.certvet.models.especializacoes.TipoExameEnum;
 
 public class ExameDTOMapper {
 
-    private ExameDTOMapper(){}
+    private ExameDTOMapper() {
+    }
+
     public static Exame assignToModel(ExameDTO dto, Exame model) {
-        model.setTipoExame(
-                TipoExame.builder()
-                        .nome(
-                                TipoExameEnum.valueOf(
-                                        dto.getTipoExame()))
-                        .build())
-                .setOutrosExames(dto.getExamesOutros())
+        model.setOutrosExames(dto.getExamesOutros())
                 .setOutrosCitologia(dto.getCitologiaOutros())
-//                .setBioquimico(dto.getBioquimico())
-//                .setHematologia(dto.getHematologia())
-//                .setCitologia(dto.getCitologia())
-//                .setImagem(dto.getImagem())
                 .setImagemRegiaoCabeca(dto.isCabeca())
                 .setImagemRegiaoTorax(dto.isTorax())
                 .setImagemObsRegioes(dto.getRegioesObs());

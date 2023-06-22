@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -18,6 +20,16 @@ public class TipoExame {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Enumerated(EnumType.STRING)
-    private TipoExameEnum nome;
+    @Column(nullable = false, unique = true)
+    private String nome;
+
+    @OneToMany(mappedBy = "tipoExame")
+    private List<Exame> exames;
+
+    @OneToMany(mappedBy = "pai")
+    private List<TipoExame> filhos = new ArrayList<>();
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "tipo_exame_id")
+    private TipoExame pai;
 }
