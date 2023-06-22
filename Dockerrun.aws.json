@@ -1,5 +1,49 @@
 {
   "AWSEBDockerrunVersion": "1",
+  "containerDefinitions": [
+    {
+      "name": "back",
+      "image": "equiperocket/backend-v2_back:latest",
+      "environment": [
+        {
+          "name": "SPRING_DATASOURCE_URL",
+          "value": "jdbc:mysql://poc.cy57hfox1fy1.us-east-1.rds.amazonaws.com:3306/certvet?useUnicode=true&characterEncoding=utf8&useSSL=true&allowPublicKeyRetrieval=true"
+        },
+        {
+          "name": "ARGS",
+          "value": "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5000 -Xmx1G -Xms128m -XX:MaxMetaspaceSize=128m"
+        },
+        {
+          "name": "PROFILE",
+          "value":"dev"
+        },
+        {
+          "name": "DB_PASSWORD",
+          "value": "kASe1QkIm5xQUZMF7cXo5000"
+        },
+        {
+          "name": "DB_USER",
+          "value": "admin"
+        },
+        {
+          "name": "MAIL_PASS",
+          "value": "yvayjysaldpubihr"
+        },
+        {
+          "name": "MAIL_USR",
+          "value": "cartvet.ifsp@gmail.com"
+        },
+        {
+          "name": "DEFAULT_PDF_PASS",
+          "value": "86E9tj9Z0ip4OLN"
+        },
+        {
+          "name": "AUTH_USER",
+          "value": "admin"
+        }
+      ]
+    }
+  ],
   "Image": {
     "Name": "equiperocket/backend-v2_back:latest",
     "Update": "true"

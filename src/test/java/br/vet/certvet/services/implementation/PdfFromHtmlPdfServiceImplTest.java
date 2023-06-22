@@ -127,7 +127,7 @@ public class PdfFromHtmlPdfServiceImplTest {
                 .procedimentos(
                         List.of(
                                 Procedimento.builder()
-                                        .descricao("Vacinação")
+//                                        .descricao("Vacinação")
                                         .medicamentoConsumido(
                                                 Estoque.builder()
                                                         .medida("ml")
