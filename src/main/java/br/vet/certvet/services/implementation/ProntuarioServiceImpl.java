@@ -106,7 +106,8 @@ public class ProntuarioServiceImpl implements ProntuarioService {
             try {
                 return prontuarioRepository.save(prontuario);
             }catch (Exception e){
-                e.printStackTrace();
+                log.error(e.getCause());
+                log.error(e.getMessage());
             }
         Optional<Clinica> clinica = clinicaRepository.findById(prontuario.getClinica().getId());
         if (clinica.isEmpty()) throw new ClinicaNotFoundException("Clínica não cadastrada ou não identificada");
