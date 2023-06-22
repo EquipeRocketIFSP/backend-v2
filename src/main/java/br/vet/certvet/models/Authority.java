@@ -13,6 +13,7 @@ import java.util.Objects;
 @ToString
 @Builder
 @Getter
+@Table(name = "responsabilidades")
 public class Authority implements GrantedAuthority {
 
     @Id

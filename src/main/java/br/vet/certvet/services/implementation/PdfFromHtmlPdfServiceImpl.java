@@ -23,7 +23,6 @@ import com.lowagie.text.pdf.PdfWriter;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
@@ -44,17 +43,20 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
 
     @Value("${app.default.pdf.password}")
     private String ownerPassword;
-    @Autowired
-    private DocumentoRepository documentoRepository;
+    private final DocumentoRepository documentoRepository;
 
-    @Autowired
-    private PdfRepository pdfRepository;
+    private final PdfRepository pdfRepository;
 
-    @Autowired
-    private ClinicaRepository clinicaRepository;
+    private final ClinicaRepository clinicaRepository;
 
-    @Autowired
-    private static UsuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
+
+    public PdfFromHtmlPdfServiceImpl(DocumentoRepository documentoRepository, PdfRepository pdfRepository, ClinicaRepository clinicaRepository, UsuarioRepository usuarioRepository) {
+        this.documentoRepository = documentoRepository;
+        this.pdfRepository = pdfRepository;
+        this.clinicaRepository = clinicaRepository;
+        this.usuarioRepository = usuarioRepository;
+    }
 
     @Override
     public byte[] writeProntuario(Prontuario prontuario) {
@@ -212,7 +214,7 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
     }
 
     @Override
-    public Optional<byte[]> writePrescricao(Prontuario prontuario) {
+    public Optional<byte[]> writePrescricao(Prontuario prontuario, int version) {
         final String layoutFile = "src/main/resources/documents/prontuario/PrescricaoLayout.html";
         String layout;
         try{
@@ -222,7 +224,7 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
             log.error(Arrays.toString(e.getStackTrace()));
             throw new EscritaPrescricaoPdfException("Erro ao ler o documento de referência para geração do pdf da prescrição.");
         }
-        layout = ProntuarioPdfHelper.replaceWithDivsForPrescricao(layout, prontuario.getPrescricoes());
+        layout = ProntuarioPdfHelper.replaceWithDivsForPrescricao(layout, prontuario.getPrescricoes(version));
         layout = ProntuarioPdfHelper.fillLayoutFieldsForPrescricao(layout, prontuario);
         return Optional.of(transformTxtToXmlToPdf(layout));
     }
@@ -236,7 +238,8 @@ public class PdfFromHtmlPdfServiceImpl implements PdfService {
         );
     }
 
-    public static List<Usuario> assinadoresPresentesSistema(IcpResponse icpResponse) {
+    @Override
+    public List<Usuario> assinadoresPresentesSistema(IcpResponse icpResponse) {
         List<Usuario> assinadores = new ArrayList<>();
         List<String> naoCadastrados = new ArrayList<>();
         for(String key : icpResponse.getSigners().keySet()){

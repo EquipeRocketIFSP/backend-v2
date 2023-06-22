@@ -4,6 +4,7 @@ import br.vet.certvet.dto.requests.prontuario.ManifestacoesClinicasDTO;
 import br.vet.certvet.dto.requests.prontuario.ProntuarioDTO;
 import br.vet.certvet.dto.requests.prontuario.SinaisVitaisDTO;
 import br.vet.certvet.dto.requests.prontuario.SuspeitaDiagnosticaDTO;
+import br.vet.certvet.models.ManifestacoesClinicas;
 import br.vet.certvet.models.Prontuario;
 
 public class ProntuarioDTOMapper {
@@ -30,7 +31,9 @@ public class ProntuarioDTOMapper {
     }
 
     protected static Prontuario mapManifestacoesClinicasDTO(ManifestacoesClinicasDTO dto, Prontuario prontuario) {
-        prontuario.setProstracao(dto.isProstracao())
+        final ManifestacoesClinicas manifestacoesClinicas = new ManifestacoesClinicas()
+                .setProntuario(prontuario)
+                .setProstracao(dto.isProstracao())
                 .setFebre(dto.isFebre())
                 .setVomito(dto.isVomito())
                 .setDiarreia(dto.isDiarreia())
@@ -40,12 +43,14 @@ public class ProntuarioDTOMapper {
                 .setLesoesNodulos(dto.isLesoesNodulos())
                 .setRegiaoCabeca(dto.isCabeca())
                 .setRegiaoTorax(dto.isTorax())
-                .setApetite(dto.getApetite())
-                .setRegioesObs(dto.getRegioesObs())
-                .setLinfonodos(dto.getLinfonodos())
-                .setLinfonodosObs(dto.getLinfonodosObs());
+                .setRegioesObs(dto.getRegioesObs());
+//                .setLinfonodos(dto.getLinfonodos())
+                //.setLinfonodosObs(dto.getLinfonodosObs());
 
-        if (dto.getMToracicos().length != 0)
+        prontuario.setManifestacoesClinicas(manifestacoesClinicas);
+    /**/
+
+        /*if (dto.getMToracicos().length != 0)
             prontuario.setRegiaoMToracicos(String.join(";", dto.getMToracicos()));
         else prontuario.setRegiaoMToracicos(null);
 
@@ -59,7 +64,7 @@ public class ProntuarioDTOMapper {
 
         if (dto.getAbdomen().length != 0)
             prontuario.setRegiaoAbdomen(String.join(";", dto.getAbdomen()));
-        else prontuario.setRegiaoAbdomen(null);
+        else prontuario.setRegiaoAbdomen(null);*/
 
         return prontuario;
     }

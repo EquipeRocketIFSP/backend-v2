@@ -44,12 +44,7 @@ public class Estoque implements Fillable<EstoqueRequestDto> {
     @JoinColumn(name = "medicamento_id")
     private Medicamento medicamento;
 
-    @OneToMany//(mappedBy = "id")
-    @JoinTable(
-            name = "estoque_procedimentos",
-            joinColumns = @JoinColumn(name = "estoque_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "procedimentos_id", referencedColumnName = "id", unique = true)
-    )
+    @OneToMany(mappedBy = "medicamentoConsumido")
     private List<Procedimento> procedimentos;
 
     @OneToMany(mappedBy = "estoque", cascade = CascadeType.ALL, orphanRemoval = true)

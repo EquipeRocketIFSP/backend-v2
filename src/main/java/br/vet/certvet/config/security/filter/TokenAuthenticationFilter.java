@@ -2,7 +2,10 @@ package br.vet.certvet.config.security.filter;
 
 
 import br.vet.certvet.config.security.service.TokenService;
+import br.vet.certvet.exceptions.ProntuarioNotFoundException;
+import br.vet.certvet.models.Prontuario;
 import br.vet.certvet.models.Usuario;
+import br.vet.certvet.repositories.ProntuarioRepository;
 import br.vet.certvet.repositories.UsuarioRepository;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -22,10 +25,13 @@ import java.util.NoSuchElementException;
 @Slf4j
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
     private static final String TYPE = "Bearer ";
+    private static final String VALIDATION_EXCEPTION = "O codigo do prontuario não pôde ser validado";
 
     private TokenService tokenService;
 
     private UsuarioRepository repository;
+
+    private ProntuarioRepository prontuarioRepository;
 
     @Override
     protected void doFilterInternal(
@@ -42,16 +48,29 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         if(Boolean.TRUE.equals(tokenService.validate(token))){
             authenticate(token);
         }
+        if(!request.getServletPath().contains("prescricao")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+        checkPrescricaoBelongsToClinica(request, token);
         filterChain.doFilter(request, response);
+    }
+
+    private void checkPrescricaoBelongsToClinica(HttpServletRequest request, String token) {
+        String[] substr = request.getServletPath().split("/");
+        String prontuarioCode = substr[substr.length-1];
+        Prontuario prontuario = prontuarioRepository.findByCodigo(prontuarioCode)
+                .orElseThrow(()->new ProntuarioNotFoundException(VALIDATION_EXCEPTION));
+        if(!prontuario.getClinica().equals(tokenService.getUsuario(token).getClinica()))
+            throw new ProntuarioNotFoundException(VALIDATION_EXCEPTION);
     }
 
     private void authenticate(String token) throws NoSuchElementException {
         Long userId = tokenService.getUsuarioId(token);
-        log.info("Usuário logado: " + userId);
         Usuario usuario;
         try {
             usuario = repository.findById(userId).orElseThrow();
-
+            log.info("Usuário logado: " + usuario.getUsername());
             if (usuario.getDeletedAt() != null)
                 throw new NoSuchElementException();
         } catch (NoSuchElementException e) {

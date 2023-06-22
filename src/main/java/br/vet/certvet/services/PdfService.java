@@ -5,6 +5,7 @@ import br.vet.certvet.exceptions.DocumentoNotPersistedException;
 import br.vet.certvet.exceptions.ErroAoProcessarTipoDocumento;
 import br.vet.certvet.models.Documento;
 import br.vet.certvet.models.Prontuario;
+import br.vet.certvet.models.Usuario;
 import br.vet.certvet.models.especializacoes.Doc;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -14,6 +15,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -27,6 +29,7 @@ public interface PdfService {
             throw new ErroAoProcessarTipoDocumento(e);
         }
     }
+    List<Usuario> assinadoresPresentesSistema(IcpResponse icpResponse);
 
     byte[] writeProntuario(Prontuario prontuario);
 
@@ -41,7 +44,7 @@ public interface PdfService {
 
     Optional<byte[]> getPrescricaoPdf(Prontuario prontuario, int version);
 
-    Optional<byte[]> writePrescricao(Prontuario prontuario);
+    Optional<byte[]> writePrescricao(Prontuario prontuario, int version);
 
     ObjectMetadata savePrescricaoPdfInBucket(Prontuario prontuario, int version, byte[] medicacaoPrescritaPdf);
 }

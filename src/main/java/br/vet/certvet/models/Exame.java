@@ -19,27 +19,29 @@ public class Exame {
     @Id
     @Setter(AccessLevel.NONE)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private Long id;
-
     @Column(nullable = false)
-    private String tipoExame;
+    private Long id;
 
     @Column(length = 2000)
     private String outrosExames;
 
     @Column(length = 2000)
     private String outrosCitologia;
-
-    private String bioquimico;
-    private String hematologia;
-    private String citologia;
-    private String imagem;
     private String imagemRegiaoCervical;
     private String imagemRegiaoAbdomen;
     private String imagemRegiaoMToracicos;
+    private String imagemRegiaoMPelvicos;
+    private String imagemObsRegioes;
+    private boolean imagemRegiaoCabeca;
+    private boolean imagemRegiaoTorax;
 
-    @Override
+    @ManyToOne
+    @JoinColumn(name = "prontuario_id")
+    private Prontuario prontuario;
+
+    @OneToOne
+    private TipoExame tipoExame;
+
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -54,14 +56,14 @@ public class Exame {
             return false;
         if (!Objects.equals(outrosCitologia, exame.outrosCitologia))
             return false;
-        if (!Objects.equals(bioquimico, exame.bioquimico))
-            return false;
-        if (!Objects.equals(hematologia, exame.hematologia))
-            return false;
-        if (!Objects.equals(citologia, exame.citologia))
-            return false;
-        if (!Objects.equals(imagem, exame.imagem))
-            return false;
+//        if (!Objects.equals(bioquimico, exame.bioquimico))
+//            return false;
+//        if (!Objects.equals(hematologia, exame.hematologia))
+//            return false;
+//        if (!Objects.equals(citologia, exame.citologia))
+//            return false;
+//        if (!Objects.equals(imagem, exame.imagem))
+//            return false;
         if (!Objects.equals(imagemRegiaoCervical, exame.imagemRegiaoCervical))
             return false;
         if (!Objects.equals(imagemRegiaoAbdomen, exame.imagemRegiaoAbdomen))
@@ -76,10 +78,10 @@ public class Exame {
         int result = tipoExame != null ? tipoExame.hashCode() : 0;
         result = 31 * result + (outrosExames != null ? outrosExames.hashCode() : 0);
         result = 31 * result + (outrosCitologia != null ? outrosCitologia.hashCode() : 0);
-        result = 31 * result + (bioquimico != null ? bioquimico.hashCode() : 0);
-        result = 31 * result + (hematologia != null ? hematologia.hashCode() : 0);
-        result = 31 * result + (citologia != null ? citologia.hashCode() : 0);
-        result = 31 * result + (imagem != null ? imagem.hashCode() : 0);
+//        result = 31 * result + (bioquimico != null ? bioquimico.hashCode() : 0);
+//        result = 31 * result + (hematologia != null ? hematologia.hashCode() : 0);
+//        result = 31 * result + (citologia != null ? citologia.hashCode() : 0);
+//        result = 31 * result + (imagem != null ? imagem.hashCode() : 0);
         result = 31 * result + (imagemRegiaoCervical != null ? imagemRegiaoCervical.hashCode() : 0);
         result = 31 * result + (imagemRegiaoAbdomen != null ? imagemRegiaoAbdomen.hashCode() : 0);
         result = 31 * result + (imagemRegiaoMToracicos != null ? imagemRegiaoMToracicos.hashCode() : 0);
@@ -88,17 +90,6 @@ public class Exame {
         result = 31 * result + (imagemRegiaoTorax ? 1 : 0);
         return result;
     }
-
-    private String imagemRegiaoMPelvicos;
-    private String imagemObsRegioes;
-
-    private boolean imagemRegiaoCabeca;
-    private boolean imagemRegiaoTorax;
-
-    @ManyToOne
-    @JoinColumn(name = "prontuario_id")
-    private Prontuario prontuario;
-
     public Exame(Prontuario prontuario) {
         this.prontuario = prontuario;
     }
