@@ -30,11 +30,46 @@ VALUES
 
 INSERT INTO tipo_exame(nome)
 VALUES
-    ('BIOQUIMICO'),
-    ('CITOLOGIA'),
-    ('HEMATOLOGIA'),
-    ('IMAGEM'),
-    ('OUTROS');
+    ("Bioquimico"),
+    ("Hematologia"),
+    ("Citologia"),
+    ("Imagem"),
+    ("Outros");
+
+INSERT INTO tipo_exame(nome,tipo_exame_id)
+VALUES
+        ("Alanina Aminotransferase - ALT",1),
+        ("Aspartato Aminotransferase - AST",1),
+        ("Fosfatase Alcalina - FA",1),
+        ("Gama Glutamil Transpeptidase - GGT",1),
+        ("Uréia",1),
+        ("Creatinina",1),
+        ("Glicemia",1),
+        ("Frutosamina",1),
+        ("Proteína Total",1),
+        ("Proteína Fracionada",1),
+        ("Albumina",1),
+        ("Amilase",1),
+        ("Lipase",1),
+        ("Colesterol Total",1),
+        ("Triglicérides",1),
+        ("Sódio",1),
+        ("Potássio",1),
+        ("Cálcio",1),
+        ("Fósforo",1),
+        ("Bilirrubinas",1);
+
+INSERT INTO tipo_exame(nome,tipo_exame_id)
+VALUES
+    ("Hemograma Completo", 2), ("Hemograma Controle", 2), ("Leucegrama", 2), ("Contagem de Plaquetas", 2);
+
+INSERT INTO tipo_exame(nome,tipo_exame_id)
+VALUES
+    ("CAAF", 3), ("Imprinting", 3), ("Histopatologico", 3), ("Biópsia", 3), ("Outro", 3);
+
+INSERT INTO tipo_exame(nome,tipo_exame_id)
+VALUES
+    ("Raio-X", 4), ("Ultrasson", 4), ("Tomografia", 4);
 
 INSERT INTO tipos_procedimentos (nome) VALUES
     ('Coleta de Sangue'),
