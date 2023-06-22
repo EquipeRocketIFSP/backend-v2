@@ -1,5 +1,6 @@
 package br.vet.certvet.services.implementation;
 
+import br.vet.certvet.dto.requests.prontuario.ManifestacoesClinicasDTO;
 import br.vet.certvet.dto.requests.prontuario.ProntuarioDTO;
 import br.vet.certvet.dto.responses.Metadata;
 import br.vet.certvet.dto.responses.PaginatedResponse;
@@ -16,7 +17,6 @@ import br.vet.certvet.services.PdfService;
 import br.vet.certvet.services.ProntuarioService;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,7 +51,17 @@ public class ProntuarioServiceImpl implements ProntuarioService {
 
     private final DocumentoService documentoService;
 
-    public ProntuarioServiceImpl(ProntuarioRepository prontuarioRepository, PdfRepository pdfRepository, CirurgiaRepository cirurgiaRepository, TutorRepository tutorRepository, DocumentoRepository documentoRepository, PdfService pdfService, ClinicaRepository clinicaRepository, AnimalRepository animalRepository, DocumentoService documentoService) {
+    private final ApetiteRepository apetiteRepository;
+
+    private final LinfonodoRepository linfonodoRepository;
+
+    private final MusculoRepository musculoRepository;
+
+    private final AbdomenRegioesRepository abdomenRegioesRepository;
+
+    private final ColunaRegioesRepository colunaRegioesRepository;
+
+    public ProntuarioServiceImpl(ProntuarioRepository prontuarioRepository, PdfRepository pdfRepository, CirurgiaRepository cirurgiaRepository, TutorRepository tutorRepository, DocumentoRepository documentoRepository, PdfService pdfService, ClinicaRepository clinicaRepository, AnimalRepository animalRepository, DocumentoService documentoService, ApetiteRepository apetiteRepository, LinfonodoRepository linfonodoRepository, MusculoRepository musculoRepository, AbdomenRegioesRepository abdomenRegioesRepository, ColunaRegioesRepository colunaRegioesRepository, EstoqueService estoqueService) {
         this.prontuarioRepository = prontuarioRepository;
         this.pdfRepository = pdfRepository;
         this.cirurgiaRepository = cirurgiaRepository;
@@ -60,10 +71,15 @@ public class ProntuarioServiceImpl implements ProntuarioService {
         this.clinicaRepository = clinicaRepository;
         this.animalRepository = animalRepository;
         this.documentoService = documentoService;
+        this.apetiteRepository = apetiteRepository;
+        this.linfonodoRepository = linfonodoRepository;
+        this.musculoRepository = musculoRepository;
+        this.abdomenRegioesRepository = abdomenRegioesRepository;
+        this.colunaRegioesRepository = colunaRegioesRepository;
+        this.estoqueService = estoqueService;
     }
 
-    @Autowired
-    private EstoqueService estoqueService;
+    private final EstoqueService estoqueService;
 
     private static final int RESPONSE_LIMIT = 30;
 
@@ -86,8 +102,13 @@ public class ProntuarioServiceImpl implements ProntuarioService {
 
     @Override
     public Prontuario save(Prontuario prontuario) {
-        if(null != prontuario.getCodigo())
-            return prontuarioRepository.save(prontuario);
+        if (null != prontuario.getCodigo())
+            try {
+                return prontuarioRepository.save(prontuario);
+            }catch (Exception e){
+                log.error(e.getCause());
+                log.error(e.getMessage());
+            }
         Optional<Clinica> clinica = clinicaRepository.findById(prontuario.getClinica().getId());
         if (clinica.isEmpty()) throw new ClinicaNotFoundException("Clínica não cadastrada ou não identificada");
         Optional<Usuario> tutor = tutorRepository.findById(prontuario.getTutor().getId());
@@ -95,36 +116,12 @@ public class ProntuarioServiceImpl implements ProntuarioService {
         Optional<Animal> animal = animalRepository.findByTutoridAndNome(tutor.get().getId(), prontuario.getAnimal().getNome());
         if (animal.isEmpty()) throw new AnimalNotFoundException("Animal não cadastrado ou não identificado");
         log.debug("Iniciando persistência do prontuário");
-//        Documento doc = Documento.builder()
-//                .codigo(codigo)
-//                .versao(1)
-//                .criadoEm(now)
-//                .veterinario(prontuario.getVeterinario())
-//                .clinica(clinica.get())
-//                .caminhoArquivo("/" + S3BucketServiceRepository.getConventionedBucketName(prontuario.getClinica().getCnpj()) + "/" + prontuario.getCodigo() + ".pdf")
-//                .build();
-////        log.debug("doc a ser persistido: " + doc);
-//        Documento tempDoc = documentoRepository.save(doc);
-//        log.debug("doc persistido");
-//        Prontuario p = prontuario.setDocumentoDetails(tempDoc);
-//        log.debug("Prontuario atualizado");
-        return prontuarioRepository.save(
+        return prontuarioRepository.saveAndFlush(
                 prontuario.setClinica(clinica.get())
                         .setTutor(tutor.get())
                         .setAnimal(animal.get())
                         .setCodigo(Prontuario.createCodigo(LocalDateTime.now()))
         );
-//        log.debug("prontuario persistido");
-//        documentoRepository.save(tempDoc.prontuario(p));
-//        log.debug("documento persistido");
-//        try {
-//            pdfService.writeProntuario(p);
-//            log.debug("Processo de gravação de PDF finalizado");
-//        } catch (SQLException e) {
-//            log.error("\"Erro de validação SQL do ID da Clínica\": " + e.getMessage());
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
     }
 
     @Override
@@ -150,8 +147,72 @@ public class ProntuarioServiceImpl implements ProntuarioService {
     }
 
     @Override
+    @Transactional(rollbackFor = {SQLException.class, RuntimeException.class})
     public Prontuario edit(ProntuarioDTO dto, Prontuario prontuario) {
         ProntuarioDTOMapper.assignToModel(dto, prontuario);
+
+        if (dto instanceof ManifestacoesClinicasDTO) {
+            prontuario.getColunaRegioes().clear();
+            prontuario.getAbdomenRegioes().clear();
+            prontuario.getMusculos().clear();
+            prontuario.getLinfonodos().clear();
+
+            List<ApetiteModel> apetiteModelList = this.apetiteRepository.findAll();
+            List<Linfonodo> linfonodos = this.linfonodoRepository.findAll();
+            List<Musculo> musculos = this.musculoRepository.findAll();
+            List<AbdomenRegioes> abdomenRegioes = this.abdomenRegioesRepository.findAll();
+            List<ColunaRegioes> colunaRegioes = this.colunaRegioesRepository.findAll();
+
+            List<Linfonodo> selectedLinfonodos = linfonodos
+                    .stream()
+                    .filter(model -> model.getLinfonodo().equals(((ManifestacoesClinicasDTO) dto).getLinfonodos()))
+                    .toList();
+
+            Optional<ApetiteModel> apetite = apetiteModelList
+                    .stream()
+                    .filter(
+                            apetiteModel -> apetiteModel
+                                    .getStatus().getStatus()
+                                    .equals(((ManifestacoesClinicasDTO) dto)
+                                            .getApetite()
+                                            .toLowerCase()))
+                    .findFirst();
+
+
+            List<String> colunas = ((ManifestacoesClinicasDTO) dto).getColuna();
+            List<String> abdomen = ((ManifestacoesClinicasDTO) dto).getAbdomen();
+            List<String> mPelvicos = ((ManifestacoesClinicasDTO) dto).getMPelvicos().stream().map((str) -> "Pélvicos " + str).toList();
+            List<String> mToracicos = ((ManifestacoesClinicasDTO) dto).getMToracicos().stream().map((str) -> "Torácico " + str).toList();
+
+            List<ColunaRegioes> selectedColunas = colunaRegioes
+                    .stream()
+                    .filter(model -> colunas.contains(model.getNome()))
+                    .toList();
+
+            List<AbdomenRegioes> selectedAbdomens = abdomenRegioes
+                    .stream()
+                    .filter(model -> abdomen.contains(model.getNome()))
+                    .toList();
+
+            List<Musculo> selectedMusculos = new ArrayList<>();
+
+            selectedMusculos.addAll(
+                    musculos.stream()
+                            .filter(model -> mPelvicos.contains(model.getNome()))
+                            .toList());
+
+            selectedMusculos.addAll(
+                    musculos.stream()
+                            .filter(model -> mToracicos.contains(model.getNome()))
+                            .toList());
+
+            apetite.ifPresent(apetiteModel -> prontuario.getManifestacoesClinicas().setApetite(apetiteModel));
+
+            prontuario.getColunaRegioes().addAll(selectedColunas);
+            prontuario.getAbdomenRegioes().addAll(selectedAbdomens);
+            prontuario.getMusculos().addAll(selectedMusculos);
+            prontuario.getLinfonodos().addAll(selectedLinfonodos);
+        }
 
         if (prontuario.getStatus() == ProntuarioStatus.COMPLETED)
             prontuario.setStatus(ProntuarioStatus.UPDATING);

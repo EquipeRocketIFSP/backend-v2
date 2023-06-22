@@ -13,7 +13,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
@@ -24,49 +25,47 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 
 @ExtendWith(SpringExtension.class)
 class ProntuarioServiceImplTest {
 
-    private ProntuarioRepository prontuarioRepository = mock(ProntuarioRepository.class);
+    @Mock
+    private ProntuarioRepository prontuarioRepository;
 
-    private PdfRepository pdfRepository = mock(PdfRepository.class);
+    @Mock
+    private PdfRepository pdfRepository;
 
-    private CirurgiaRepository cirurgiaRepository = mock(CirurgiaRepository.class);
+    @Mock
+    private CirurgiaRepository cirurgiaRepository;
 
-    private TutorRepository tutorRepository = mock(TutorRepository.class);
+    @Mock
+    private TutorRepository tutorRepository;
 
-    private DocumentoRepository documentoRepository = mock(DocumentoRepository.class);
+    @Mock
+    private DocumentoRepository documentoRepository;
 
-    private PdfService pdfService = mock(PdfService.class);
+    @Mock
+    private PdfService pdfService;
 
-    private ClinicaRepository clinicaRepository = mock(ClinicaRepository.class);
+    @Mock
+    private ClinicaRepository clinicaRepository;
 
-    private AnimalRepository animalRepository = mock(AnimalRepository.class);
+    @Mock
+    private AnimalRepository animalRepository;
 
-    private DocumentoService documentoService = mock(DocumentoService.class);
+    @Mock
+    private DocumentoService documentoService;
 
-    private ProntuarioFactory prontuarioFactory = mock(ProntuarioFactory.class);
+    @Mock
+    private ProntuarioFactory prontuarioFactory;
 
-    @Qualifier("prontuarioServiceImpl")
+    @InjectMocks
     private ProntuarioServiceImpl prontuarioService;
 
     @BeforeEach
     void setUp() {
-        prontuarioService = new ProntuarioServiceImpl(
-                prontuarioRepository,
-                pdfRepository,
-                cirurgiaRepository,
-                tutorRepository,
-                documentoRepository,
-                pdfService,
-                clinicaRepository,
-                animalRepository,
-                documentoService
-        );
     }
 
     @AfterEach

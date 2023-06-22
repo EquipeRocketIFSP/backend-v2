@@ -192,9 +192,10 @@ public class ProntuarioPdfHelper {
                 .put(CLINICA_RAZAOSOCIAL, clinica.getRazaoSocial())
                 .put(TUTOR_NOME,          tutor.getNome())
                 .put(TUTOR_CPF,           tutor.getCpf())
-                .put("tutor.telefone",      tutor.getTelefone())
+                .put("tutor.telefone",    tutor.getTelefone())
                 .put(VETERINARIO_NOME,    veterinario.getNome())
                 .put(VETERINARIO_CRMV,    veterinario.getRegistroCRMV())
+                .put("prontuario.codigo", prontuario.getCodigo())
                 .build()
         ).replace(layout);
     }

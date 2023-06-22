@@ -22,7 +22,7 @@ public class ProcedimentoResponseDTO {
     private MedicamentoResponseDto medicamento;
 
     public ProcedimentoResponseDTO(Procedimento model) {
-        this.procedimento = model.getDescricao();
+        this.procedimento = model.getProcedimentoTipo().getNome();
         this.procedimentoOutros = model.getOutros();
 
         if (model.getMedicamentoConsumido() != null) {

@@ -43,14 +43,20 @@ public class Documento {
     private String anestesia;
     private String observacoes;
 
-    @ManyToOne
-    @JoinColumn(name = "veterinario_id")
-    private Usuario veterinario;
 
     @ManyToOne
-    @JoinColumn(name = "clinica_id")
-    @ToString.Exclude
-    private Clinica clinica;
+    @JoinTable(
+            name = "veterinario_documentos",
+            joinColumns = @JoinColumn(name = "documento_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "usuario_id", referencedColumnName = "id"),
+            uniqueConstraints = { @UniqueConstraint(columnNames = {"usuario_id", "documento_id"}) }
+    )
+    private Usuario veterinario;
+
+//    @ManyToOne
+//    @JoinColumn(name = "clinica_id")
+//    @ToString.Exclude
+//    private Clinica clinica;
     private String caminhoArquivo;
 
     protected String md5 = null;
@@ -60,8 +66,8 @@ public class Documento {
     @ManyToMany
     @JoinTable(
             name = "assinadores_documentos",
-            joinColumns = {@JoinColumn(name = "documento_id")},
-            inverseJoinColumns = {@JoinColumn(name = "usuario_id")}
+            joinColumns = {@JoinColumn(name = "documento_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "usuario_id", referencedColumnName = "id")}
     )
     @ToString.Exclude
     protected List<Usuario> assinadores;
@@ -93,9 +99,12 @@ public class Documento {
         return this;
     }
 
-    public Documento setClinica(Clinica clinica) {
-        this.clinica = clinica;
-        return this;
+//    public Documento setClinica(Clinica clinica) {
+//        this.clinica = clinica;
+//        return this;
+//    }
+    public Clinica getClinica(){
+        return prontuario.getClinica();
     }
 
     public Documento md5(String md5) {

@@ -37,7 +37,7 @@ public record ProntuarioRequest (
         Animal animal,
         Usuario veterinario,
         Cirurgia cirurgia,
-        List<Procedimento>procedimentos,
+        List<Procedimento> procedimentos,
         List<Exame> exames,
         String codigo,
         Usuario tutor,
@@ -55,7 +55,7 @@ public record ProntuarioRequest (
                 .conciencia(conciencia)
                 .escoreCorporal(escoreCorporal)
                 .supeitaDiagnostica(supeitaDiagnostica)
-                .prostracao(prostracao)
+/*                .prostracao(prostracao)
                 .febre(febre)
                 .vomito(vomito)
                 .diarreia(diarreia)
@@ -64,14 +64,14 @@ public record ProntuarioRequest (
                 .sensibilidadeDor(sensibilidadeDor)
                 .lesoesNodulos(lesoesNodulos)
                 .apetite(apetite)
-                .linfonodos(linfonodos)
+//                .linfonodos(linfonodos)
                 .linfonodosObs(linfonodosObs)
                 .regiaoColuna(regiaoColuna)
                 .regiaoAbdomen(regiaoAbdomen)
                 .regiaoMToracicos(regiaoMToracicos)
                 .regiaoMPelvicos(regiaoMPelvicos)
                 .regiaoCabeca(regiaoCabeca)
-                .regiaoTorax(regiaoTorax)
+                .regiaoTorax(regiaoTorax)*/
                 .dataAtendimento(dataAtendimento)
                 .animal(animal)
                 .veterinario(veterinario)

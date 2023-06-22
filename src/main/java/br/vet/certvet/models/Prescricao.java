@@ -35,7 +35,13 @@ public class Prescricao {
     @Setter
     @ManyToOne
     @ToString.Exclude
-    private Usuario assinador;
+    @JoinTable(
+            name = "prescricoes_veterinarioassinador",
+            joinColumns = @JoinColumn(name = "prescricao_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "usuarios_id", referencedColumnName = "id"),
+            uniqueConstraints = { @UniqueConstraint(columnNames = {"prescricao_id", "usuarios_id"}) }
+    )
+    private Usuario veterinarioAssinador;
 
     private LocalDateTime dataCriacao;
     private LocalDateTime dataExclusao;
@@ -46,6 +52,12 @@ public class Prescricao {
 
     @ManyToOne
     @ToString.Exclude
+    @JoinTable(
+            name = "prontuario_prescricoes",
+            joinColumns = @JoinColumn(name = "prescricoes_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "prontuario_id", referencedColumnName = "id"),
+            uniqueConstraints = { @UniqueConstraint(columnNames = {"prontuario_id", "prescricoes_id"}) }
+    )
     private Prontuario prontuario;
 
     @Override

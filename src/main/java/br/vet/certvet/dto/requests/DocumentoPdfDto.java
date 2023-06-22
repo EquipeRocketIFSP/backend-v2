@@ -31,7 +31,7 @@ public record DocumentoPdfDto(
 ) {
         public Documento toDocumento(final Prontuario prontuario, final String tipo) {
                 return Documento.builder()
-                        .clinica(prontuario.getClinica())
+//                        .clinica(prontuario.getClinica())
                         .prontuario(prontuario)
                         .anestesia(anestesiaAplicada())
                         .causaMortisDescription(causaMortisDescription())

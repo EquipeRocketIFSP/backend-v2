@@ -8,6 +8,7 @@ import lombok.ToString;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
+import java.util.Objects;
 
 @Getter
 @ToString
@@ -81,6 +82,41 @@ public class MedicacaoPrescritaDTO {
                 .duracao(this.duracao)
                 .quandoAplicar(this.quandoAplicar)
                 .observacoes(this.observacoes)
+                .prontuario(prontuario)
                 .build();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        MedicacaoPrescritaDTO that = (MedicacaoPrescritaDTO) o;
+
+        if (!Objects.equals(uso, that.uso)) return false;
+        if (!Objects.equals(nome, that.nome)) return false;
+        if (!Objects.equals(dose, that.dose)) return false;
+        if (!Objects.equals(formaFarmaceutica, that.formaFarmaceutica))
+            return false;
+        if (!Objects.equals(concentracao, that.concentracao)) return false;
+        if (!Objects.equals(frequencia, that.frequencia)) return false;
+        if (!Objects.equals(duracao, that.duracao)) return false;
+        if (!Objects.equals(quandoAplicar, that.quandoAplicar))
+            return false;
+        return Objects.equals(observacoes, that.observacoes);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = uso != null ? uso.hashCode() : 0;
+        result = 31 * result + (nome != null ? nome.hashCode() : 0);
+        result = 31 * result + (dose != null ? dose.hashCode() : 0);
+        result = 31 * result + (formaFarmaceutica != null ? formaFarmaceutica.hashCode() : 0);
+        result = 31 * result + (concentracao != null ? concentracao.hashCode() : 0);
+        result = 31 * result + (frequencia != null ? frequencia.hashCode() : 0);
+        result = 31 * result + (duracao != null ? duracao.hashCode() : 0);
+        result = 31 * result + (quandoAplicar != null ? quandoAplicar.hashCode() : 0);
+        result = 31 * result + (observacoes != null ? observacoes.hashCode() : 0);
+        return result;
     }
 }
