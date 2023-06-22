@@ -204,8 +204,8 @@ public class ProntuarioServiceImpl implements ProntuarioService {
 
             apetite.ifPresent(apetiteModel -> prontuario.getManifestacoesClinicas().setApetite(apetiteModel));
 
-            prontuario.getColunaRegioes().addAll(colunaRegioes);
-            prontuario.getAbdomenRegioes().addAll(abdomenRegioes);
+            prontuario.getColunaRegioes().addAll(selectedColunas);
+            prontuario.getAbdomenRegioes().addAll(selectedAbdomens);
             prontuario.getMusculos().addAll(selectedMusculos);
             prontuario.getLinfonodos().addAll(selectedLinfonodos);
         }

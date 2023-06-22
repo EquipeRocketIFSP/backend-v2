@@ -52,7 +52,7 @@ public class ProcedimentoServiceImpl implements ProcedimentoService {
                 .stream()
                 .map(procedimentoDTO -> {
                     final Optional<ProcedimentoTipo> tipo = tipos.stream()
-                            .filter((t) -> t.getId().equals(procedimentoDTO.getProcedimento()))
+                            .filter((t) -> t.getNome().equals(procedimentoDTO.getProcedimento()))
                             .findFirst();
 
                     if (tipo.isEmpty())
