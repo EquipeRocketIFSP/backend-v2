@@ -25,8 +25,11 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @RequestMapping("/api")
 @SecurityRequirement(name = "bearer-key")
 public class AgendamentoController extends BaseController {
-    @Autowired
-    private AgendamentoService agendamentoService;
+    private final AgendamentoService agendamentoService;
+
+    public AgendamentoController(AgendamentoService agendamentoService) {
+        this.agendamentoService = agendamentoService;
+    }
 
     @PostMapping("/agendamento")
     public ResponseEntity<AgendamentoResponseDto> create(
