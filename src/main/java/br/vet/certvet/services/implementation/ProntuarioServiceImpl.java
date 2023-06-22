@@ -17,7 +17,6 @@ import br.vet.certvet.services.PdfService;
 import br.vet.certvet.services.ProntuarioService;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -52,22 +51,17 @@ public class ProntuarioServiceImpl implements ProntuarioService {
 
     private final DocumentoService documentoService;
 
-    @Autowired
-    private ApetiteRepository apetiteRepository;
+    private final ApetiteRepository apetiteRepository;
 
-    @Autowired
-    private LinfonodoRepository linfonodoRepository;
+    private final LinfonodoRepository linfonodoRepository;
 
-    @Autowired
-    private MusculoRepository musculoRepository;
+    private final MusculoRepository musculoRepository;
 
-    @Autowired
-    private AbdomenRegioesRepository abdomenRegioesRepository;
+    private final AbdomenRegioesRepository abdomenRegioesRepository;
 
-    @Autowired
-    private ColunaRegioesRepository colunaRegioesRepository;
+    private final ColunaRegioesRepository colunaRegioesRepository;
 
-    public ProntuarioServiceImpl(ProntuarioRepository prontuarioRepository, PdfRepository pdfRepository, CirurgiaRepository cirurgiaRepository, TutorRepository tutorRepository, DocumentoRepository documentoRepository, PdfService pdfService, ClinicaRepository clinicaRepository, AnimalRepository animalRepository, DocumentoService documentoService) {
+    public ProntuarioServiceImpl(ProntuarioRepository prontuarioRepository, PdfRepository pdfRepository, CirurgiaRepository cirurgiaRepository, TutorRepository tutorRepository, DocumentoRepository documentoRepository, PdfService pdfService, ClinicaRepository clinicaRepository, AnimalRepository animalRepository, DocumentoService documentoService, ApetiteRepository apetiteRepository, LinfonodoRepository linfonodoRepository, MusculoRepository musculoRepository, AbdomenRegioesRepository abdomenRegioesRepository, ColunaRegioesRepository colunaRegioesRepository, EstoqueService estoqueService) {
         this.prontuarioRepository = prontuarioRepository;
         this.pdfRepository = pdfRepository;
         this.cirurgiaRepository = cirurgiaRepository;
@@ -77,10 +71,15 @@ public class ProntuarioServiceImpl implements ProntuarioService {
         this.clinicaRepository = clinicaRepository;
         this.animalRepository = animalRepository;
         this.documentoService = documentoService;
+        this.apetiteRepository = apetiteRepository;
+        this.linfonodoRepository = linfonodoRepository;
+        this.musculoRepository = musculoRepository;
+        this.abdomenRegioesRepository = abdomenRegioesRepository;
+        this.colunaRegioesRepository = colunaRegioesRepository;
+        this.estoqueService = estoqueService;
     }
 
-    @Autowired
-    private EstoqueService estoqueService;
+    private final EstoqueService estoqueService;
 
     private static final int RESPONSE_LIMIT = 30;
 
@@ -104,7 +103,11 @@ public class ProntuarioServiceImpl implements ProntuarioService {
     @Override
     public Prontuario save(Prontuario prontuario) {
         if (null != prontuario.getCodigo())
-            return prontuarioRepository.saveAndFlush(prontuario);
+            try {
+                return prontuarioRepository.save(prontuario);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         Optional<Clinica> clinica = clinicaRepository.findById(prontuario.getClinica().getId());
         if (clinica.isEmpty()) throw new ClinicaNotFoundException("Clínica não cadastrada ou não identificada");
         Optional<Usuario> tutor = tutorRepository.findById(prontuario.getTutor().getId());

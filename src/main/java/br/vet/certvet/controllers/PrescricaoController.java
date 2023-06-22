@@ -6,14 +6,12 @@ import br.vet.certvet.dto.requests.prontuario.MedicacaoPrescritaListDTO;
 import br.vet.certvet.exceptions.AssinadorNaoCadastradoException;
 import br.vet.certvet.exceptions.ErroSalvarPdfAssinadoAwsException;
 import br.vet.certvet.exceptions.InvalidSignedDocumentoException;
-import br.vet.certvet.exceptions.NotMatchingFileTypeToPdfException;
 import br.vet.certvet.models.Prescricao;
 import br.vet.certvet.models.Prontuario;
 import br.vet.certvet.models.Usuario;
 import br.vet.certvet.repositories.PrescricaoRepository;
 import br.vet.certvet.services.PdfService;
 import br.vet.certvet.services.ProntuarioService;
-import br.vet.certvet.services.implementation.PdfFromHtmlPdfServiceImpl;
 import br.vet.certvet.services.implementation.ProntuarioServiceImpl;
 import br.vet.certvet.services.implementation.S3BucketServiceRepository;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -104,8 +102,8 @@ public class PrescricaoController extends BaseController {
             @RequestBody byte[] medicacaoPrescritaPdf
     ) {
 
-        if(Boolean.FALSE.equals(pdfService.isFileTypePdf(medicacaoPrescritaPdf)))
-            throw new NotMatchingFileTypeToPdfException("O arquivo recebido não foi identificado como pdf. Revise e tente novamente.");
+//        if(Boolean.FALSE.equals(pdfService.isFileTypePdf(medicacaoPrescritaPdf)))
+//            throw new NotMatchingFileTypeToPdfException("O arquivo recebido não foi identificado como pdf. Revise e tente novamente.");
 
         Prontuario prontuario = findProntuarioEClinica(auth, prontuarioCodigo);
         final int version = Integer.parseInt(prontuario.prescricaoLatestVersion());
@@ -120,7 +118,7 @@ public class PrescricaoController extends BaseController {
         if (!icpResponse.isValidDocument())
             throw new InvalidSignedDocumentoException("O documento não pôde ser confirmado pelo ICP-BR");
 
-        final List<Usuario> assinadores = PdfFromHtmlPdfServiceImpl.assinadoresPresentesSistema(icpResponse);
+        final List<Usuario> assinadores = pdfService.assinadoresPresentesSistema(icpResponse);
         Prontuario signedPrescricao = prontuarioService.save(
                 prontuario.setPrescricoes(
                         prontuario.getPrescricoes()
@@ -134,7 +132,8 @@ public class PrescricaoController extends BaseController {
                                         );
                                     }
                                     return prescricao;
-                                }).toList())
+                                })
+                                .toList())
         );
 
         return null != signedPrescricao

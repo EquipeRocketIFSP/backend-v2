@@ -85,7 +85,7 @@ insert into clinicas (
 INSERT INTO usuarios
     (id, bairro, celular, cep, cidade, cpf, crmv, deleted_at, email, estado, logradouro, nome, numero, password, reset_password_token, rg, telefone, username, clinica_id)
 VALUES
-    (1, 'Bairro do usuario', '(11) 98765-4321','09089-777', 'São Paulo', '489.576.098-00', 'CRMV123456', null, 'mario@quem.viu','SP', 'Rua das camelias', 'Mario Viu', '12', '$2a$10$yE9FznmKoPgAVRz5Yklkw.f1ImjjkxuYIHfSiwlT1EYK/y24laFHm', NULL, 'RG123654', '(11) 1234-5678','mario@quem.viu','1'),
+    (1, 'Bairro do usuario', '(11) 98765-4321','09089-777', 'São Paulo', '333.555.648-85', 'CRMV123456', null, 'mario@quem.viu','SP', 'Rua das camelias', 'Mario Viu', '12', '$2a$10$yE9FznmKoPgAVRz5Yklkw.f1ImjjkxuYIHfSiwlT1EYK/y24laFHm', NULL, 'RG123654', '(11) 1234-5678','mario@quem.viu','1'),
     (2, 'Velame', '(83) 98920-8496', '58420-290', 'Campina Grande', '759.755.587-35', 'SP-123456', NULL, NULL, 'PB', 'Rua Frutuoso Maria Vasconcelos', 'Sarah Cristiane Moreira', '862', '$2a$10$fuus0V3IbYjKbNt0f1QCDOd2JstI.FKBIISEwmRS5yRnzuXJy5Kr6', NULL, '28.563.840-3', '(83) 2999-8303', 'sarah_cristiane_moreira@fundasa.com.br', 1),
     (3, 'Planalto', '(84) 98799-1434', '59073-305', 'Natal', '971.636.160-23', 'SP-123456', NULL, NULL, 'RN', 'Rua Campestre Menino Jesus', 'Murilo Rodrigo Julio Pinto', '558', NULL, NULL, '11.214.014-2', '(84) 3830-7003', 'murilo_rodrigo_pinto@corp.inf.br', 1),
     (4, 'vjidsbvdfl', '12345678', '12345-025', 'fdsgvfdbdf', '261.499.740-49', 'SP-123456', NULL, NULL, 'SP', 'rua rua rau', 'vet cadastrado', '123s', '$2a$10$CajaIRqJ1bN9gdu83zkc7OV.6YPDg3aYAeycfELOQlkEGohOtUuIW', NULL, '123456', '145648', 'email@validado.com', 1);

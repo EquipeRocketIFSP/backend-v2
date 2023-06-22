@@ -11,7 +11,6 @@ import br.vet.certvet.models.Prontuario;
 import br.vet.certvet.services.DocumentoService;
 import br.vet.certvet.services.PdfService;
 import br.vet.certvet.services.ProntuarioService;
-import br.vet.certvet.services.implementation.PdfFromHtmlPdfServiceImpl;
 import br.vet.certvet.services.implementation.ProntuarioServiceImpl;
 import br.vet.certvet.services.implementation.S3BucketServiceRepository;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -136,7 +135,7 @@ public class DocumentoController extends BaseController {
         IcpResponse icpResponse = pdfService.getIcpBrValidation(bucket, fileName);
         if(!icpResponse.isValidDocument()) throw new InvalidSignedDocumentoException("O documento não pôde ser confirmado pelo ICP-BR");
         Documento attachedDocumento = prontuarioService.attachDocumentoAndPdfPersist(
-                documento.assinadores(PdfFromHtmlPdfServiceImpl.assinadoresPresentesSistema(icpResponse)),
+                documento.assinadores(pdfService.assinadoresPresentesSistema(icpResponse)),
                 awsResponse,
                 version
         );

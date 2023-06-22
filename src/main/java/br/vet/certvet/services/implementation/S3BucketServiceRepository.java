@@ -36,7 +36,7 @@ public class S3BucketServiceRepository implements PdfRepository {
             }
         ]
     }
-    """.indent(4);
+    """;
 
     private static final AmazonS3 s3 = AmazonS3ClientBuilder.standard()
             .withRegion(Regions.SA_EAST_1)

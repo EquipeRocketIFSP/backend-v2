@@ -133,7 +133,7 @@ public class Prontuario {
 
     @OneToMany(mappedBy = "prontuario")
     @ToString.Exclude
-    private List<Prescricao> prescricoes;
+    private List<Prescricao> prescricoes = new ArrayList<>();
 
     public Prontuario setDocumentos(List<Documento> documentos) {
         this.documentos = documentos;
