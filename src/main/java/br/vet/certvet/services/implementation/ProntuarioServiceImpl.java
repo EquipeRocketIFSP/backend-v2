@@ -106,7 +106,6 @@ public class ProntuarioServiceImpl implements ProntuarioService {
             try {
                 return prontuarioRepository.save(prontuario);
             }catch (Exception e){
-                log.error(e.getCause());
                 log.error(e.getMessage());
             }
         Optional<Clinica> clinica = clinicaRepository.findById(prontuario.getClinica().getId());
